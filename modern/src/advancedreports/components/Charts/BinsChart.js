@@ -52,10 +52,10 @@ const BinsChart = ({ bins }) => {
         The rate of the empted bins and the unempted one&apos;s
       </Typography>
       <div className="chart">
-        <PieChart width={_width(50)} height={300}>
+        <PieChart width={_width(40)} height={300}>
           <Pie
             data={data}
-            cx={_width(50) / 2}
+            cx={_width(40) / 2}
             cy={150}
             labelLine={false}
             label={renderCustomizedLabel}
