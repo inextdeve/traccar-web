@@ -31,13 +31,13 @@ export default makeStyles((theme) => ({
     padding: theme.spacing(3, 2, 2),
   },
   filterItem: {
-    minWidth: 0,
-    flex: `1 1 ${theme.dimensions.filterFormWidth}`,
+    minWidth: "160px",
+
   },
   filterButtons: {
     display: "flex",
     gap: theme.spacing(1),
-    flex: `1 1 ${theme.dimensions.filterFormWidth}`,
+
   },
   filterButton: {
     flexGrow: 1,
@@ -55,13 +55,23 @@ export default makeStyles((theme) => ({
     color: "#fff",
   },
   totalRow: {
-    backgroundColor: theme.palette.colors.bsWarning,
+    backgroundColor: "#000",
   },
   charts: {
-    marginLeft: "8px",
-    marginTop: "8px",
+    marginTop: "16px",
+    marginBottom: "16px",
+    gap: "1.5rem",
+    gridTemplateColumns: "1fr 1fr",
+  },
+  chart: {
+    boxShadow: "rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px",
+    borderRadius: "11px",
+    padding: "8px",
   },
   chartsHeading: {
     marginBottom: "8px",
+  },
+  chartSubtitle: {
+    color: theme.palette.colors.neutral,
   },
 }));

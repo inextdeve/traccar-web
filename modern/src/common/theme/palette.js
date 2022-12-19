@@ -12,8 +12,8 @@ const colors = {
   negative: red[500],
   neutral: grey[500],
   geometry: "#3bb2d0",
-  bsDanger: "#dc3545",
-  bsSuccess: "#28a745",
+  bsDanger: "rgb(211, 47, 47)",
+  bsSuccess: "rgb(46, 125, 50)",
   bsWarning: "#ffc107",
 };
 

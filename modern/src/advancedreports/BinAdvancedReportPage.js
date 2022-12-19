@@ -6,6 +6,10 @@ import {
   TableHead,
   TableRow,
   Grid,
+  Typography,
+  TableContainer,
+  Paper,
+  Box
 } from "@mui/material";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
@@ -46,7 +50,7 @@ const BinAdvancedReportPage = () => {
   useEffect(() => {
     setIsLoading(true);
     fetch(
-      "http://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bintype"
+      "https://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bintype"
     )
       .then((data) => {
         setIsLoading(false);
@@ -62,9 +66,10 @@ const BinAdvancedReportPage = () => {
       breadcrumbs={["advancedReportTitle", "reportBin"]}
     >
       <div className={classes.container}>
-        <div className={classes.containerMain}>
+        <Box className={classes.containerMain} sx={{p: 2}}>
           <ReportFilter />
           <div className={classes.header} />
+          <TableContainer  component={Paper} >
           <Table>
             <TableHead>
               <TableRow>
@@ -92,13 +97,13 @@ const BinAdvancedReportPage = () => {
                     </TableRow>
                   ))}
                   <TableRow className={classes.totalRow}>
-                    <TableCell />
-                    <TableCell>Total</TableCell>
-                    <TableCell>{countTotal(items, "total")}</TableCell>
-                    <TableCell>{countTotal(items, "empty_bin")}</TableCell>
-                    <TableCell>{countTotal(items, "un_empty_bin")}</TableCell>
-                    <TableCell>
-                      {`${countTotal(items, "rate") / items.length}%`}
+                    <TableCell sx={{border: 0}}/>
+                    <TableCell sx={{border: 0}}><Typography sx={{fontWeight: "500", color:"#fff"}}>Total</Typography></TableCell>
+                    <TableCell sx={{border: 0}}><Typography sx={{fontWeight: "500", color:"#fff"}}>{countTotal(items, "total")}</Typography></TableCell>
+                    <TableCell sx={{border: 0}}><Typography sx={{fontWeight: "500", color:"#fff"}}>{countTotal(items, "empty_bin")}</Typography></TableCell>
+                    <TableCell sx={{border: 0}}><Typography sx={{fontWeight: "500", color:"#fff"}}>{countTotal(items, "un_empty_bin")}</Typography></TableCell>
+                    <TableCell sx={{border: 0}}>
+                      <Typography sx={{fontWeight: "500", color:"#fff"}}>{`${countTotal(items, "rate") / items.length}%`}</Typography>
                     </TableCell>
                   </TableRow>
                 </>
@@ -107,16 +112,18 @@ const BinAdvancedReportPage = () => {
               )}
             </TableBody>
           </Table>
-          <Grid container spacing={2} className={classes.charts}>
+          </TableContainer>
+          <Typography component="h3" variant="h3" sx={{textAlign: "center", p:3}}>Overview</Typography>
+          <Grid container spacing={1} className={classes.charts}>
             {!loading ? (
               <>
-                <Grid item xs={4}>
+                <Grid item className={classes.chart} >
                   <BinsChart
-                    empted={countTotal(items, "empty_bin")}
-                    unempted={countTotal(items, "un_empty_bin")}
+                    bins={[{name: "Empted", value: countTotal(items, "empty_bin")}, {name: "Unempted", value: countTotal(items, "un_empty_bin")}]}
+                    
                   />
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item className={classes.chart}>
                   <BinsPercentageChart
                     data={items.map((item) => ({
                       name: item.bintype,
@@ -127,7 +134,7 @@ const BinAdvancedReportPage = () => {
               </>
             ) : null}
           </Grid>
-        </div>
+        </Box>
       </div>
     </PageLayout>
   );

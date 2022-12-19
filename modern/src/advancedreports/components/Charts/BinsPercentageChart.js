@@ -4,6 +4,7 @@ import {
 } from "recharts";
 
 import { Typography } from "@mui/material";
+import useReportStyles from "../../common/useReportStyles";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 const renderActiveShape = (props) => {
@@ -87,22 +88,24 @@ const BinsPercentageChart = ({ data }) => {
     (_, index) => setActiveIndex(index),
     [setActiveIndex],
   );
-
+  const classes = useReportStyles();
   return (
     <>
-      <Typography variant="h6" component="h6">
+      <Typography variant="h6" component="h6" sx={{ fontWeight: "regular" }}>
         Bins Percentage
       </Typography>
-
-      <PieChart width={600} height={300}>
+      <Typography className={classes.chartSubtitle} sx={{ typography: "subtitle2", fontWeight: "light" }}>
+        The rate of the bins types
+      </Typography>
+      <PieChart width={500} height={300}>
         <Pie
           activeIndex={activeIndex}
           activeShape={renderActiveShape}
           data={data}
-          cx={300}
+          cx={250}
           cy={150}
-          innerRadius={90}
-          outerRadius={110}
+          innerRadius={70}
+          outerRadius={90}
           fill="#8884d8"
           dataKey="value"
           onMouseEnter={onPieEnter}

@@ -23,7 +23,7 @@ const ReportFilter = () => {
   const to = useSelector((state) => state.advancedReports.to);
 
   const handleSubmit = ({ from, to }) => {
-    const url = `http://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bintype&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`;
+    const url = `https://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bintype&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`;
     setIsLoading(true);
     fetch(url)
       .then((data) => data.json())
