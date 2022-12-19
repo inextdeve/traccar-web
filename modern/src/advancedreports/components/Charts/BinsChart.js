@@ -1,10 +1,8 @@
 import React from "react";
 import { Typography, Box } from "@mui/material";
-import {
-  PieChart, Pie, Cell,
-} from "recharts";
+import { PieChart, Pie, Cell } from "recharts";
 import useReportStyles from "../../common/useReportStyles";
-import Rect from "../../common/Rect"
+import Rect from "../../common/Rect";
 
 const COLORS = ["#00C49F", "#D32F2F"];
 let data;
@@ -16,7 +14,6 @@ const renderCustomizedLabel = ({
   innerRadius,
   outerRadius,
   percent,
-  index,
 }) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -38,37 +35,62 @@ const BinsChart = ({ bins }) => {
   data = bins;
 
   const classes = useReportStyles();
-
+  const _width = (rate) => {
+    const width = (rate * (window.outerWidth - 360 - 40)) / 100;
+    // if (width < 550) return 550;
+    return width;
+  };
   return (
     <div>
       <Typography variant="h6" component="h6" sx={{ fontWeight: "regular" }}>
         Bins Chart
       </Typography>
-      <Typography className={classes.chartSubtitle} sx={{ typography: "subtitle2", fontWeight: "light" }}>
-        The rate of the empted bins and the unempted one's
+      <Typography
+        className={classes.chartSubtitle}
+        sx={{ typography: "subtitle2", fontWeight: "light" }}
+      >
+        The rate of the empted bins and the unempted one&apos;s
       </Typography>
       <div className="chart">
-        <PieChart width={400} height={400}>
+        <PieChart width={_width(50)} height={300}>
           <Pie
             data={data}
-            cx={200}
+            cx={_width(50) / 2}
             cy={150}
             labelLine={false}
             label={renderCustomizedLabel}
-            outerRadius={90}
+            outerRadius={140}
             fill="#8884d8"
             dataKey="value"
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${entry.name}`} fill={COLORS[index % COLORS.length]} />
+              <Cell
+                key={`cell-${entry.name}`}
+                fill={COLORS[index % COLORS.length]}
+              />
             ))}
           </Pie>
         </PieChart>
       </div>
       <div className={classes.indicators}>
-        <Box sx={{display: "flex", gap: "0.5rem", alignItems: "center"}}><Rect w={10} h={10} c="#00C49F" />
-        <Typography component="span" sx={{ typography: "subtitle2", fontWeight: "light" }}>Empted</Typography></Box>
-        <Box sx={{display: "flex", gap: "0.5rem", alignItems: "center"}}><Rect w={10} h={10} c="rgb(211, 47, 47)" /><Typography component="span" sx={{ typography: "subtitle2", fontWeight: "light" }}>Unempted</Typography></Box>
+        <Box sx={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <Rect w={10} h={10} c="#00C49F" />
+          <Typography
+            component="span"
+            sx={{ typography: "subtitle2", fontWeight: "light" }}
+          >
+            Empted
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <Rect w={10} h={10} c="rgb(211, 47, 47)" />
+          <Typography
+            component="span"
+            sx={{ typography: "subtitle2", fontWeight: "light" }}
+          >
+            Unempted
+          </Typography>
+        </Box>
       </div>
     </div>
   );

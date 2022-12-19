@@ -1,12 +1,11 @@
 import React, { useState, useCallback } from "react";
-import {
-  Cell, PieChart, Pie, Sector,
-} from "recharts";
+import { Cell, PieChart, Pie, Sector } from "recharts";
 
 import { Typography } from "@mui/material";
 import useReportStyles from "../../common/useReportStyles";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+
 const renderActiveShape = (props) => {
   const RADIAN = Math.PI / 180;
   const {
@@ -86,26 +85,37 @@ const BinsPercentageChart = ({ data }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
     (_, index) => setActiveIndex(index),
-    [setActiveIndex],
+    [setActiveIndex]
   );
   const classes = useReportStyles();
+
+  const _width = (rate) => {
+    const width = (rate * (window.outerWidth - 360 - 40)) / 100;
+    // if (width < 550) return 550;
+    return width;
+  };
+
   return (
     <>
       <Typography variant="h6" component="h6" sx={{ fontWeight: "regular" }}>
         Bins Percentage
       </Typography>
-      <Typography className={classes.chartSubtitle} sx={{ typography: "subtitle2", fontWeight: "light" }}>
+      <Typography
+        className={classes.chartSubtitle}
+        sx={{ typography: "subtitle2", fontWeight: "light" }}
+      >
         The rate of the bins types
       </Typography>
-      <PieChart width={500} height={300}>
+
+      <PieChart width={_width(50)} height={300}>
         <Pie
           activeIndex={activeIndex}
           activeShape={renderActiveShape}
           data={data}
-          cx={250}
+          cx={_width(50) / 2}
           cy={150}
-          innerRadius={70}
-          outerRadius={90}
+          innerRadius={80}
+          outerRadius={100}
           fill="#8884d8"
           dataKey="value"
           onMouseEnter={onPieEnter}

@@ -32,19 +32,13 @@ export default makeStyles((theme) => ({
   },
   filterItem: {
     minWidth: "160px",
-
   },
   filterButtons: {
     display: "flex",
     gap: theme.spacing(1),
-
   },
   filterButton: {
     flexGrow: 1,
-  },
-  chart: {
-    flexGrow: 1,
-    overflow: "hidden",
   },
   emptyBin: {
     backgroundColor: theme.palette.colors.bsSuccess,
@@ -54,17 +48,16 @@ export default makeStyles((theme) => ({
     backgroundColor: theme.palette.colors.bsDanger,
     color: "#fff",
   },
-  totalRow: {
-    backgroundColor: "#000",
+  greyRow: {
+    backgroundColor: theme.palette.colors.neutral,
   },
   charts: {
     marginTop: "16px",
     marginBottom: "16px",
-    gap: "1.5rem",
-    gridTemplateColumns: "1fr 1fr",
   },
   chart: {
-    boxShadow: "rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px",
+    boxShadow:
+      "rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px",
     borderRadius: "11px",
     padding: "8px",
   },
