@@ -46,20 +46,27 @@ const BinAdvancedReportPage = () => {
   const loading = useSelector((state) => state.advancedReports.loading);
   const setIsLoading = (state) =>
     dispatch(advancedReportsActions.updateLoading(state));
-  const items = useSelector((state) => state.advancedReports.items);
+  // const items = useSelector((state) => state.advancedReports.items);
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetch(
-      "https://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bintype"
-    )
-      .then((data) => {
-        setIsLoading(false);
-        return data.json();
-      })
-      .then((data) => dispatch(advancedReportsActions.updateItems(data)))
-      .catch(() => setIsLoading(false));
-  }, []);
+  //Testing Mode
+  let items = [{"id_type":"1","bintype":"200 liters","total":398,"empty_bin":227,"un_empty_bin":171,"rate":"58%","date_from":"2022-12-20 00:00","date_to":"2022-12-20 23:59"},{"id_type":"3","bintype":"2 Yard","total":6509,"empty_bin":3935,"un_empty_bin":2574,"rate":"61%","date_from":"2022-12-20 00:00","date_to":"2022-12-20 23:59"},{"id_type":"4","bintype":"6 Yard","total":337,"empty_bin":211,"un_empty_bin":126,"rate":"63%","date_from":"2022-12-20 00:00","date_to":"2022-12-20 23:59"},{"id_type":"5","bintype":"collection point","total":119,"empty_bin":118,"un_empty_bin":1,"rate":"100%","date_from":"2022-12-20 00:00","date_to":"2022-12-20 23:59"}]
+  // data = JSON.parse(JSON.stringify(data))
+  // dispatch(advancedReportsActions.updateItems(data))
+  
+  //Production Mode
+
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   fetch(
+  //     "https://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bintype"
+  //   )
+  //     .then((data) => {
+  //       setIsLoading(false);
+  //       return data.json();
+  //     })
+  //     .then((data) => dispatch(advancedReportsActions.updateItems(data)))
+  //     .catch(() => setIsLoading(false));
+  // }, []);
 
   return (
     <PageLayout
@@ -156,7 +163,7 @@ const BinAdvancedReportPage = () => {
           <Grid container className={classes.charts}>
             {!loading ? (
               <>
-                <Grid item className={classes.chart}>
+                <Grid item xl={6} className={classes.chart}>
                   <BinsChart
                     bins={[
                       { name: "Empted", value: countTotal(items, "empty_bin") },
@@ -167,7 +174,7 @@ const BinAdvancedReportPage = () => {
                     ]}
                   />
                 </Grid>
-                <Grid item className={classes.chart}>
+                <Grid xl={6} item className={classes.chart}>
                   <BinsPercentageChart
                     data={items.map((item) => ({
                       name: item.bintype,

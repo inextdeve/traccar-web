@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Cell, PieChart, Pie, Sector } from "recharts";
+import { Cell, PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
 
 import { Typography } from "@mui/material";
 import useReportStyles from "../../common/useReportStyles";
@@ -106,8 +106,8 @@ const BinsPercentageChart = ({ data }) => {
       >
         The rate of the bins types
       </Typography>
-
-      <PieChart width={_width(50)} height={300}>
+      <ResponsiveContainer width={"100%"} height={50 * data.length} debounce={50}>
+      <PieChart>
         <Pie
           activeIndex={activeIndex}
           activeShape={renderActiveShape}
@@ -127,7 +127,9 @@ const BinsPercentageChart = ({ data }) => {
             />
           ))}
         </Pie>
+       
       </PieChart>
+      </ResponsiveContainer>
     </>
   );
 };

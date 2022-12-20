@@ -1,6 +1,6 @@
-import React from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { Typography, Box } from "@mui/material";
-import { PieChart, Pie, Cell } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import useReportStyles from "../../common/useReportStyles";
 import Rect from "../../common/Rect";
 
@@ -35,13 +35,14 @@ const BinsChart = ({ bins }) => {
   data = bins;
 
   const classes = useReportStyles();
-  const _width = (rate) => {
-    const width = (rate * (window.outerWidth - 360 - 40)) / 100;
-    // if (width < 550) return 550;
-    return width;
-  };
+  const container = useRef()
+  const [CX, setCX] = useState(80)
+  useEffect(() => {
+    console.log("Hello World")
+    console.log(container.current)
+  }, [])
   return (
-    <div>
+    <>
       <Typography variant="h6" component="h6" sx={{ fontWeight: "regular" }}>
         Bins Chart
       </Typography>
@@ -52,10 +53,11 @@ const BinsChart = ({ bins }) => {
         The rate of the empted bins and the unempted one&apos;s
       </Typography>
       <div className="chart">
-        <PieChart width={_width(40)} height={300}>
+      <ResponsiveContainer ref={container} width={"100%"} height={150 * 2 + 20} debounce={50}>
+        <PieChart>
           <Pie
             data={data}
-            cx={_width(40) / 2}
+            cx={CX}
             cy={150}
             labelLine={false}
             label={renderCustomizedLabel}
@@ -71,6 +73,7 @@ const BinsChart = ({ bins }) => {
             ))}
           </Pie>
         </PieChart>
+        </ResponsiveContainer>
       </div>
       <div className={classes.indicators}>
         <Box sx={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -92,7 +95,7 @@ const BinsChart = ({ bins }) => {
           </Typography>
         </Box>
       </div>
-    </div>
+    </>
   );
 };
 
