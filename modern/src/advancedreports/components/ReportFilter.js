@@ -84,38 +84,33 @@ const ReportFilter = () => {
   };
 
   return (
-    <div className={classes.filter}>
-      <div className={classes.filterItem}>
-        <FormControl fullWidth>
-          <InputLabel>{t("reportPeriod")}</InputLabel>
-          <Select
-            label={t("reportPeriod")}
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-          >
-            <MenuItem value="today">{t("reportToday")}</MenuItem>
-            <MenuItem value="yesterday">{t("reportYesterday")}</MenuItem>
-            <MenuItem value="thisWeek">{t("reportThisWeek")}</MenuItem>
-            <MenuItem value="previousWeek">{t("reportPreviousWeek")}</MenuItem>
-            <MenuItem value="thisMonth">{t("reportThisMonth")}</MenuItem>
-            <MenuItem value="previousMonth">
-              {t("reportPreviousMonth")}
-            </MenuItem>
-            <MenuItem value="custom">{t("reportCustom")}</MenuItem>
-          </Select>
-        </FormControl>
-      </div>
-      <div className={classes.filterButtons}>
-        <Button
-          variant="contained"
-          color="secondary"
-          className={classes.filterButton}
-          onClick={handleClick}
+    <>
+      <FormControl sx={{ width: 1 / 4 }}>
+        <InputLabel>{t("reportPeriod")}</InputLabel>
+        <Select
+          label={t("reportPeriod")}
+          value={period}
+          onChange={(e) => setPeriod(e.target.value)}
         >
-          {t("reportShow")}
-        </Button>
-      </div>
-    </div>
+          <MenuItem value="today">{t("reportToday")}</MenuItem>
+          <MenuItem value="yesterday">{t("reportYesterday")}</MenuItem>
+          <MenuItem value="thisWeek">{t("reportThisWeek")}</MenuItem>
+          <MenuItem value="previousWeek">{t("reportPreviousWeek")}</MenuItem>
+          <MenuItem value="thisMonth">{t("reportThisMonth")}</MenuItem>
+          <MenuItem value="previousMonth">{t("reportPreviousMonth")}</MenuItem>
+          <MenuItem value="custom">{t("reportCustom")}</MenuItem>
+        </Select>
+      </FormControl>
+
+      <Button
+        variant="contained"
+        color="secondary"
+        className={classes.filterButton}
+        onClick={handleClick}
+      >
+        {t("reportShow")}
+      </Button>
+    </>
   );
 };
 

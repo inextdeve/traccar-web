@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Table,
   TableBody,
@@ -11,6 +11,7 @@ import {
   Paper,
   Box,
   Skeleton,
+  Button,
 } from "@mui/material";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
@@ -23,10 +24,14 @@ import { advancedReportsActions } from "../store";
 import BinsChart from "./components/Charts/BinsChart";
 import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
 import BinsStatusChart from "./components/Charts/BinsStatusChart";
+import ReactToPrint from "react-to-print";
+import ExcelExport from "./components/ExcelExport";
+
 const BinAdvancedReportPage = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const dispatch = useDispatch();
+  const TableRef = useRef(null);
 
   const countTotal = (array, prop) => {
     return array
@@ -47,68 +52,20 @@ const BinAdvancedReportPage = () => {
   const loading = useSelector((state) => state.advancedReports.loading);
   const setIsLoading = (state) =>
     dispatch(advancedReportsActions.updateLoading(state));
-  // const items = useSelector((state) => state.advancedReports.items);
+  const items = useSelector((state) => state.advancedReports.items);
 
-  //Testing Mode
-  let items = [
-    {
-      id_type: "1",
-      bintype: "200 liters",
-      total: 398,
-      empty_bin: 227,
-      un_empty_bin: 171,
-      rate: "58%",
-      date_from: "2022-12-20 00:00",
-      date_to: "2022-12-20 23:59",
-    },
-    {
-      id_type: "3",
-      bintype: "2 Yard",
-      total: 6509,
-      empty_bin: 3935,
-      un_empty_bin: 2574,
-      rate: "61%",
-      date_from: "2022-12-20 00:00",
-      date_to: "2022-12-20 23:59",
-    },
-    {
-      id_type: "4",
-      bintype: "6 Yard",
-      total: 337,
-      empty_bin: 211,
-      un_empty_bin: 126,
-      rate: "63%",
-      date_from: "2022-12-20 00:00",
-      date_to: "2022-12-20 23:59",
-    },
-    {
-      id_type: "5",
-      bintype: "collection point",
-      total: 119,
-      empty_bin: 118,
-      un_empty_bin: 1,
-      rate: "100%",
-      date_from: "2022-12-20 00:00",
-      date_to: "2022-12-20 23:59",
-    },
-  ];
-  // data = JSON.parse(JSON.stringify(data))
-  // dispatch(advancedReportsActions.updateItems(data))
-
-  //Production Mode
-
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   fetch(
-  //     "https://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bintype"
-  //   )
-  //     .then((data) => {
-  //       setIsLoading(false);
-  //       return data.json();
-  //     })
-  //     .then((data) => dispatch(advancedReportsActions.updateItems(data)))
-  //     .catch(() => setIsLoading(false));
-  // }, []);
+  useEffect(() => {
+    setIsLoading(true);
+    fetch(
+      "https://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bintype"
+    )
+      .then((data) => {
+        setIsLoading(false);
+        return data.json();
+      })
+      .then((data) => dispatch(advancedReportsActions.updateItems(data)))
+      .catch(() => setIsLoading(false));
+  }, []);
 
   return (
     <PageLayout
@@ -117,9 +74,30 @@ const BinAdvancedReportPage = () => {
     >
       <div className={classes.container}>
         <Box className={classes.containerMain} sx={{ p: 2 }}>
-          <ReportFilter />
+          <Box
+            sx={{
+              display: "flex",
+              gap: "0.5rem",
+              margin: "1rem 0",
+            }}
+          >
+            <ReportFilter />
+            <ExcelExport excelData={items} fileName={"ReportSheet"} />
+            <ReactToPrint
+              trigger={() => (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  className={classes.filterButton}
+                >
+                  {t("advancedReportPrint")}
+                </Button>
+              )}
+              content={() => TableRef.current}
+            />
+          </Box>
           <div className={classes.header} />
-          <TableContainer component={Paper}>
+          <TableContainer ref={TableRef} component={Paper}>
             <Table>
               <TableHead>
                 <TableRow className={classes.greyRow}>

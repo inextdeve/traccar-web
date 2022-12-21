@@ -24,21 +24,8 @@ export default makeStyles((theme) => ({
     width: "1%",
     paddingLeft: theme.spacing(1),
   },
-  filter: {
-    display: "inline-flex",
-    flexWrap: "wrap",
-    gap: theme.spacing(2),
-    padding: theme.spacing(3, 2, 2),
-  },
   filterItem: {
     minWidth: "160px",
-  },
-  filterButtons: {
-    display: "flex",
-    gap: theme.spacing(1),
-  },
-  filterButton: {
-    flexGrow: 1,
   },
   emptyBin: {
     backgroundColor: theme.palette.colors.bsSuccess,
