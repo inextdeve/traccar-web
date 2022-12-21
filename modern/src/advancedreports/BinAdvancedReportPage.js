@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { advancedReportsActions } from "../store";
 import BinsChart from "./components/Charts/BinsChart";
 import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
+import BinsStatusChart from "./components/Charts/BinsStatusChart";
 const BinAdvancedReportPage = () => {
   const classes = useReportStyles();
   const t = useTranslation();
@@ -49,10 +50,51 @@ const BinAdvancedReportPage = () => {
   // const items = useSelector((state) => state.advancedReports.items);
 
   //Testing Mode
-  let items = [{"id_type":"1","bintype":"200 liters","total":398,"empty_bin":227,"un_empty_bin":171,"rate":"58%","date_from":"2022-12-20 00:00","date_to":"2022-12-20 23:59"},{"id_type":"3","bintype":"2 Yard","total":6509,"empty_bin":3935,"un_empty_bin":2574,"rate":"61%","date_from":"2022-12-20 00:00","date_to":"2022-12-20 23:59"},{"id_type":"4","bintype":"6 Yard","total":337,"empty_bin":211,"un_empty_bin":126,"rate":"63%","date_from":"2022-12-20 00:00","date_to":"2022-12-20 23:59"},{"id_type":"5","bintype":"collection point","total":119,"empty_bin":118,"un_empty_bin":1,"rate":"100%","date_from":"2022-12-20 00:00","date_to":"2022-12-20 23:59"}]
+  let items = [
+    {
+      id_type: "1",
+      bintype: "200 liters",
+      total: 398,
+      empty_bin: 227,
+      un_empty_bin: 171,
+      rate: "58%",
+      date_from: "2022-12-20 00:00",
+      date_to: "2022-12-20 23:59",
+    },
+    {
+      id_type: "3",
+      bintype: "2 Yard",
+      total: 6509,
+      empty_bin: 3935,
+      un_empty_bin: 2574,
+      rate: "61%",
+      date_from: "2022-12-20 00:00",
+      date_to: "2022-12-20 23:59",
+    },
+    {
+      id_type: "4",
+      bintype: "6 Yard",
+      total: 337,
+      empty_bin: 211,
+      un_empty_bin: 126,
+      rate: "63%",
+      date_from: "2022-12-20 00:00",
+      date_to: "2022-12-20 23:59",
+    },
+    {
+      id_type: "5",
+      bintype: "collection point",
+      total: 119,
+      empty_bin: 118,
+      un_empty_bin: 1,
+      rate: "100%",
+      date_from: "2022-12-20 00:00",
+      date_to: "2022-12-20 23:59",
+    },
+  ];
   // data = JSON.parse(JSON.stringify(data))
   // dispatch(advancedReportsActions.updateItems(data))
-  
+
   //Production Mode
 
   // useEffect(() => {
@@ -163,7 +205,7 @@ const BinAdvancedReportPage = () => {
           <Grid container className={classes.charts}>
             {!loading ? (
               <>
-                <Grid item xl={6} className={classes.chart}>
+                <Grid item xs={12} lg={5} className={classes.chart}>
                   <BinsChart
                     bins={[
                       { name: "Empted", value: countTotal(items, "empty_bin") },
@@ -174,12 +216,27 @@ const BinAdvancedReportPage = () => {
                     ]}
                   />
                 </Grid>
-                <Grid xl={6} item className={classes.chart}>
+                <Grid xs={12} lg={6} item className={classes.chart}>
                   <BinsPercentageChart
                     data={items.map((item) => ({
                       name: item.bintype,
                       value: parseInt(item.total),
                     }))}
+                  />
+                </Grid>
+                <Grid xs={12} item className={classes.chart}>
+                  <BinsStatusChart
+                    bins={items.map((item) => {
+                      const empted = Math.round(
+                        (item.empty_bin * 100) / item.total
+                      );
+                      return {
+                        name: item.bintype,
+                        empted,
+                        unempted: 100 - empted,
+                        amt: 100,
+                      };
+                    })}
                   />
                 </Grid>
               </>

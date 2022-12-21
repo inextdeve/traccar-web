@@ -1,6 +1,8 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Typography, Box } from "@mui/material";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import {
+  PieChart, Pie, Cell, ResponsiveContainer,
+} from "recharts";
 import useReportStyles from "../../common/useReportStyles";
 import Rect from "../../common/Rect";
 
@@ -35,12 +37,12 @@ const BinsChart = ({ bins }) => {
   data = bins;
 
   const classes = useReportStyles();
-  const container = useRef()
-  const [CX, setCX] = useState(80)
+  const container = useRef(null);
+  const [CX, setCX] = useState(80);
   useEffect(() => {
-    console.log("Hello World")
-    console.log(container.current)
-  }, [])
+    const containerWidth = container.current.current.offsetWidth;
+    setCX(parseInt(containerWidth) / 2);
+  }, []);
   return (
     <>
       <Typography variant="h6" component="h6" sx={{ fontWeight: "regular" }}>
@@ -53,26 +55,32 @@ const BinsChart = ({ bins }) => {
         The rate of the empted bins and the unempted one&apos;s
       </Typography>
       <div className="chart">
-      <ResponsiveContainer ref={container} width={"100%"} height={150 * 2 + 20} debounce={50}>
-        <PieChart>
-          <Pie
-            data={data}
-            cx={CX}
-            cy={150}
-            labelLine={false}
-            label={renderCustomizedLabel}
-            outerRadius={140}
-            fill="#8884d8"
-            dataKey="value"
-          >
-            {data.map((entry, index) => (
-              <Cell
-                key={`cell-${entry.name}`}
-                fill={COLORS[index % COLORS.length]}
-              />
-            ))}
-          </Pie>
-        </PieChart>
+        <ResponsiveContainer
+          ref={container}
+          width="100%"
+          height={150 * 2 + 20}
+          debounce={50}
+          className={classes.chartContainer}
+        >
+          <PieChart>
+            <Pie
+              data={data}
+              cx={CX}
+              cy={150}
+              labelLine={false}
+              label={renderCustomizedLabel}
+              outerRadius={140}
+              fill="#8884d8"
+              dataKey="value"
+            >
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${entry.name}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+          </PieChart>
         </ResponsiveContainer>
       </div>
       <div className={classes.indicators}>

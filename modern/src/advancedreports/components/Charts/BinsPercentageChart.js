@@ -1,5 +1,9 @@
-import React, { useState, useCallback } from "react";
-import { Cell, PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
+import React, {
+  useState, useCallback, useRef, useEffect,
+} from "react";
+import {
+  Cell, PieChart, Pie, Sector, ResponsiveContainer,
+} from "recharts";
 
 import { Typography } from "@mui/material";
 import useReportStyles from "../../common/useReportStyles";
@@ -85,15 +89,19 @@ const BinsPercentageChart = ({ data }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
     (_, index) => setActiveIndex(index),
-    [setActiveIndex]
+    [setActiveIndex],
   );
   const classes = useReportStyles();
 
-  const _width = (rate) => {
-    const width = (rate * (window.outerWidth - 360 - 40)) / 100;
-    // if (width < 550) return 550;
-    return width;
-  };
+  const [CX, setCX] = useState(200);
+
+  const container = useRef(null);
+
+  useEffect(() => {
+    const containerWidth = container.current.current.offsetWidth;
+
+    setCX(parseInt(containerWidth) / 2);
+  }, []);
 
   return (
     <>
@@ -106,29 +114,34 @@ const BinsPercentageChart = ({ data }) => {
       >
         The rate of the bins types
       </Typography>
-      <ResponsiveContainer width={"100%"} height={50 * data.length} debounce={50}>
-      <PieChart>
-        <Pie
-          activeIndex={activeIndex}
-          activeShape={renderActiveShape}
-          data={data}
-          cx={_width(50) / 2}
-          cy={150}
-          innerRadius={80}
-          outerRadius={100}
-          fill="#8884d8"
-          dataKey="value"
-          onMouseEnter={onPieEnter}
-        >
-          {data.map((entry, index) => (
-            <Cell
-              key={`cell-${entry.name}`}
-              fill={COLORS[index % COLORS.length]}
-            />
-          ))}
-        </Pie>
-       
-      </PieChart>
+      <ResponsiveContainer
+        ref={container}
+        width="100%"
+        height={150 * 2 + 30}
+        debounce={50}
+        className={classes.chartContainer}
+      >
+        <PieChart>
+          <Pie
+            activeIndex={activeIndex}
+            activeShape={renderActiveShape}
+            data={data}
+            cx={CX}
+            cy={150}
+            innerRadius={90}
+            outerRadius={100}
+            fill="#8884d8"
+            dataKey="value"
+            onMouseEnter={onPieEnter}
+          >
+            {data.map((entry, index) => (
+              <Cell
+                key={`cell-${entry.name}`}
+                fill={COLORS[index % COLORS.length]}
+              />
+            ))}
+          </Pie>
+        </PieChart>
       </ResponsiveContainer>
     </>
   );

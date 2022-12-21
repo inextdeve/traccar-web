@@ -52,14 +52,17 @@ export default makeStyles((theme) => ({
     backgroundColor: theme.palette.colors.neutral,
   },
   charts: {
-    marginTop: "16px",
-    marginBottom: "16px",
+    gap: "1rem",
+    justifyContent: "center",
   },
   chart: {
     boxShadow:
       "rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px",
     borderRadius: "11px",
     padding: "8px",
+  },
+  chartContainer: {
+    margin: "16px 0",
   },
   chartsHeading: {
     marginBottom: "8px",
