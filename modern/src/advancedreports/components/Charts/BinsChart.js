@@ -41,7 +41,8 @@ const BinsChart = ({ bins }) => {
   const [CX, setCX] = useState(80);
   useEffect(() => {
     const containerWidth = container.current.current.offsetWidth;
-    setCX(parseInt(containerWidth) / 2);
+    const cx = parseInt(containerWidth, 10) / 2;
+    setCX(cx);
   }, []);
   return (
     <>

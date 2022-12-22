@@ -99,8 +99,8 @@ const BinsPercentageChart = ({ data }) => {
 
   useEffect(() => {
     const containerWidth = container.current.current.offsetWidth;
-
-    setCX(parseInt(containerWidth) / 2);
+    const cx = parseInt(containerWidth, 10) / 2;
+    setCX(cx, 10);
   }, []);
 
   return (
