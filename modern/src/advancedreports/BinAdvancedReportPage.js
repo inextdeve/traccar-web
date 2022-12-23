@@ -21,6 +21,7 @@ import TableShimmer from "../common/components/TableShimmer";
 import ReportFilter from "./components/ReportFilter";
 import { useDispatch, useSelector } from "react-redux";
 import { advancedReportsActions } from "../store";
+
 import BinsChart from "./components/Charts/BinsChart";
 import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
 import BinsStatusChart from "./components/Charts/BinsStatusChart";
@@ -35,7 +36,7 @@ const BinAdvancedReportPage = () => {
 
   const countTotal = (array, prop) => {
     return array
-      .map((item) => parseInt(item[prop]))
+      .map((item) => parseFloat(item[prop]))
       .reduce((n, c) => {
         return n + c;
       }, 0);
@@ -48,7 +49,7 @@ const BinAdvancedReportPage = () => {
     "notEmpted",
     "completionRate",
   ];
-
+  const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.advancedReports.loading);
   const setIsLoading = (state) =>
     dispatch(advancedReportsActions.updateLoading(state));
@@ -56,9 +57,7 @@ const BinAdvancedReportPage = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(
-      "https://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bintype"
-    )
+    fetch(`https://med-reports.almajal.co/al/api/?token=${token}&bintype`)
       .then((data) => {
         setIsLoading(false);
         return data.json();
@@ -84,6 +83,7 @@ const BinAdvancedReportPage = () => {
             <ReportFilter />
             <ExcelExport excelData={items} fileName={"ReportSheet"} />
             <ReactToPrint
+              bodyClass="print"
               trigger={() => (
                 <Button
                   variant="contained"
@@ -96,130 +96,136 @@ const BinAdvancedReportPage = () => {
               content={() => TableRef.current}
             />
           </Box>
-          <div className={classes.header} />
-          <TableContainer ref={TableRef} component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow className={classes.greyRow}>
-                  <TableCell className={classes.columnAction} />
-                  {headColumns.map((name) => (
-                    <TableCell sx={{ color: "#fff" }} key={name}>
-                      {t(name)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {!loading ? (
-                  <>
-                    {items.map((item) => (
-                      <TableRow key={item.id_type} hover={true}>
-                        <TableCell />
-                        <TableCell>{item.bintype}</TableCell>
-                        <TableCell>{item.total}</TableCell>
-                        <TableCell className={classes.emptyBin}>
-                          {item.empty_bin}
-                        </TableCell>
-                        <TableCell className={classes.unEmptyBin}>
-                          {item.un_empty_bin}
-                        </TableCell>
-                        <TableCell>{item.rate}</TableCell>
-                      </TableRow>
+          <Box ref={TableRef}>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow className={classes.greyRow}>
+                    <TableCell className={classes.columnAction} />
+                    {headColumns.map((name) => (
+                      <TableCell sx={{ color: "#fff" }} key={name}>
+                        {t(name)}
+                      </TableCell>
                     ))}
-                    <TableRow className={classes.greyRow}>
-                      <TableCell sx={{ border: 0 }} />
-                      <TableCell sx={{ border: 0 }}>
-                        <Typography sx={{ fontWeight: "500", color: "#fff" }}>
-                          Total
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={{ border: 0 }}>
-                        <Typography sx={{ fontWeight: "500", color: "#fff" }}>
-                          {countTotal(items, "total")}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={{ border: 0 }}>
-                        <Typography sx={{ fontWeight: "500", color: "#fff" }}>
-                          {countTotal(items, "empty_bin")}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={{ border: 0 }}>
-                        <Typography sx={{ fontWeight: "500", color: "#fff" }}>
-                          {countTotal(items, "un_empty_bin")}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={{ border: 0 }}>
-                        <Typography
-                          sx={{ fontWeight: "500", color: "#fff" }}
-                        >{`${
-                          countTotal(items, "rate") / items.length
-                        }%`}</Typography>
-                      </TableCell>
-                    </TableRow>
-                  </>
-                ) : (
-                  <TableShimmer columns={headColumns.length + 1} startAction />
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          {!loading ? (
-            <Typography
-              component="h3"
-              variant="h3"
-              sx={{ textAlign: "center", p: 3 }}
-            >
-              Overview
-            </Typography>
-          ) : (
-            <Skeleton
-              animation="wave"
-              variant="rounded"
-              width={210}
-              height={60}
-              sx={{ textAlign: "center", my: 3, mx: "auto" }}
-            />
-          )}
-          <Grid container className={classes.charts}>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {!loading ? (
+                    <>
+                      {items.map((item) => (
+                        <TableRow key={item.id_type} hover={true}>
+                          <TableCell />
+                          <TableCell>{item.bintype}</TableCell>
+                          <TableCell>{item.total}</TableCell>
+                          <TableCell className={classes.emptyBin}>
+                            {item.empty_bin}
+                          </TableCell>
+                          <TableCell className={classes.unEmptyBin}>
+                            {item.un_empty_bin}
+                          </TableCell>
+                          <TableCell>{item.rate}</TableCell>
+                        </TableRow>
+                      ))}
+                      <TableRow className={classes.greyRow}>
+                        <TableCell sx={{ border: 0 }} />
+                        <TableCell sx={{ border: 0 }}>
+                          <Typography sx={{ fontWeight: "500", color: "#fff" }}>
+                            {t("total")}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={{ border: 0 }}>
+                          <Typography sx={{ fontWeight: "500", color: "#fff" }}>
+                            {countTotal(items, "total")}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={{ border: 0 }}>
+                          <Typography sx={{ fontWeight: "500", color: "#fff" }}>
+                            {countTotal(items, "empty_bin")}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={{ border: 0 }}>
+                          <Typography sx={{ fontWeight: "500", color: "#fff" }}>
+                            {countTotal(items, "un_empty_bin")}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={{ border: 0 }}>
+                          <Typography
+                            sx={{ fontWeight: "500", color: "#fff" }}
+                          >{`${
+                            countTotal(items, "rate") / items.length
+                          }%`}</Typography>
+                        </TableCell>
+                      </TableRow>
+                    </>
+                  ) : (
+                    <TableShimmer
+                      columns={headColumns.length + 1}
+                      startAction
+                    />
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
             {!loading ? (
-              <>
-                <Grid item xs={12} lg={5} className={classes.chart}>
-                  <BinsChart
-                    bins={[
-                      { name: "Empted", value: countTotal(items, "empty_bin") },
-                      {
-                        name: "Unempted",
-                        value: countTotal(items, "un_empty_bin"),
-                      },
-                    ]}
-                  />
-                </Grid>
-                <Grid xs={12} lg={6} item className={classes.chart}>
-                  <BinsPercentageChart
-                    data={items.map((item) => ({
-                      name: item.bintype,
-                      value: parseInt(item.total),
-                    }))}
-                  />
-                </Grid>
-                <Grid xs={12} item className={classes.chart}>
-                  <BinsStatusChart
-                    bins={items.map((item) => {
-                      const empted = Math.round(
-                        (item.empty_bin * 100) / item.total
-                      );
-                      return {
+              <Typography
+                component="h3"
+                variant="h3"
+                sx={{ textAlign: "center", p: 3 }}
+              >
+                Overview
+              </Typography>
+            ) : (
+              <Skeleton
+                animation="wave"
+                variant="rounded"
+                width={210}
+                height={60}
+                sx={{ textAlign: "center", my: 3, mx: "auto" }}
+              />
+            )}
+            <Grid container className={classes.charts}>
+              {!loading ? (
+                <>
+                  <Grid item xs={12} lg={5} className={classes.chart}>
+                    <BinsChart
+                      bins={[
+                        {
+                          name: "Empted",
+                          value: countTotal(items, "rate") / items.length,
+                        },
+                        {
+                          name: "Unempted",
+                          value: 100 - countTotal(items, "rate") / items.length,
+                        },
+                      ]}
+                    />
+                  </Grid>
+                  <Grid xs={12} lg={6} item className={classes.chart}>
+                    <BinsPercentageChart
+                      data={items.map((item) => ({
                         name: item.bintype,
-                        empted,
-                        unempted: 100 - empted,
-                        amt: 100,
-                      };
-                    })}
-                  />
-                </Grid>
-              </>
-            ) : null}
-          </Grid>
+                        value: parseInt(item.total),
+                      }))}
+                    />
+                  </Grid>
+                  <Grid xs={12} item className={classes.chart}>
+                    <BinsStatusChart
+                      bins={items.map((item) => {
+                        const empted = (item.empty_bin * 100) / item.total;
+
+                        return {
+                          name: item.bintype,
+                          empted,
+                          unempted: 100 - empted,
+                          amt: 100,
+                        };
+                      })}
+                    />
+                  </Grid>
+                </>
+              ) : null}
+            </Grid>
+          </Box>
         </Box>
       </div>
     </PageLayout>

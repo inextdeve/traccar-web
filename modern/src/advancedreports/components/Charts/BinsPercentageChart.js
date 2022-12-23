@@ -1,10 +1,6 @@
-import React, {
-  useState, useCallback, useRef, useEffect,
-} from "react";
-import {
-  Cell, PieChart, Pie, Sector, ResponsiveContainer,
-} from "recharts";
-
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import { Cell, PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
+import { useTranslation } from "../../../common/components/LocalizationProvider";
 import { Typography } from "@mui/material";
 import useReportStyles from "../../common/useReportStyles";
 
@@ -86,10 +82,11 @@ const renderActiveShape = (props) => {
 };
 
 const BinsPercentageChart = ({ data }) => {
+  const t = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
     (_, index) => setActiveIndex(index),
-    [setActiveIndex],
+    [setActiveIndex]
   );
   const classes = useReportStyles();
 
@@ -106,13 +103,13 @@ const BinsPercentageChart = ({ data }) => {
   return (
     <>
       <Typography variant="h6" component="h6" sx={{ fontWeight: "regular" }}>
-        Bins Percentage
+        {t("theProportionOfEachBinsType")}
       </Typography>
       <Typography
         className={classes.chartSubtitle}
         sx={{ typography: "subtitle2", fontWeight: "light" }}
       >
-        The rate of the bins types
+        {t("theProportionOfEachBinType")}
       </Typography>
       <ResponsiveContainer
         ref={container}

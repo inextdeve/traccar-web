@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Typography, Box } from "@mui/material";
-import {
-  PieChart, Pie, Cell, ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { useTranslation } from "../../../common/components/LocalizationProvider";
 import useReportStyles from "../../common/useReportStyles";
 import Rect from "../../common/Rect";
 
@@ -29,13 +28,13 @@ const renderCustomizedLabel = ({
       textAnchor={x > cx ? "start" : "end"}
       dominantBaseline="central"
     >
-      {`${(percent * 100).toFixed(0)}%`}
+      {`${(percent * 100).toFixed(2)}%`}
     </text>
   );
 };
 const BinsChart = ({ bins }) => {
   data = bins;
-
+  const t = useTranslation();
   const classes = useReportStyles();
   const container = useRef(null);
   const [CX, setCX] = useState(80);
@@ -47,13 +46,13 @@ const BinsChart = ({ bins }) => {
   return (
     <>
       <Typography variant="h6" component="h6" sx={{ fontWeight: "regular" }}>
-        Bins Chart
+        {t("binsStatus")}
       </Typography>
       <Typography
         className={classes.chartSubtitle}
         sx={{ typography: "subtitle2", fontWeight: "light" }}
       >
-        The rate of the empted bins and the unempted one&apos;s
+        {t("theProportionOfTheEmptedBinsAndTheUnempted")}
       </Typography>
       <div className="chart">
         <ResponsiveContainer

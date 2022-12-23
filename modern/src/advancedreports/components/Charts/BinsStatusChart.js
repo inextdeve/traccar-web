@@ -1,9 +1,8 @@
 import React from "react";
-import {
-  BarChart, Bar, XAxis, YAxis, ResponsiveContainer,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import { Typography } from "@mui/material";
 import useReportStyles from "../../common/useReportStyles";
+import { useTranslation } from "../../../common/components/LocalizationProvider";
 
 let arr = [];
 let i = 0;
@@ -29,8 +28,7 @@ const CustomizedLabel = ({ x, y, value }) => {
       fill="#fff"
       textAnchor="start"
     >
-      {value}
-      %
+      {value.toFixed(2)}%
     </text>
   );
 
@@ -38,18 +36,19 @@ const CustomizedLabel = ({ x, y, value }) => {
 };
 
 const BinsStatusChart = ({ bins }) => {
+  const t = useTranslation();
   const classes = useReportStyles();
   data = bins;
   return (
     <>
       <Typography variant="h6" component="h6" sx={{ fontWeight: "regular" }}>
-        Bins Status
+        {t("binsStatusByType")}
       </Typography>
       <Typography
         className={classes.chartSubtitle}
         sx={{ typography: "subtitle2", fontWeight: "light" }}
       >
-        The rate of empted and unempted bins by types
+        {t("theProportionOfEmptedAndUnemptedBinsByTypes")}
       </Typography>
       <ResponsiveContainer
         width="100%"

@@ -5,6 +5,7 @@ import {
   Select,
   MenuItem,
   Button,
+  TextField,
 } from "@mui/material";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,9 +22,10 @@ const ReportFilter = () => {
   const setIsLoading = (state) => dispatch(advancedReportsActions.updateLoading(state));
   const from = useSelector((state) => state.advancedReports.from);
   const to = useSelector((state) => state.advancedReports.to);
+  const token = useSelector((state) => state.session.user.attributes.apitoken);
 
   const handleSubmit = ({ from, to }) => {
-    const url = `https://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bintype&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`;
+    const url = `https://med-reports.almajal.co/al/api/?token=${token}&bintype&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`;
     setIsLoading(true);
     fetch(url)
       .then((data) => data.json())
@@ -101,7 +103,28 @@ const ReportFilter = () => {
           <MenuItem value="custom">{t("reportCustom")}</MenuItem>
         </Select>
       </FormControl>
-
+      {period === "custom" && (
+        <div className={classes.filterItem}>
+          <TextField
+            label={t("reportFrom")}
+            type="datetime-local"
+            value={from}
+            onChange={(e) => dispatch(advancedReportsActions.updateFrom(e.target.value))}
+            fullWidth
+          />
+        </div>
+      )}
+      {period === "custom" && (
+        <div className={classes.filterItem}>
+          <TextField
+            label={t("reportTo")}
+            type="datetime-local"
+            value={to}
+            onChange={(e) => dispatch(advancedReportsActions.updateTo(e.target.value))}
+            fullWidth
+          />
+        </div>
+      )}
       <Button
         variant="contained"
         color="secondary"

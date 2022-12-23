@@ -564,5 +564,13 @@
   "categoryVan": "Van",
   "categoryScooter": "Scooter",
   "maintenanceStart": "Start",
-  "maintenancePeriod": "Period"
+  "maintenancePeriod": "Period",
+  "total": "Total",
+  "overview": "Overview",
+  "binsStatus": "Bins Status",
+  "theProportionOfEachBinsType": "The proportion of each bins type",
+  "binsStatusByType": "Bins Status By Type",
+  "theProportionOfEmptedAndUnemptedBinsByTypes": "The proportion of empted and unempted bins by types",
+  "theProportionOfEachBinType": "The proportion of each bin type",
+  "theProportionOfTheEmptedBinsAndTheUnempted": "The proportion of the empted bins and the unempted one's"
 }

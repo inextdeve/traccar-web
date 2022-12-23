@@ -13,13 +13,6 @@ export default makeStyles((theme) => ({
   containerMain: {
     overflow: "auto",
   },
-  header: {
-    position: "sticky",
-    left: 0,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "stretch",
-  },
   columnAction: {
     width: "1%",
     paddingLeft: theme.spacing(1),

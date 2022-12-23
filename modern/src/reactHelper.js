@@ -16,9 +16,9 @@ export const useEffectAsync = (effect, deps) => {
   const ref = useRef();
   useEffect(() => {
     effect()
-      .then((result) => ref.current = result)
+      .then((result) => (ref.current = result))
       .catch((error) => dispatch(errorsActions.push(error.message)));
-      
+
     return () => {
       const result = ref.current;
       if (result) {
@@ -31,10 +31,20 @@ export const useEffectAsync = (effect, deps) => {
 export const useCatch = (method) => {
   const dispatch = useDispatch();
   return (...parameters) => {
-    method(...parameters).catch((error) => dispatch(errorsActions.push(error.message)));
+    method(...parameters).catch((error) =>
+      dispatch(errorsActions.push(error.message))
+    );
   };
 };
 
 export const useCatchCallback = (method, deps) => {
   return useCallback(useCatch(method), deps);
+};
+
+export const parseDot = (number, digit) => {
+  return parseFloat(
+    number.toString().split(".")[0] +
+      "." +
+      number.toString().split(".")[1]?.substr(0, digit)
+  );
 };
