@@ -16,6 +16,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import MapIcon from "@mui/icons-material/Map";
 import PersonIcon from "@mui/icons-material/Person";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import AnalyticsIcon from "../icons/AnalyticsIcon";
 
 import { sessionActions } from "../../store";
 import { useTranslation } from "./LocalizationProvider";
@@ -45,8 +46,8 @@ const BottomMenu = () => {
     if (location.pathname.startsWith("/reports")) {
       return "reports";
     }
-    if (location.pathname.startsWith("/advancedreports")) {
-      return "advancedreports";
+    if (location.pathname.startsWith("/analytics")) {
+      return "analytics";
     }
     if (location.pathname === "/") {
       return "map";
@@ -99,9 +100,9 @@ const BottomMenu = () => {
       case "reports":
         navigate("/reports/route");
         break;
-      // Advanced Reports
-      case "advancedreports":
-        navigate("/advancedreports/bin");
+      // Analytics Reports
+      case "analytics":
+        navigate("/analytics/bin");
         break;
       case "settings":
         navigate("/settings/preferences");
@@ -145,11 +146,11 @@ const BottomMenu = () => {
             value="reports"
           />
         )}
-        {/* Advanced Reports */}
+        {/* Analytics Reports */}
         <BottomNavigationAction
-          label={t("advancedReportTitle")}
-          icon={<DescriptionIcon />}
-          value="advancedreports"
+          label={t("analytics")}
+          icon={<AnalyticsIcon />}
+          value="analytics"
         />
 
         <BottomNavigationAction

@@ -218,8 +218,6 @@
   "settingsAppVersion": "App Version",
   "settingsConnection": "Connection",
   "reportTitle": "التقارير",
-  "advancedReportTitle": "التقارير المتقدمة",
-  "advancedReportBinTitle": "تقارير الحاويات",
   "binType": "نوع الحاوية",
   "numberOfBins": "عدد الحاويات",
   "empted": "فرغت",
@@ -501,7 +499,7 @@
   "reportEvents": "الأحداث",
   "reportTrips": "رحلات",
   "reportStops": "وقفات",
-  "reportSummary": "ملخص",
+
   "reportDaily": "الملخص اليومي",
   "reportChart": "رسم بياني",
   "reportConfigure": "تهيئة",
@@ -571,5 +569,11 @@
   "binsStatusByType": "حالة الحاويات حسب النوع",
   "theProportionOfEmptedAndUnemptedBinsByTypes": "نسبة الحاويات المفرغة وغير المفرغة حسب الأنواع",
   "theProportionOfEachBinType": "نسبة كل نوع من الحاويات",
-  "theProportionOfTheEmptedBinsAndTheUnempted": "نسبة الحاويات المفرغة والغير مفرغة"
+  "theProportionOfTheEmptedBinsAndTheUnempted": "نسبة الحاويات المفرغة والغير مفرغة",
+  "bins": "الحاويات",
+  "analytics": "التحليلات",
+  "binsByType": "حسب النوع",
+  "binsByRoutes": "حسب المسار",
+  "binsByArea": "حسب المنطقة",
+  "reportSummary": "ملخص"
 }

@@ -1,5 +1,7 @@
 import React from "react";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import {
+  BarChart, Bar, XAxis, YAxis, ResponsiveContainer,
+} from "recharts";
 import { Typography } from "@mui/material";
 import useReportStyles from "../../common/useReportStyles";
 import { useTranslation } from "../../../common/components/LocalizationProvider";
@@ -28,7 +30,8 @@ const CustomizedLabel = ({ x, y, value }) => {
       fill="#fff"
       textAnchor="start"
     >
-      {value.toFixed(2)}%
+      {value.toFixed(2)}
+      %
     </text>
   );
 

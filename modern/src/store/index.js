@@ -9,7 +9,7 @@ import { groupsReducer as groups } from "./groups";
 import { driversReducer as drivers } from "./drivers";
 import { maintenancesReducer as maintenances } from "./maintenances";
 import { reportsReducer as reports } from "./reports";
-import { advancedReportsReducer as advancedReports } from "./advancedReports";
+import { analyticsReducer as analytics } from "./analytics";
 import throttleMiddleware from "./throttleMiddleware";
 
 const reducer = combineReducers({
@@ -22,7 +22,7 @@ const reducer = combineReducers({
   drivers,
   maintenances,
   reports,
-  advancedReports,
+  analytics,
 });
 
 export { errorsActions } from "./errors";
@@ -34,7 +34,7 @@ export { groupsActions } from "./groups";
 export { driversActions } from "./drivers";
 export { maintenancesActions } from "./maintenances";
 export { reportsActions } from "./reports";
-export { advancedReportsActions } from "./advancedReports";
+export { analyticsActions } from "./analytics";
 
 export default configureStore({
   reducer,

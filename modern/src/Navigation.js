@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import {
-  Route, Routes, useLocation, useNavigate,
-} from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { LinearProgress } from "@mui/material";
 import MainPage from "./main/MainPage";
 import RouteReportPage from "./reports/RouteReportPage";
-import BinAdvancedReportPage from "./advancedreports/BinAdvancedReportPage";
+// Analytics
+import ByType from "./analytics/ByType";
+import ByRoutes from "./analytics/ByRoutes";
 import ServerPage from "./settings/ServerPage";
 import UsersPage from "./settings/UsersPage";
 import DevicePage from "./settings/DevicePage";
@@ -148,8 +148,9 @@ const Navigation = () => {
           <Route path="trip" element={<TripReportPage />} />
         </Route>
         {/* Advanced Reports */}
-        <Route path="advancedreports">
-          <Route path="bin" element={<BinAdvancedReportPage />} />
+        <Route path="analytics">
+          <Route path="bin" element={<ByType />} />
+          <Route path="bin/byroutes" element={<ByRoutes />} />
         </Route>
       </Route>
     </Routes>

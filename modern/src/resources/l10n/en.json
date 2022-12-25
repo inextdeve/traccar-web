@@ -219,7 +219,6 @@
   "settingsConnection": "Connection",
   "reportTitle": "Reports",
   "advancedReportTitle": "Advanced Reports",
-  "advancedReportBinTitle": "Bin Reports",
   "binType": "Type",
   "numberOfBins": "Number Of Bins",
   "empted": "Empted",
@@ -572,5 +571,11 @@
   "binsStatusByType": "Bins Status By Type",
   "theProportionOfEmptedAndUnemptedBinsByTypes": "The proportion of empted and unempted bins by types",
   "theProportionOfEachBinType": "The proportion of each bin type",
-  "theProportionOfTheEmptedBinsAndTheUnempted": "The proportion of the empted bins and the unempted one's"
+  "theProportionOfTheEmptedBinsAndTheUnempted": "The proportion of the empted bins and the unempted one's",
+  "bins": "Bins",
+  "analytics": "Analytics",
+  "binsByType": "By Type",
+  "binsByRoutes": "By Routes",
+  "binsByArea": "By Area",
+  "reportSummary": "Summary"
 }

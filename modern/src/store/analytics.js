@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import moment from "moment";
 
 const { reducer, actions } = createSlice({
-  name: "advancedReports",
+  name: "analytics",
   initialState: {
     loading: false,
     items: [],
@@ -32,5 +32,5 @@ const { reducer, actions } = createSlice({
   },
 });
 
-export { actions as advancedReportsActions };
-export { reducer as advancedReportsReducer };
+export { actions as analyticsActions };
+export { reducer as analyticsReducer };

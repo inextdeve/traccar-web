@@ -13,20 +13,21 @@ import {
   Skeleton,
   Button,
 } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import ReactToPrint from "react-to-print";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
 import ReportsMenu from "./components/ReportsMenu";
 import { useTranslation } from "../common/components/LocalizationProvider";
 import TableShimmer from "../common/components/TableShimmer";
 import ReportFilter from "./components/ReportFilter";
-import { useDispatch, useSelector } from "react-redux";
-import { advancedReportsActions } from "../store";
+import { analyticsActions } from "../store";
 
 import BinsChart from "./components/Charts/BinsChart";
 import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
 import BinsStatusChart from "./components/Charts/BinsStatusChart";
-import ReactToPrint from "react-to-print";
 import ExcelExport from "./components/ExcelExport";
+import PrintingHeader from "../common/components/PrintingHeader";
 
 const BinAdvancedReportPage = () => {
   const classes = useReportStyles();
@@ -34,13 +35,10 @@ const BinAdvancedReportPage = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
 
-  const countTotal = (array, prop) => {
-    return array
-      .map((item) => parseFloat(item[prop]))
-      .reduce((n, c) => {
-        return n + c;
-      }, 0);
-  };
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+
+  const countRate = (total, n) => (n * 100) / total;
 
   const headColumns = [
     "binType",
@@ -50,27 +48,26 @@ const BinAdvancedReportPage = () => {
     "completionRate",
   ];
   const token = useSelector((state) => state.session.user.attributes.apitoken);
-  const loading = useSelector((state) => state.advancedReports.loading);
+  const loading = useSelector((state) => state.analytics.loading);
   const setIsLoading = (state) =>
-    dispatch(advancedReportsActions.updateLoading(state));
-  const items = useSelector((state) => state.advancedReports.items);
+    dispatch(analyticsActions.updateLoading(state));
+  const items = useSelector((state) => state.analytics.items);
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`https://med-reports.almajal.co/al/api/?token=${token}&bintype`)
+    fetch(
+      `https://med-reports.almajal.co/al/api/?token=${token}&bins_routes&date_f=2022-12-14&time_f=00:00&date_t=2022-12-14&time_t=23:59`
+    )
       .then((data) => {
         setIsLoading(false);
         return data.json();
       })
-      .then((data) => dispatch(advancedReportsActions.updateItems(data)))
+      .then((data) => dispatch(analyticsActions.updateItems(data)))
       .catch(() => setIsLoading(false));
   }, []);
 
   return (
-    <PageLayout
-      menu={<ReportsMenu />}
-      breadcrumbs={["advancedReportTitle", "reportBin"]}
-    >
+    <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
       <div className={classes.container}>
         <Box className={classes.containerMain} sx={{ p: 2 }}>
           <Box
@@ -81,7 +78,7 @@ const BinAdvancedReportPage = () => {
             }}
           >
             <ReportFilter />
-            <ExcelExport excelData={items} fileName={"ReportSheet"} />
+            <ExcelExport excelData={items} fileName="ReportSheet" />
             <ReactToPrint
               bodyClass="print"
               trigger={() => (
@@ -97,13 +94,20 @@ const BinAdvancedReportPage = () => {
             />
           </Box>
           <Box ref={TableRef}>
+            <PrintingHeader />
             <TableContainer component={Paper}>
               <Table>
                 <TableHead>
                   <TableRow className={classes.greyRow}>
                     <TableCell className={classes.columnAction} />
-                    {headColumns.map((name) => (
-                      <TableCell sx={{ color: "#fff" }} key={name}>
+                    {headColumns.map((name, index, { length }) => (
+                      <TableCell
+                        sx={{
+                          color: "#fff",
+                          textAlign: index === length - 1 ? "center" : "auto",
+                        }}
+                        key={name}
+                      >
                         {t(name)}
                       </TableCell>
                     ))}
@@ -113,7 +117,7 @@ const BinAdvancedReportPage = () => {
                   {!loading ? (
                     <>
                       {items.map((item) => (
-                        <TableRow key={item.id_type} hover={true}>
+                        <TableRow key={item.id_type} hover>
                           <TableCell />
                           <TableCell>{item.bintype}</TableCell>
                           <TableCell>{item.total}</TableCell>
@@ -123,7 +127,9 @@ const BinAdvancedReportPage = () => {
                           <TableCell className={classes.unEmptyBin}>
                             {item.un_empty_bin}
                           </TableCell>
-                          <TableCell>{item.rate}</TableCell>
+                          <TableCell align="center">
+                            {countRate(item.total, item.empty_bin).toFixed(2)}
+                          </TableCell>
                         </TableRow>
                       ))}
                       <TableRow className={classes.greyRow}>
@@ -151,9 +157,12 @@ const BinAdvancedReportPage = () => {
                         <TableCell sx={{ border: 0 }}>
                           <Typography
                             sx={{ fontWeight: "500", color: "#fff" }}
-                          >{`${
-                            countTotal(items, "rate") / items.length
-                          }%`}</Typography>
+                            align="center"
+                          >
+                            {`${(
+                              countTotal(items, "rate") / items.length
+                            ).toFixed(2)}%`}
+                          </Typography>
                         </TableCell>
                       </TableRow>
                     </>
@@ -204,7 +213,7 @@ const BinAdvancedReportPage = () => {
                     <BinsPercentageChart
                       data={items.map((item) => ({
                         name: item.bintype,
-                        value: parseInt(item.total),
+                        value: parseInt(item.total, 10),
                       }))}
                     />
                   </Grid>
@@ -215,7 +224,9 @@ const BinAdvancedReportPage = () => {
 
                         return {
                           name: item.bintype,
-                          empted,
+                          empted: countRate(item.total, item.empty_bin).toFixed(
+                            2
+                          ),
                           unempted: 100 - empted,
                           amt: 100,
                         };

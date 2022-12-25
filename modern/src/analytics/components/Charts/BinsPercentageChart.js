@@ -1,7 +1,11 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
-import { Cell, PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
-import { useTranslation } from "../../../common/components/LocalizationProvider";
+import React, {
+  useState, useCallback, useRef, useEffect,
+} from "react";
+import {
+  Cell, PieChart, Pie, Sector, ResponsiveContainer,
+} from "recharts";
 import { Typography } from "@mui/material";
+import { useTranslation } from "../../../common/components/LocalizationProvider";
 import useReportStyles from "../../common/useReportStyles";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
@@ -86,7 +90,7 @@ const BinsPercentageChart = ({ data }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
     (_, index) => setActiveIndex(index),
-    [setActiveIndex]
+    [setActiveIndex],
   );
   const classes = useReportStyles();
 

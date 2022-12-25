@@ -29,3 +29,11 @@ canvas {
 .print {
   page: print;
 }
+.fprint {
+  display: none;
+}
+@media print {
+  .fprint {
+    display: block;
+  }
+}
