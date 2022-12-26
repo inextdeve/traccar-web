@@ -23,14 +23,14 @@ const CustomizedLabel = ({ x, y, value }) => {
 
   const text = (
     <text
-      x={x + 10}
+      x={value < 4 ? x + 4 : x + 10}
       y={y + 22}
       fontSize="14"
       fontFamily="sans-serif"
       fill="#fff"
       textAnchor="start"
     >
-      {value.toFixed(2)}
+      {value < 4 ? Math.ceil(value) : value.toFixed(2)}
       %
     </text>
   );
@@ -38,20 +38,19 @@ const CustomizedLabel = ({ x, y, value }) => {
   return text;
 };
 
-const BinsStatusChart = ({ bins }) => {
-  const t = useTranslation();
+const BinsStatusChart = ({ bins, title, subtitle }) => {
   const classes = useReportStyles();
   data = bins;
   return (
     <>
       <Typography variant="h6" component="h6" sx={{ fontWeight: "regular" }}>
-        {t("binsStatusByType")}
+        {title}
       </Typography>
       <Typography
         className={classes.chartSubtitle}
         sx={{ typography: "subtitle2", fontWeight: "light" }}
       >
-        {t("theProportionOfEmptedAndUnemptedBinsByTypes")}
+        {subtitle}
       </Typography>
       <ResponsiveContainer
         width="100%"

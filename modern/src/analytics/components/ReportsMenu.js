@@ -39,20 +39,24 @@ const ReportsMenu = () => {
 
   const admin = useAdministrator();
 
-  const [open, setOpen] = React.useState(true);
+  const [binOpen, setBinOpen] = React.useState(true);
+  const [washOpen, setWashOpen] = React.useState(false);
 
   const handleClick = () => {
-    setOpen(!open);
+    setBinOpen(!binOpen);
   };
+  const handleWashClick = () => {
+    setWashOpen(prev => !prev)
+  }
 
   return (
     <>
       <List>
         <ListItemButton onClick={handleClick}>
           <ListItemText primary={t("bins")} />
-          {open ? <ExpandLess /> : <ExpandMore />}
+          {binOpen ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
-        <Collapse in={open} timeout="auto" unmountOnExit>
+        <Collapse in={binOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             <MenuItem
               title={t("binsByType")}
@@ -64,19 +68,35 @@ const ReportsMenu = () => {
               title={t("binsByRoutes")}
               link="/analytics/bin/byroutes"
               icon={<RouteIcon />}
-              selected={location.pathname === "/analytics/binroutes"}
+              selected={location.pathname === "/analytics/bin/byroutes"}
             />
             <MenuItem
               title={t("binsByArea")}
-              link="/analytics/binarea"
+              link="/analytics/bin/byarea"
               icon={<AreaIcon />}
-              selected={location.pathname === "/analytics/binarea"}
+              selected={location.pathname === "/analytics/bin/byarea"}
             />
             <MenuItem
               title={t("reportSummary")}
               link="/analytics/binsummary"
               icon={<StockIcon />}
               selected={location.pathname === "/analytics/binsummary"}
+            />
+          </List>
+        </Collapse>
+      </List>
+      <List>
+        <ListItemButton onClick={handleWashClick}>
+          <ListItemText primary={t("bins")} />
+          {washOpen ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={washOpen} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <MenuItem
+              title={t("binsByType")}
+              link="/analytics/bin"
+              icon={<Delete />}
+              selected={location.pathname === "/analytics/bin"}
             />
           </List>
         </Collapse>

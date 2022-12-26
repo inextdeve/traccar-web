@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { Grid, Typography, Box, Skeleton, Button } from "@mui/material";
+import {
+  Grid, Typography, Box, Skeleton, Button,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import ReactToPrint from "react-to-print";
 import PageLayout from "../common/components/PageLayout";
@@ -21,11 +23,15 @@ const BinAdvancedReportPage = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
 
-  const countTotal = (array, prop) =>
-    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
+  const token = useSelector((state) => state.session.user.attributes.apitoken);
+  const loading = useSelector((state) => state.analytics.loading);
+  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+
+  // Table Data Processing
   const columnsHead = [
     "binType",
     "numberOfBins",
@@ -33,20 +39,22 @@ const BinAdvancedReportPage = () => {
     "notEmpted",
     "completionRate",
   ];
-  const token = useSelector((state) => state.session.user.attributes.apitoken);
-  const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) =>
-    dispatch(analyticsActions.updateLoading(state));
-
-  //Table Data Processing
   const data = useSelector((state) => state.analytics.items);
   const keys = ["bintype", "total", "empty_bin", "un_empty_bin", "rate"];
-  const items = data.map((item) => {
-    return {
-      ...item,
-      rate: countRate(item.total, item.empty_bin).toFixed(2),
-    };
+  const items = data.map((item) => ({
+    ...item,
+    rate: countRate(item.total, item.empty_bin).toFixed(2),
+  }));
+  items.push({
+    bintype: t("total"),
+    total: countTotal(items, "total"),
+    empty_bin: countTotal(items, "empty_bin"),
+    un_empty_bin: countTotal(items, "un_empty_bin"),
+    rate: (countTotal(items, "rate") / items.length).toFixed(2),
   });
+  //Data for charts drop Total item
+  const chartData = items.slice(0, -1);
+
 
   useEffect(() => {
     setIsLoading(true);
@@ -70,7 +78,7 @@ const BinAdvancedReportPage = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter />
+            <ReportFilter tag="binstype" />
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <ReactToPrint
               bodyClass="print"
@@ -115,21 +123,25 @@ const BinAdvancedReportPage = () => {
                 <>
                   <Grid item xs={12} lg={5} className={classes.chart}>
                     <BinsChart
+                      title={t("binsStatus")}
+                      subtitle={t("theProportionOfTheEmptedBinsAndTheUnempted")}
                       bins={[
                         {
                           name: "Empted",
-                          value: countTotal(items, "rate") / items.length,
+                          value: countTotal(chartData, "rate") / chartData.length,
                         },
                         {
                           name: "Unempted",
-                          value: 100 - countTotal(items, "rate") / items.length,
+                          value: 100 - countTotal(chartData, "rate") / chartData.length,
                         },
                       ]}
                     />
                   </Grid>
                   <Grid xs={12} lg={6} item className={classes.chart}>
                     <BinsPercentageChart
-                      data={items.map((item) => ({
+                      title={t("theProportionOfEachBinsType")}
+                      subtitle={t("theProportionOfEachBinType")}
+                      data={chartData.map((item) => ({
                         name: item.bintype,
                         value: parseInt(item.total, 10),
                       }))}
@@ -137,13 +149,15 @@ const BinAdvancedReportPage = () => {
                   </Grid>
                   <Grid xs={12} item className={classes.chart}>
                     <BinsStatusChart
-                      bins={items.map((item) => {
+                      title={t("binsStatusByType")}
+                      subtitle={t("theProportionOfEmptedAndUnemptedBinsByTypes")}
+                      bins={chartData.map((item) => {
                         const empted = (item.empty_bin * 100) / item.total;
 
                         return {
                           name: item.bintype,
                           empted: countRate(item.total, item.empty_bin).toFixed(
-                            2
+                            2,
                           ),
                           unempted: 100 - empted,
                           amt: 100,

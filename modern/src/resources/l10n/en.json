@@ -500,7 +500,6 @@
   "reportEvents": "Events",
   "reportTrips": "Trips",
   "reportStops": "Stops",
-  "reportSummary": "Summary",
   "reportDaily": "Daily Summary",
   "reportChart": "Chart",
   "reportConfigure": "Configure",
@@ -577,5 +576,15 @@
   "binsByType": "By Type",
   "binsByRoutes": "By Routes",
   "binsByArea": "By Area",
-  "reportSummary": "Summary"
+  "reportSummary": "Summary",
+  "trackCode": "Track Code",
+  "theProportionOfTracksCode": "The proportion of tracks code",
+  "theProportionOfEachTrackCode": "The proportion of each track code",
+  "binsStatusByTrack": "Bins status by track",
+  "center": "Center",
+  "area": "Area",
+  "theProportionOfArea": "The proportion of area",
+  "theProportionOfEachArea": "The proportion of each area",
+  "binsStatusByArea": "Bins status by area",
+  "theProportionOfEmptedAndUnemptedBinsByArea": "The proportion of empted and unempted bins by area"
 }

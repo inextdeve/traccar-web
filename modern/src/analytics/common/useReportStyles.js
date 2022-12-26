@@ -31,6 +31,14 @@ export default makeStyles((theme) => ({
   greyRow: {
     backgroundColor: theme.palette.colors.neutral,
   },
+  lastCell: {
+    fontWeight: "500",
+    color: "#fff",
+    border: 0,
+    fontSize: "1rem",
+    lineHeight: 1.5,
+    letterSpacing: "0.00938em",
+  },
   charts: {
     gap: "1rem",
     justifyContent: "center",

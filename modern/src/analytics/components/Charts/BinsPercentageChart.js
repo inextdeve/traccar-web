@@ -85,7 +85,7 @@ const renderActiveShape = (props) => {
   );
 };
 
-const BinsPercentageChart = ({ data }) => {
+const BinsPercentageChart = ({ data, title, subtitle }) => {
   const t = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
@@ -107,13 +107,13 @@ const BinsPercentageChart = ({ data }) => {
   return (
     <>
       <Typography variant="h6" component="h6" sx={{ fontWeight: "regular" }}>
-        {t("theProportionOfEachBinsType")}
+        {title}
       </Typography>
       <Typography
         className={classes.chartSubtitle}
         sx={{ typography: "subtitle2", fontWeight: "light" }}
       >
-        {t("theProportionOfEachBinType")}
+        {subtitle}
       </Typography>
       <ResponsiveContainer
         ref={container}

@@ -38,24 +38,24 @@ const BinAdvancedReportPage = () => {
 
   // Table Data Processing
   const columnsHead = [
-    "trackCode",
+    "area",
     "numberOfBins",
     "empted",
     "notEmpted",
     "completionRate",
   ];
-  const keys = ["route_name", "total", "empty_bin", "un_empty_bin", "rate"];
+  const keys = ["center_name", "total", "empty_bin", "un_empty_bin", "rate"];
   const data = useSelector((state) => state.analytics.items);
   const items = data.map((item) => ({
     ...item,
-    rate: countRate(item.total, item.empty_bin).toFixed(2),
+    rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
   }));
   items.push({
-    route_name: t("total"),
+    center_name: t("total"),
     total: countTotal(items, "total"),
     empty_bin: countTotal(items, "empty_bin"),
     un_empty_bin: countTotal(items, "un_empty_bin"),
-    rate: (countTotal(items, "rate") / items.length).toFixed(2),
+    rate: `${(countTotal(items, "rate") / items.length).toFixed(2)}%`,
   });
 
   //Data for charts drop Total item
@@ -64,7 +64,7 @@ const BinAdvancedReportPage = () => {
   useEffect(() => {
     setIsLoading(true);
     fetch(
-      `https://med-reports.almajal.co/al/api/?token=${token}&bins_routes`,
+      `https://med-reports.almajal.co/al/api/?token=${token}&bins_centers`,
     )
       .then((data) => {
         setIsLoading(false);
@@ -85,7 +85,7 @@ const BinAdvancedReportPage = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter tag="bins_routes" />
+            <ReportFilter tag="bins_centers" />
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <ReactToPrint
               bodyClass="print"
@@ -146,23 +146,23 @@ const BinAdvancedReportPage = () => {
                   </Grid>
                   <Grid xs={12} lg={6} item className={classes.chart}>
                     <BinsPercentageChart
-                      title={t("theProportionOfTracksCode")}
-                      subtitle={t("theProportionOfEachTrackCode")}
+                      title={t("theProportionOfArea")}
+                      subtitle={t("theProportionOfEachArea")}
                       data={chartData.map((item) => ({
-                        name: item.route_name,
+                        name: item.center_name,
                         value: parseInt(item.total, 10),
                       }))}
                     />
                   </Grid>
                   <Grid xs={12} item className={classes.chart}>
                     <BinsStatusChart
-                    title={t("binsStatusByTrack")}
-                    subtitle={t("theProportionOfEmptedAndUnemptedBinsByTypes")}
+                    title={t("binsStatusByArea")}
+                    subtitle={t("theProportionOfEmptedAndUnemptedBinsByArea")}
                       bins={chartData.map((item) => {
                         const empted = (item.empty_bin * 100) / item.total;
 
                         return {
-                          name: item.route_name,
+                          name: item.center_name,
                           empted: countRate(item.total, item.empty_bin).toFixed(
                             2,
                           ),

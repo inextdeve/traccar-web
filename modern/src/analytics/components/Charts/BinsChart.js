@@ -34,7 +34,7 @@ const renderCustomizedLabel = ({
     </text>
   );
 };
-const BinsChart = ({ bins }) => {
+const BinsChart = ({ bins, title, subtitle }) => {
   data = bins;
   const t = useTranslation();
   const classes = useReportStyles();
@@ -48,13 +48,13 @@ const BinsChart = ({ bins }) => {
   return (
     <>
       <Typography variant="h6" component="h6" sx={{ fontWeight: "regular" }}>
-        {t("binsStatus")}
+        {title}
       </Typography>
       <Typography
         className={classes.chartSubtitle}
         sx={{ typography: "subtitle2", fontWeight: "light" }}
       >
-        {t("theProportionOfTheEmptedBinsAndTheUnempted")}
+        {subtitle}
       </Typography>
       <div className="chart">
         <ResponsiveContainer

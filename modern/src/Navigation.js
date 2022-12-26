@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import {
+  Route, Routes, useLocation, useNavigate,
+} from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { LinearProgress } from "@mui/material";
 import MainPage from "./main/MainPage";
@@ -7,6 +9,7 @@ import RouteReportPage from "./reports/RouteReportPage";
 // Analytics
 import ByType from "./analytics/ByType";
 import ByRoutes from "./analytics/ByRoutes";
+import ByArea from "./analytics/ByArea";
 import ServerPage from "./settings/ServerPage";
 import UsersPage from "./settings/UsersPage";
 import DevicePage from "./settings/DevicePage";
@@ -151,6 +154,7 @@ const Navigation = () => {
         <Route path="analytics">
           <Route path="bin" element={<ByType />} />
           <Route path="bin/byroutes" element={<ByRoutes />} />
+          <Route path="bin/byarea" element={<ByArea />} />
         </Route>
       </Route>
     </Routes>

@@ -575,5 +575,16 @@
   "binsByType": "حسب النوع",
   "binsByRoutes": "حسب المسار",
   "binsByArea": "حسب المنطقة",
-  "reportSummary": "ملخص"
+  "reportSummary": "ملخص",
+  "trackCode": "كود المسار",
+  "theProportionOfTracksCode": "نسبة كود المسارات",
+  "theProportionOfEachTrackCode": "نسبة كل رمز مسار",
+  "binsStatusByTrack": "حالة الحاويات حسب نوع المسار",
+  "center": "المركز",
+  "area": "المنطقة",
+  "theProportionOfArea": "نسب المناطق",
+  "theProportionOfEachArea": "النسب حسب كل منطقة",
+  "binsStatusByArea": "حالة الحاويات حسب المنطقة",
+  "theProportionOfEmptedAndUnemptedBinsByArea": "نسبة الحاويات المفرغة و الغير مفرغة حسب المناطق"
+
 }
