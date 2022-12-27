@@ -3,7 +3,6 @@ import { Typography, Box } from "@mui/material";
 import {
   PieChart, Pie, Cell, ResponsiveContainer,
 } from "recharts";
-import { useTranslation } from "../../../common/components/LocalizationProvider";
 import useReportStyles from "../../common/useReportStyles";
 import Rect from "../../common/Rect";
 
@@ -36,7 +35,6 @@ const renderCustomizedLabel = ({
 };
 const BinsChart = ({ bins, title, subtitle }) => {
   data = bins;
-  const t = useTranslation();
   const classes = useReportStyles();
   const container = useRef(null);
   const [CX, setCX] = useState(80);

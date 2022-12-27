@@ -11,6 +11,7 @@ module.exports = {
   ],
   rules: {
     quotes: [2, "double", { avoidEscape: true }],
+    "no-tabs": 0,
     "max-len": [0],
     "no-shadow": [0],
     "no-return-assign": [0],

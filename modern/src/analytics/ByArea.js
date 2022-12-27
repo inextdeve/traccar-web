@@ -1,13 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import {
-  Grid,
-  Typography,
-  Box,
-  Skeleton,
-  Button,
+  Grid, Typography, Box, Skeleton, Button,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import ReactToPrint from "react-to-print";
+
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
 import ReportsMenu from "./components/ReportsMenu";
@@ -15,14 +11,14 @@ import AnalyticsTable from "./components/AnalyticsTable";
 import { useTranslation } from "../common/components/LocalizationProvider";
 import ReportFilter from "./components/ReportFilter";
 import { analyticsActions } from "../store";
-
+import Print from "./common/Print";
 import BinsChart from "./components/Charts/BinsChart";
 import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
 import BinsStatusChart from "./components/Charts/BinsStatusChart";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
 
-const BinAdvancedReportPage = () => {
+const ByArea = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const dispatch = useDispatch();
@@ -58,14 +54,12 @@ const BinAdvancedReportPage = () => {
     rate: `${(countTotal(items, "rate") / items.length).toFixed(2)}%`,
   });
 
-  //Data for charts drop Total item
+  // Data for charts drop Total item
   const chartData = items.slice(0, -1);
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(
-      `https://med-reports.almajal.co/al/api/?token=${token}&bins_centers`,
-    )
+    fetch(`https://med-reports.almajal.co/al/api/?token=${token}&bins_centers`)
       .then((data) => {
         setIsLoading(false);
         return data.json();
@@ -87,10 +81,12 @@ const BinAdvancedReportPage = () => {
           >
             <ReportFilter tag="bins_centers" />
             <ExcelExport excelData={items} fileName="ReportSheet" />
-            <ReactToPrint
-              bodyClass="print"
-              trigger={() => (
+            <Print
+              allowAsProps
+              target={TableRef.current}
+              button={(
                 <Button
+                  allowAsProps
                   variant="contained"
                   color="secondary"
                   className={classes.filterButton}
@@ -98,7 +94,6 @@ const BinAdvancedReportPage = () => {
                   {t("advancedReportPrint")}
                 </Button>
               )}
-              content={() => TableRef.current}
             />
           </Box>
           <Box ref={TableRef}>
@@ -135,11 +130,14 @@ const BinAdvancedReportPage = () => {
                       bins={[
                         {
                           name: "Empted",
-                          value: countTotal(chartData, "rate") / chartData.length,
+                          value:
+                            countTotal(chartData, "rate") / chartData.length,
                         },
                         {
                           name: "Unempted",
-                          value: 100 - countTotal(chartData, "rate") / chartData.length,
+                          value:
+                            100 -
+                            countTotal(chartData, "rate") / chartData.length,
                         },
                       ]}
                     />
@@ -156,8 +154,8 @@ const BinAdvancedReportPage = () => {
                   </Grid>
                   <Grid xs={12} item className={classes.chart}>
                     <BinsStatusChart
-                    title={t("binsStatusByArea")}
-                    subtitle={t("theProportionOfEmptedAndUnemptedBinsByArea")}
+                      title={t("binsStatusByArea")}
+                      subtitle={t("theProportionOfEmptedAndUnemptedBinsByArea")}
                       bins={chartData.map((item) => {
                         const empted = (item.empty_bin * 100) / item.total;
 
@@ -182,4 +180,4 @@ const BinAdvancedReportPage = () => {
   );
 };
 
-export default BinAdvancedReportPage;
+export default ByArea;

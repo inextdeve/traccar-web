@@ -5,7 +5,6 @@ import {
   Cell, PieChart, Pie, Sector, ResponsiveContainer,
 } from "recharts";
 import { Typography } from "@mui/material";
-import { useTranslation } from "../../../common/components/LocalizationProvider";
 import useReportStyles from "../../common/useReportStyles";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
@@ -86,7 +85,6 @@ const renderActiveShape = (props) => {
 };
 
 const BinsPercentageChart = ({ data, title, subtitle }) => {
-  const t = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
     (_, index) => setActiveIndex(index),

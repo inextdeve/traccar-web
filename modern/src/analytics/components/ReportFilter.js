@@ -13,7 +13,7 @@ import { useTranslation } from "../../common/components/LocalizationProvider";
 import useReportStyles from "../common/useReportStyles";
 import { analyticsActions } from "../../store";
 
-const ReportFilter = ({tag}) => {
+const ReportFilter = ({ tag }) => {
   const t = useTranslation();
   const classes = useReportStyles();
   const [period, setPeriod] = useState("");

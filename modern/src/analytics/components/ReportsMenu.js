@@ -46,8 +46,8 @@ const ReportsMenu = () => {
     setBinOpen(!binOpen);
   };
   const handleWashClick = () => {
-    setWashOpen(prev => !prev)
-  }
+    setWashOpen((prev) => !prev);
+  };
 
   return (
     <>
@@ -87,13 +87,13 @@ const ReportsMenu = () => {
       </List>
       <List>
         <ListItemButton onClick={handleWashClick}>
-          <ListItemText primary={t("bins")} />
+          <ListItemText primary={t("washing")} />
           {washOpen ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
         <Collapse in={washOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             <MenuItem
-              title={t("binsByType")}
+              title={t("washing")}
               link="/analytics/bin"
               icon={<Delete />}
               selected={location.pathname === "/analytics/bin"}

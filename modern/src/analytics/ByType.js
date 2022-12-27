@@ -3,7 +3,7 @@ import {
   Grid, Typography, Box, Skeleton, Button,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import ReactToPrint from "react-to-print";
+import Print from "./common/Print";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
 import ReportsMenu from "./components/ReportsMenu";
@@ -17,7 +17,7 @@ import BinsStatusChart from "./components/Charts/BinsStatusChart";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
 
-const BinAdvancedReportPage = () => {
+const ByType = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const dispatch = useDispatch();
@@ -43,18 +43,17 @@ const BinAdvancedReportPage = () => {
   const keys = ["bintype", "total", "empty_bin", "un_empty_bin", "rate"];
   const items = data.map((item) => ({
     ...item,
-    rate: countRate(item.total, item.empty_bin).toFixed(2),
+    rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
   }));
   items.push({
     bintype: t("total"),
     total: countTotal(items, "total"),
     empty_bin: countTotal(items, "empty_bin"),
     un_empty_bin: countTotal(items, "un_empty_bin"),
-    rate: (countTotal(items, "rate") / items.length).toFixed(2),
+    rate: `${(countTotal(items, "rate") / items.length).toFixed(2)}%`,
   });
-  //Data for charts drop Total item
+  // Data for charts drop Total item
   const chartData = items.slice(0, -1);
-
 
   useEffect(() => {
     setIsLoading(true);
@@ -80,10 +79,12 @@ const BinAdvancedReportPage = () => {
           >
             <ReportFilter tag="binstype" />
             <ExcelExport excelData={items} fileName="ReportSheet" />
-            <ReactToPrint
-              bodyClass="print"
-              trigger={() => (
+            <Print
+              allowAsProps
+              target={TableRef.current}
+              button={(
                 <Button
+                  allowAsProps
                   variant="contained"
                   color="secondary"
                   className={classes.filterButton}
@@ -91,7 +92,6 @@ const BinAdvancedReportPage = () => {
                   {t("advancedReportPrint")}
                 </Button>
               )}
-              content={() => TableRef.current}
             />
           </Box>
           <Box ref={TableRef}>
@@ -128,11 +128,14 @@ const BinAdvancedReportPage = () => {
                       bins={[
                         {
                           name: "Empted",
-                          value: countTotal(chartData, "rate") / chartData.length,
+                          value:
+                            countTotal(chartData, "rate") / chartData.length,
                         },
                         {
                           name: "Unempted",
-                          value: 100 - countTotal(chartData, "rate") / chartData.length,
+                          value:
+                            100 -
+                            countTotal(chartData, "rate") / chartData.length,
                         },
                       ]}
                     />
@@ -150,7 +153,9 @@ const BinAdvancedReportPage = () => {
                   <Grid xs={12} item className={classes.chart}>
                     <BinsStatusChart
                       title={t("binsStatusByType")}
-                      subtitle={t("theProportionOfEmptedAndUnemptedBinsByTypes")}
+                      subtitle={t(
+                        "theProportionOfEmptedAndUnemptedBinsByTypes",
+                      )}
                       bins={chartData.map((item) => {
                         const empted = (item.empty_bin * 100) / item.total;
 
@@ -175,4 +180,4 @@ const BinAdvancedReportPage = () => {
   );
 };
 
-export default BinAdvancedReportPage;
+export default ByType;

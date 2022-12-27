@@ -4,7 +4,6 @@ import {
 } from "recharts";
 import { Typography } from "@mui/material";
 import useReportStyles from "../../common/useReportStyles";
-import { useTranslation } from "../../../common/components/LocalizationProvider";
 
 let arr = [];
 let i = 0;
@@ -23,14 +22,14 @@ const CustomizedLabel = ({ x, y, value }) => {
 
   const text = (
     <text
-      x={value < 4 ? x + 4 : x + 10}
+      x={value < 4 ? x + 3 : x + 10}
       y={y + 22}
       fontSize="14"
       fontFamily="sans-serif"
       fill="#fff"
       textAnchor="start"
     >
-      {value < 4 ? Math.ceil(value) : value.toFixed(2)}
+      {value < 5 ? Math.ceil(value) : value.toFixed(2)}
       %
     </text>
   );
