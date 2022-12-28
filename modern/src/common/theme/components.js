@@ -1,4 +1,4 @@
-import { grey } from "@mui/material/colors";
+import { grey, green } from "@mui/material/colors";
 
 export default {
   MuiUseMediaQuery: {
@@ -33,10 +33,22 @@ export default {
       },
     },
   },
+  MuiTabs: {
+    styleOverrides: {
+      root: {
+        backgroundColor: green[200],
+        borderRadius: "8px",
+        width: "fit-content",
+        padding: "0.3rem",
+      },
+    },
+  },
   MuiTab: {
     styleOverrides: {
       root: {
-        backgroundColor: "#000",
+        backgroundColor: "transparent",
+        borderRadius: 1,
+        color: green[700],
       },
     },
   },

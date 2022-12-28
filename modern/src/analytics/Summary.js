@@ -1,30 +1,25 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
-  Grid,
-  Typography,
-  Box,
-  Skeleton,
-  Button,
-  Tabs,
-  Tab,
+  Grid, Typography, Box, Skeleton, Button,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
 import Print from "./common/Print";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
 import ReportsMenu from "./components/ReportsMenu";
-import AnalyticsTable from "./components/AnalyticsTable";
 import { useTranslation } from "../common/components/LocalizationProvider";
 import ReportFilter from "./components/ReportFilter";
 import { analyticsActions } from "../store";
-
+import AnalyticsTable from "./components/AnalyticsTable";
 import BinsChart from "./components/Charts/BinsChart";
 import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
 import BinsStatusChart from "./components/Charts/BinsStatusChart";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
 
-const ByRoutes = () => {
+
+const Summary = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const dispatch = useDispatch();
@@ -40,70 +35,45 @@ const ByRoutes = () => {
 
   // Table Data Processing
   const columnsHead = [
-    "trackCode",
+    "id",
     "numberOfBins",
-    "time",
+    "date",
     "empted",
     "notEmpted",
     "completionRate",
   ];
-  const keys = [
-    "route_name",
-    "total",
-    "shift",
-    "empty_bin",
-    "un_empty_bin",
-    "rate",
-  ];
   const data = useSelector((state) => state.analytics.items);
-  const [tableData, setTableData] = useState(data);
-  const items = tableData.map((item) => ({
+  const keys = ["id", "total", "date_from", "on", "off", "rate"];
+  const items = data.map((item, index) => ({
+    id: index,
     ...item,
-    rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
+    date_from: moment(item.date_from).format("MMM Do YY"),
+    rate: `${countRate(item.total, item.on).toFixed(2)}%`,
   }));
   items.push({
-    route_name: t("total"),
+    id: t("total"),
     total: countTotal(items, "total"),
-    empty_bin: countTotal(items, "empty_bin"),
-    un_empty_bin: countTotal(items, "un_empty_bin"),
+    date_from: `All`,
+    on: countTotal(items, "on"),
+    off: countTotal(items, "off"),
     rate: `${(countTotal(items, "rate") / items.length).toFixed(2)}%`,
   });
-
   // Data for charts drop Total item
   const chartData = items.slice(0, -1);
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`https://med-reports.almajal.co/al/api/?token=${token}&bins_routes`)
+    fetch(`https://med-reports.almajal.co/al/api/?token=${token}&device_daily`)
       .then((data) => {
         setIsLoading(false);
         return data.json();
       })
-      .then((data) => {
-        setTableData(data);
-        dispatch(analyticsActions.updateItems(data));
-      })
+      .then((data) => dispatch(analyticsActions.updateItems(data)))
       .catch(() => setIsLoading(false));
   }, []);
 
-  const filterRoutes = (filter) => {
-    if (filter === 1) {
-      setTableData(data.filter((item) => item.shift === "morning"));
-    } else if (filter === 2) {
-      setTableData(data.filter((item) => item.shift === "night"));
-    } else {
-      setTableData(data);
-    }
-  };
-
-  const [value, setValue] = useState(0);
-
-  const handleChange = (event, newValue) => {
-    filterRoutes(newValue);
-    setValue(newValue);
-  };
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
+    <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "summary"]}>
       <div className={classes.container}>
         <Box className={classes.containerMain} sx={{ p: 2 }}>
           <Box
@@ -113,8 +83,8 @@ const ByRoutes = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter tag="bins_routes" />
-            <ExcelExport excelData={items} fileName="ReportSheet" />
+            <ReportFilter tag="device_daily" />
+            <ExcelExport excelData={items} fileName="SummarySheet" />
             <Print
               target={TableRef.current}
               button={(
@@ -127,21 +97,6 @@ const ByRoutes = () => {
                 </Button>
               )}
             />
-          </Box>
-          <Box>
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              indicator={{ height: 0 }}
-              className="filterTab"
-              indicatorColor="transparent"
-              centered
-              sx={{ display: "flex", justifyContent: "center", mt: "2rem" }}
-            >
-              <Tab label="All" />
-              <Tab label="Morning" />
-              <Tab label="Night" />
-            </Tabs>
           </Box>
           <Box ref={TableRef}>
             <PrintingHeader />
@@ -191,26 +146,26 @@ const ByRoutes = () => {
                   </Grid>
                   <Grid xs={12} lg={6} item className={classes.chart}>
                     <BinsPercentageChart
-                      title={t("theProportionOfTracksCode")}
-                      subtitle={t("theProportionOfEachTrackCode")}
+                      title={t("theProportionOfEachBinsType")}
+                      subtitle={t("theProportionOfEachBinType")}
                       data={chartData.map((item) => ({
-                        name: item.route_name,
+                        name: `id: ${item.id}`,
                         value: parseInt(item.total, 10),
                       }))}
                     />
                   </Grid>
                   <Grid xs={12} item className={classes.chart}>
                     <BinsStatusChart
-                      title={t("binsStatusByTrack")}
+                      title={t("binsStatusByType")}
                       subtitle={t(
                         "theProportionOfEmptedAndUnemptedBinsByTypes",
                       )}
                       bins={chartData.map((item) => {
-                        const empted = (item.empty_bin * 100) / item.total;
+                        const empted = (item.on * 100) / item.total;
 
                         return {
-                          name: item.route_name,
-                          empted: countRate(item.total, item.empty_bin).toFixed(
+                          name: item.id,
+                          empted: countRate(item.total, item.on).toFixed(
                             2,
                           ),
                           unempted: 100 - empted,
@@ -229,4 +184,4 @@ const ByRoutes = () => {
   );
 };
 
-export default ByRoutes;
+export default Summary;

@@ -587,5 +587,7 @@
   "binsStatusByArea": "حالة الحاويات حسب المنطقة",
   "theProportionOfEmptedAndUnemptedBinsByArea": "نسبة الحاويات المفرغة و الغير مفرغة حسب المناطق",
   "washing": "التنظيف",
-  "time": "التوقيت"
+  "time": "التوقيت",
+  "date": "التاريخ",
+  "id": "الرمز"
 }

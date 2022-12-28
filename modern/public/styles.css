@@ -38,8 +38,9 @@ canvas {
     background: red;
   }
 }
-/* .css-1y7cqcs-MuiButtonBase-root-MuiTab-root.Mui-selected {
-  background-color: #4caf50;
-  border-radius: 4px;
-  color: #fff;
-} */
+.filterTab .Mui-selected {
+  background: #4caf50 !important;
+  border-radius: 8px !important;
+  color: #fff !important;
+  border: 0 !important;
+}

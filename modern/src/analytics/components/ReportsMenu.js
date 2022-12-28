@@ -78,9 +78,9 @@ const ReportsMenu = () => {
             />
             <MenuItem
               title={t("reportSummary")}
-              link="/analytics/binsummary"
+              link="/analytics/bin/summary"
               icon={<StockIcon />}
-              selected={location.pathname === "/analytics/binsummary"}
+              selected={location.pathname === "/analytics/bin/summary"}
             />
           </List>
         </Collapse>

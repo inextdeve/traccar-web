@@ -588,5 +588,7 @@
   "binsStatusByArea": "Bins status by area",
   "theProportionOfEmptedAndUnemptedBinsByArea": "The proportion of empted and unempted bins by area",
   "washing": "Washing",
-  "time": "Time"
+  "time": "Time",
+  "date": "Date",
+  "id": "ID"
 }

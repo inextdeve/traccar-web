@@ -52,6 +52,7 @@ import CommandSendPage from "./settings/CommandSendPage";
 import App from "./App";
 import ChangeServerPage from "./other/ChangeServerPage";
 import DevicesPage from "./settings/DevicesPage";
+import Summary from "./analytics/Summary";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -155,6 +156,7 @@ const Navigation = () => {
           <Route path="bin" element={<ByType />} />
           <Route path="bin/byroutes" element={<ByRoutes />} />
           <Route path="bin/byarea" element={<ByArea />} />
+          <Route path="bin/summary" element={<Summary />} />
         </Route>
       </Route>
     </Routes>
