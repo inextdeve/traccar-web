@@ -25,7 +25,6 @@ canvas {
   mso-footer-margin: 0.5in;
   mso-paper-source: 0;
 }
-
 .print {
   page: print;
 }
@@ -35,5 +34,12 @@ canvas {
 @media print {
   .fprint {
     display: block;
+    margin-top: 909px;
+    background: red;
   }
 }
+/* .css-1y7cqcs-MuiButtonBase-root-MuiTab-root.Mui-selected {
+  background-color: #4caf50;
+  border-radius: 4px;
+  color: #fff;
+} */

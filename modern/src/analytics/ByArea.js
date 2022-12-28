@@ -82,11 +82,9 @@ const ByArea = () => {
             <ReportFilter tag="bins_centers" />
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
-              allowAsProps
               target={TableRef.current}
               button={(
                 <Button
-                  allowAsProps
                   variant="contained"
                   color="secondary"
                   className={classes.filterButton}
@@ -96,6 +94,7 @@ const ByArea = () => {
               )}
             />
           </Box>
+
           <Box ref={TableRef}>
             <PrintingHeader />
             <AnalyticsTable

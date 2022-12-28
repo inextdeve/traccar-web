@@ -23,7 +23,7 @@ const CustomizedLabel = ({ x, y, value }) => {
   const text = (
     <text
       x={value < 4 ? x + 3 : x + 10}
-      y={y + 22}
+      y={y + 18}
       fontSize="14"
       fontFamily="sans-serif"
       fill="#fff"
@@ -53,7 +53,7 @@ const BinsStatusChart = ({ bins, title, subtitle }) => {
       </Typography>
       <ResponsiveContainer
         width="100%"
-        height={50 * data.length}
+        height={30 * data.length}
         debounce={50}
         className={classes.chartContainer}
       >

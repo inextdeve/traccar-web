@@ -80,11 +80,9 @@ const ByType = () => {
             <ReportFilter tag="binstype" />
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
-              allowAsProps
               target={TableRef.current}
               button={(
                 <Button
-                  allowAsProps
                   variant="contained"
                   color="secondary"
                   className={classes.filterButton}

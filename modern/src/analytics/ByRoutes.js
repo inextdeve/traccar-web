@@ -1,6 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  Grid, Typography, Box, Skeleton, Button,
+  Grid,
+  Typography,
+  Box,
+  Skeleton,
+  Button,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import Print from "./common/Print";
@@ -36,13 +42,22 @@ const ByRoutes = () => {
   const columnsHead = [
     "trackCode",
     "numberOfBins",
+    "time",
     "empted",
     "notEmpted",
     "completionRate",
   ];
-  const keys = ["route_name", "total", "empty_bin", "un_empty_bin", "rate"];
+  const keys = [
+    "route_name",
+    "total",
+    "shift",
+    "empty_bin",
+    "un_empty_bin",
+    "rate",
+  ];
   const data = useSelector((state) => state.analytics.items);
-  const items = data.map((item) => ({
+  const [tableData, setTableData] = useState(data);
+  const items = tableData.map((item) => ({
     ...item,
     rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
   }));
@@ -64,10 +79,29 @@ const ByRoutes = () => {
         setIsLoading(false);
         return data.json();
       })
-      .then((data) => dispatch(analyticsActions.updateItems(data)))
+      .then((data) => {
+        setTableData(data);
+        dispatch(analyticsActions.updateItems(data));
+      })
       .catch(() => setIsLoading(false));
   }, []);
 
+  const filterRoutes = (filter) => {
+    if (filter === 1) {
+      setTableData(data.filter((item) => item.shift === "morning"));
+    } else if (filter === 2) {
+      setTableData(data.filter((item) => item.shift === "night"));
+    } else {
+      setTableData(data);
+    }
+  };
+
+  const [value, setValue] = useState(0);
+
+  const handleChange = (event, newValue) => {
+    filterRoutes(newValue);
+    setValue(newValue);
+  };
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
       <div className={classes.container}>
@@ -82,11 +116,9 @@ const ByRoutes = () => {
             <ReportFilter tag="bins_routes" />
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
-              allowAsProps
               target={TableRef.current}
               button={(
                 <Button
-                  allowAsProps
                   variant="contained"
                   color="secondary"
                   className={classes.filterButton}
@@ -95,6 +127,18 @@ const ByRoutes = () => {
                 </Button>
               )}
             />
+          </Box>
+          <Box>
+            <Tabs
+              sx={{ my: "1rem" }}
+              value={value}
+              onChange={handleChange}
+              indicator={{ height: 0 }}
+            >
+              <Tab label="All" />
+              <Tab label="Morning" />
+              <Tab label="Night" />
+            </Tabs>
           </Box>
           <Box ref={TableRef}>
             <PrintingHeader />

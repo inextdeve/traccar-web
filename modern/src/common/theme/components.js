@@ -33,4 +33,11 @@ export default {
       },
     },
   },
+  MuiTab: {
+    styleOverrides: {
+      root: {
+        backgroundColor: "#000",
+      },
+    },
+  },
 };

@@ -17,7 +17,6 @@ const AnalyticsTable = ({ columnsHead, items, keys }) => {
   const classes = useReportStyles();
   const t = useTranslation();
   const loading = useSelector((state) => state.analytics.loading);
-  console.log(items);
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -41,11 +40,28 @@ const AnalyticsTable = ({ columnsHead, items, keys }) => {
           {!loading ? (
             <>
               {items.map((item, itemsIndex) => (
-                <TableRow key={item.id_type} hover={itemsIndex !== items.length - 1} className={itemsIndex === items.length - 1 ? classes.greyRow : null}>
-                  <TableCell sx={itemsIndex === items.length - 1 ? { border: 0 } : null} />
+                <TableRow
+                  key={itemsIndex + 2}
+                  hover={itemsIndex !== items.length - 1}
+                  className={
+                    itemsIndex === items.length - 1 ? classes.greyRow : null
+                  }
+                >
+                  <TableCell
+                    sx={itemsIndex === items.length - 1 ? { border: 0 } : null}
+                  />
                   {keys.map((key, index) => (
                     <TableCell
-                      className={itemsIndex === items.length - 1 ? classes.lastCell : key === "empty_bin" ? classes.emptyBin : key === "un_empty_bin" ? classes.unEmptyBin : null}
+                      key={index}
+                      className={
+                        itemsIndex === items.length - 1
+                          ? classes.lastCell
+                          : key === "empty_bin"
+                            ? classes.emptyBin
+                            : key === "un_empty_bin"
+                              ? classes.unEmptyBin
+                              : null
+                      }
                       align={`${
                         index === keys.length - 1 ? "center" : "inherit"
                       }`}
@@ -55,7 +71,6 @@ const AnalyticsTable = ({ columnsHead, items, keys }) => {
                   ))}
                 </TableRow>
               ))}
-
             </>
           ) : (
             <TableShimmer columns={columnsHead.length + 1} startAction />
