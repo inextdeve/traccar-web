@@ -1,7 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import {
-  Grid, Typography, Box, Skeleton, Button,
-} from "@mui/material";
+import React, {
+  useEffect,
+  useRef,
+  Fragment,
+  useState,
+  useCallback,
+} from "react";
+import { Grid, Typography, Box, Skeleton, Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import Print from "./common/Print";
 import PageLayout from "../common/components/PageLayout";
@@ -16,6 +20,14 @@ import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
 import BinsStatusChart from "./components/Charts/BinsStatusChart";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
+// MAP IMPORTS
+import MapView, { map } from "../map/core/MapView";
+import MapRoutePath from "../map/MapRoutePath";
+import MapRoutePoints from "../map/MapRoutePoints";
+import MapPositions from "../map/MapPositions";
+import MapCamera from "../map/MapCamera";
+import MapGeofence from "../map/MapGeofence";
+import { Popup } from "maplibre-gl";
 
 const ByType = () => {
   const classes = useReportStyles();
@@ -23,13 +35,15 @@ const ByType = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   // Table Data Processing
   const columnsHead = [
@@ -62,13 +76,63 @@ const ByType = () => {
         setIsLoading(false);
         return data.json();
       })
-      .then((data) => dispatch(analyticsActions.updateItems(data)))
+      .then((data) => {
+        console.log(JSON.stringify(data));
+        dispatch(analyticsActions.updateItems(data));
+      })
       .catch(() => setIsLoading(false));
   }, []);
+
+  // MAP TESTING
+  const test_bins = [
+    {
+      id: "1",
+      bintype: "200 liters",
+      total: 398,
+      empty_bin: 16,
+      un_empty_bin: 382,
+      latitude: 27.06757,
+      longitude: 49.60385,
+    },
+    {
+      id: "2",
+      bintype: "90 liters",
+      total: 98,
+      empty_bin: 7,
+      un_empty_bin: 87,
+      latitude: 32.06757,
+      longitude: 49.60385,
+    },
+  ];
+
+  const [selectedItem, setSelectedItem] = useState(true);
+  const onMapPointClick = useCallback(
+    (positionId) => {
+      setSelectedItem(items.find((it) => it.id === positionId));
+    },
+    [items, setSelectedItem]
+  );
+
+  useEffect(() => {
+    var popup = new Popup({ closeOnClick: false })
+      .setLngLat([test_bins[0].longitude, test_bins[0].latitude])
+      .setHTML("<h1>Hello World!</h1>")
+      .addTo(map);
+  });
 
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
       <div className={classes.container}>
+        {selectedItem && (
+          <div className={classes.containerMap}>
+            <MapView>
+              <MapGeofence />
+
+              <MapPositions positions={[test_bins[0]]} titleField="fixTime" />
+            </MapView>
+            <MapCamera positions={test_bins} />
+          </div>
+        )}
         <Box className={classes.containerMain} sx={{ p: 2 }}>
           <Box
             sx={{
@@ -81,7 +145,7 @@ const ByType = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -89,7 +153,7 @@ const ByType = () => {
                 >
                   {t("advancedReportPrint")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box ref={TableRef}>
@@ -152,7 +216,7 @@ const ByType = () => {
                     <BinsStatusChart
                       title={t("binsStatusByType")}
                       subtitle={t(
-                        "theProportionOfEmptedAndUnemptedBinsByTypes",
+                        "theProportionOfEmptedAndUnemptedBinsByTypes"
                       )}
                       bins={chartData.map((item) => {
                         const empted = (item.empty_bin * 100) / item.total;
@@ -160,7 +224,7 @@ const ByType = () => {
                         return {
                           name: item.bintype,
                           empted: countRate(item.total, item.empty_bin).toFixed(
-                            2,
+                            2
                           ),
                           unempted: 100 - empted,
                           amt: 100,

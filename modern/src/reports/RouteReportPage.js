@@ -1,7 +1,12 @@
-import React, { Fragment, useCallback, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
-  IconButton, Table, TableBody, TableCell, TableHead, TableRow,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
 } from "@mui/material";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
@@ -31,14 +36,29 @@ const RouteReportPage = () => {
 
   const devices = useSelector((state) => state.devices.items);
 
-  const [columns, setColumns] = usePersistedState("routeColumns", ["fixTime", "latitude", "longitude", "speed", "address"]);
+  const [columns, setColumns] = usePersistedState("routeColumns", [
+    "fixTime",
+    "latitude",
+    "longitude",
+    "speed",
+    "address",
+  ]);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const onMapPointClick = useCallback((positionId) => {
-    setSelectedItem(items.find((it) => it.id === positionId));
-  }, [items, setSelectedItem]);
+  const onMapPointClick = useCallback(
+    (positionId) => {
+      setSelectedItem(items.find((it) => it.id === positionId));
+    },
+    [items, setSelectedItem]
+  );
+
+  //TESTING
+  useEffect(() => {
+    console.log(selectedItem);
+  }, [selectedItem]);
+  //END TESTING
 
   const handleSubmit = useCatch(async ({ deviceIds, from, to, type }) => {
     const query = new URLSearchParams({ from, to });
@@ -46,7 +66,9 @@ const RouteReportPage = () => {
     if (type === "export") {
       window.location.assign(`/api/reports/route/xlsx?${query.toString()}`);
     } else if (type === "mail") {
-      const response = await fetch(`/api/reports/route/mail?${query.toString()}`);
+      const response = await fetch(
+        `/api/reports/route/mail?${query.toString()}`
+      );
       if (!response.ok) {
         throw Error(await response.text());
       }
@@ -68,18 +90,27 @@ const RouteReportPage = () => {
   });
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={["reportTitle", "reportRoute"]}>
+    <PageLayout
+      menu={<ReportsMenu />}
+      breadcrumbs={["reportTitle", "reportRoute"]}
+    >
       <div className={classes.container}>
         {selectedItem && (
           <div className={classes.containerMap}>
             <MapView>
               <MapGeofence />
               {[...new Set(items.map((it) => it.deviceId))].map((deviceId) => {
-                const positions = items.filter((position) => position.deviceId === deviceId);
+                const positions = items.filter(
+                  (position) => position.deviceId === deviceId
+                );
+                console.log("Positions", positions);
                 return (
                   <Fragment key={deviceId}>
                     <MapRoutePath positions={positions} />
-                    <MapRoutePoints positions={positions} onClick={onMapPointClick} />
+                    <MapRoutePoints
+                      positions={positions}
+                      onClick={onMapPointClick}
+                    />
                   </Fragment>
                 );
               })}
@@ -103,35 +134,49 @@ const RouteReportPage = () => {
               <TableRow>
                 <TableCell className={classes.columnAction} />
                 <TableCell>{t("sharedDevice")}</TableCell>
-                {columns.map((key) => (<TableCell key={key}>{positionAttributes[key].name}</TableCell>))}
+                {columns.map((key) => (
+                  <TableCell key={key}>
+                    {positionAttributes[key].name}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {!loading ? items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className={classes.columnAction} padding="none">
-                    {selectedItem === item ? (
-                      <IconButton size="small" onClick={() => setSelectedItem(null)}>
-                        <GpsFixedIcon fontSize="small" />
-                      </IconButton>
-                    ) : (
-                      <IconButton size="small" onClick={() => setSelectedItem(item)}>
-                        <LocationSearchingIcon fontSize="small" />
-                      </IconButton>
-                    )}
-                  </TableCell>
-                  <TableCell>{devices[item.deviceId].name}</TableCell>
-                  {columns.map((key) => (
-                    <TableCell key={key}>
-                      <PositionValue
-                        position={item}
-                        property={item.hasOwnProperty(key) ? key : null}
-                        attribute={item.hasOwnProperty(key) ? null : key}
-                      />
+              {!loading ? (
+                items.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className={classes.columnAction} padding="none">
+                      {selectedItem === item ? (
+                        <IconButton
+                          size="small"
+                          onClick={() => setSelectedItem(null)}
+                        >
+                          <GpsFixedIcon fontSize="small" />
+                        </IconButton>
+                      ) : (
+                        <IconButton
+                          size="small"
+                          onClick={() => setSelectedItem(item)}
+                        >
+                          <LocationSearchingIcon fontSize="small" />
+                        </IconButton>
+                      )}
                     </TableCell>
-                  ))}
-                </TableRow>
-              )) : (<TableShimmer columns={columns.length + 2} startAction />)}
+                    <TableCell>{devices[item.deviceId].name}</TableCell>
+                    {columns.map((key) => (
+                      <TableCell key={key}>
+                        <PositionValue
+                          position={item}
+                          property={item.hasOwnProperty(key) ? key : null}
+                          attribute={item.hasOwnProperty(key) ? null : key}
+                        />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableShimmer columns={columns.length + 2} startAction />
+              )}
             </TableBody>
           </Table>
         </div>

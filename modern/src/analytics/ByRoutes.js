@@ -128,7 +128,14 @@ const ByRoutes = () => {
               )}
             />
           </Box>
-          <Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "2rem",
+              marginBottom: "1rem",
+            }}
+          >
             <Tabs
               value={value}
               onChange={handleChange}

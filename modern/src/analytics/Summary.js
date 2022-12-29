@@ -18,7 +18,6 @@ import BinsStatusChart from "./components/Charts/BinsStatusChart";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
 
-
 const Summary = () => {
   const classes = useReportStyles();
   const t = useTranslation();
@@ -43,19 +42,28 @@ const Summary = () => {
     "completionRate",
   ];
   const data = useSelector((state) => state.analytics.items);
-  const keys = ["id", "total", "date_from", "on", "off", "rate"];
+  const keys = [
+    "id",
+    "total",
+    "date_from",
+    "empty_bin",
+    "un_empty_bin",
+    "rate",
+  ];
   const items = data.map((item, index) => ({
     id: index,
     ...item,
+    empty_bin: item.on,
+    un_empty_bin: item.off,
     date_from: moment(item.date_from).format("MMM Do YY"),
     rate: `${countRate(item.total, item.on).toFixed(2)}%`,
   }));
   items.push({
     id: t("total"),
     total: countTotal(items, "total"),
-    date_from: `All`,
-    on: countTotal(items, "on"),
-    off: countTotal(items, "off"),
+    date_from: "All",
+    empty_bin: countTotal(items, "empty_bin"),
+    un_empty_bin: countTotal(items, "un_empty_bin"),
     rate: `${(countTotal(items, "rate") / items.length).toFixed(2)}%`,
   });
   // Data for charts drop Total item
@@ -165,9 +173,7 @@ const Summary = () => {
 
                         return {
                           name: item.id,
-                          empted: countRate(item.total, item.on).toFixed(
-                            2,
-                          ),
+                          empted: countRate(item.total, item.on).toFixed(2),
                           unempted: 100 - empted,
                           amt: 100,
                         };
