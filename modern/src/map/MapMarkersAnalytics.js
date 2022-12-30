@@ -34,6 +34,9 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
         "icon-image": "{category}-{color}",
         "icon-allow-overlap": true,
       },
+      paint: {
+        "icon-halo-blur": 1,
+      },
     });
 
     map.on("mouseenter", id, onMouseEnter);
