@@ -1,13 +1,10 @@
 import React, {
-  useEffect,
-  useRef,
-  useState,
+  useCallback, useEffect, useRef, useState,
 } from "react";
 import {
   Grid, Typography, Box, Skeleton, Button,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { Popup } from "maplibre-gl";
 import Print from "./common/Print";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
@@ -23,10 +20,11 @@ import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
 // MAP IMPORTS
 import MapView, { map } from "../map/core/MapView";
-import MapPositions from "../map/MapPositions";
+
 import MapCamera from "../map/MapCamera";
 import MapGeofence from "../map/MapGeofence";
-import MapMarkers from "../map/MapMarkers";
+
+import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
 
 const ByType = () => {
   const classes = useReportStyles();
@@ -82,26 +80,78 @@ const ByType = () => {
   // MAP TESTING
   const testBins = [
     {
-      id: "1",
-      bintype: "200 liters",
-      total: 398,
-      empty_bin: 16,
-      un_empty_bin: 382,
-      latitude: 27.06757,
-      longitude: 49.60385,
-      color: "negative",
-      category: "trash"
+      color: "primary",
+      id: 134434,
+      attributes: {
+        priority: 0,
+        sat: 0,
+        event: 240,
+        ignition: false,
+        motion: true,
+        in2: true,
+        io113: 59,
+        power: 12.026,
+        io24: 0,
+        odometer: 0,
+        io11: 89966011000,
+        io14: 30799631,
+        distance: 0,
+        totalDistance: 6092721.82,
+        hours: -4854091,
+      },
+      deviceId: 6,
+      protocol: "teltonika",
+      serverTime: "2022-12-20T23:36:46.000+00:00",
+      deviceTime: "2022-12-20T23:36:44.000+00:00",
+      fixTime: "2022-12-20T23:36:44.000+00:00",
+      outdated: false,
+      valid: false,
+      latitude: 0,
+      longitude: 0,
+      altitude: 0,
+      speed: 0,
+      course: 0,
+      address: null,
+      accuracy: 0,
+      network: null,
+      category: "default",
     },
     {
-      id: "2",
-      bintype: "90 liters",
-      total: 98,
-      empty_bin: 7,
-      un_empty_bin: 87,
-      latitude: 32.06757,
-      longitude: 49.60385,
-      color: "positive",
-      category: "trash"
+      id: 195795,
+      attributes: {
+        priority: 0,
+        sat: 17,
+        event: 0,
+        ignition: false,
+        motion: true,
+        in2: false,
+        io113: 63,
+        power: 12.505,
+        io24: 9,
+        odometer: 41,
+        io11: 89966011000,
+        io14: 30799631,
+        distance: 2.6,
+        totalDistance: 12188060.61,
+        hours: -4854091,
+      },
+      deviceId: 6,
+      protocol: "teltonika",
+      serverTime: "2022-12-23T03:04:23.000+00:00",
+      deviceTime: "2022-12-23T03:04:22.000+00:00",
+      fixTime: "2022-12-23T03:04:22.000+00:00",
+      outdated: false,
+      valid: true,
+      latitude: 27.0680683,
+      longitude: 49.603775,
+      altitude: 0,
+      speed: 2.15983,
+      course: 181,
+      address: null,
+      accuracy: 0,
+      network: null,
+      color: "primary",
+      category: "default",
     },
   ];
 
@@ -113,6 +163,9 @@ const ByType = () => {
   //   .addTo(map)
   // ), []);
 
+  const onMarkClick = (id) => {
+    alert(`Hello ${id}`);
+  };
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
       <div className={classes.container}>
@@ -120,10 +173,9 @@ const ByType = () => {
           <div className={classes.containerMap}>
             <MapView>
               <MapGeofence />
-              <MapMarkers markers={testBins} />
-              <MapPositions positions={[testBins[0]]} onClick={() => alert("ALHAMDOLILLAH")} titleField="fixTime" />
+              <MapMarkersAnalytics positions={testBins} onClick={onMarkClick} />
             </MapView>
-            
+
             <MapCamera positions={testBins} />
           </div>
         )}

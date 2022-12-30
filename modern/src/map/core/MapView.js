@@ -1,11 +1,14 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import maplibregl from "maplibre-gl";
-import React, {
-  useRef, useLayoutEffect, useEffect, useState,
-} from "react";
+import React, { useRef, useLayoutEffect, useEffect, useState } from "react";
 import { SwitcherControl } from "../switcher/switcher";
-import { useAttributePreference, usePreference } from "../../common/util/preferences";
-import usePersistedState, { savePersistedState } from "../../common/util/usePersistedState";
+import {
+  useAttributePreference,
+  usePreference,
+} from "../../common/util/preferences";
+import usePersistedState, {
+  savePersistedState,
+} from "../../common/util/usePersistedState";
 import { mapImages } from "./preloadImages";
 import useMapStyles from "./useMapStyles";
 
@@ -64,7 +67,7 @@ const switcher = new SwitcherControl(
       };
       waiting();
     });
-  },
+  }
 );
 
 map.addControl(switcher);
@@ -75,8 +78,14 @@ const MapView = ({ children }) => {
   const [mapReady, setMapReady] = useState(false);
 
   const mapStyles = useMapStyles();
-  const activeMapStyles = useAttributePreference("activeMapStyles", "locationIqStreets,osm,carto");
-  const [defaultMapStyle] = usePersistedState("selectedMapStyle", usePreference("map", "locationIqStreets"));
+  const activeMapStyles = useAttributePreference(
+    "activeMapStyles",
+    "locationIqStreets,osm,carto"
+  );
+  const [defaultMapStyle] = usePersistedState(
+    "selectedMapStyle",
+    usePreference("map", "locationIqStreets")
+  );
   const mapboxAccessToken = useAttributePreference("mapboxAccessToken");
   const maxZoom = useAttributePreference("web.maxZoom");
 
@@ -91,8 +100,12 @@ const MapView = ({ children }) => {
   }, [mapboxAccessToken]);
 
   useEffect(() => {
-    const filteredStyles = mapStyles.filter((s) => s.available && activeMapStyles.includes(s.id));
-    const styles = filteredStyles.length ? filteredStyles : mapStyles.filter((s) => s.id === "osm");
+    const filteredStyles = mapStyles.filter(
+      (s) => s.available && activeMapStyles.includes(s.id)
+    );
+    const styles = filteredStyles.length
+      ? filteredStyles
+      : mapStyles.filter((s) => s.id === "osm");
     switcher.updateStyles(styles, defaultMapStyle);
   }, [mapStyles, defaultMapStyle]);
 

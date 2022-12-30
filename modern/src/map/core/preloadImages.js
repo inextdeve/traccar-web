@@ -48,10 +48,11 @@ export const mapIcons = {
   trolleybus: trolleybusSvg,
   truck: truckSvg,
   van: vanSvg,
-  trash: trashSvg
+  trash: trashSvg,
 };
 
-export const mapIconKey = (category) => (mapIcons.hasOwnProperty(category) ? category : "default");
+export const mapIconKey = (category) =>
+  mapIcons.hasOwnProperty(category) ? category : "default";
 
 export const mapImages = {};
 
@@ -59,13 +60,21 @@ export default async () => {
   const background = await loadImage(backgroundSvg);
   mapImages.background = await prepareIcon(background);
   mapImages.direction = await prepareIcon(await loadImage(directionSvg));
-  await Promise.all(Object.keys(mapIcons).map(async (category) => {
-    const results = [];
-    ["primary", "positive", "negative", "neutral"].forEach((color) => {
-      results.push(loadImage(mapIcons[category]).then((icon) => {
-        mapImages[`${category}-${color}`] = prepareIcon(background, icon, palette.colors[color]);
-      }));
-    });
-    await Promise.all(results);
-  }));
+  await Promise.all(
+    Object.keys(mapIcons).map(async (category) => {
+      const results = [];
+      ["primary", "positive", "negative", "neutral"].forEach((color) => {
+        results.push(
+          loadImage(mapIcons[category]).then((icon) => {
+            mapImages[`${category}-${color}`] = prepareIcon(
+              background,
+              icon,
+              palette.colors[color]
+            );
+          })
+        );
+      });
+      await Promise.all(results);
+    })
+  );
 };
