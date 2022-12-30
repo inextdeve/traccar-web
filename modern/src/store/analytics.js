@@ -6,6 +6,7 @@ const { reducer, actions } = createSlice({
   initialState: {
     loading: false,
     items: [],
+    positions: [],
     period: "today",
     from: moment()
       .subtract(1, "hour")
@@ -19,6 +20,9 @@ const { reducer, actions } = createSlice({
     },
     updateItems(state, action) {
       state.items = action.payload;
+    },
+    updatePositions(state, action) {
+      state.positions = action.payload;
     },
     updatePeriod(state, action) {
       state.period = action.payload;

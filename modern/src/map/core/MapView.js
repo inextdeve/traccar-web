@@ -1,6 +1,8 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import maplibregl from "maplibre-gl";
-import React, { useRef, useLayoutEffect, useEffect, useState } from "react";
+import React, {
+  useRef, useLayoutEffect, useEffect, useState,
+} from "react";
 import { SwitcherControl } from "../switcher/switcher";
 import {
   useAttributePreference,
@@ -67,7 +69,7 @@ const switcher = new SwitcherControl(
       };
       waiting();
     });
-  }
+  },
 );
 
 map.addControl(switcher);
@@ -80,11 +82,11 @@ const MapView = ({ children }) => {
   const mapStyles = useMapStyles();
   const activeMapStyles = useAttributePreference(
     "activeMapStyles",
-    "locationIqStreets,osm,carto"
+    "locationIqStreets,osm,carto",
   );
   const [defaultMapStyle] = usePersistedState(
     "selectedMapStyle",
-    usePreference("map", "locationIqStreets")
+    usePreference("map", "locationIqStreets"),
   );
   const mapboxAccessToken = useAttributePreference("mapboxAccessToken");
   const maxZoom = useAttributePreference("web.maxZoom");
@@ -101,7 +103,7 @@ const MapView = ({ children }) => {
 
   useEffect(() => {
     const filteredStyles = mapStyles.filter(
-      (s) => s.available && activeMapStyles.includes(s.id)
+      (s) => s.available && activeMapStyles.includes(s.id),
     );
     const styles = filteredStyles.length
       ? filteredStyles

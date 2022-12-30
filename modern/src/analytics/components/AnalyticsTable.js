@@ -1,5 +1,5 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useCallback, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Table,
   TableBody,
@@ -8,15 +8,34 @@ import {
   TableRow,
   TableContainer,
   Paper,
+  Button
 } from "@mui/material";
+import MapIcon from '@mui/icons-material/Map';
 import { useTranslation } from "../../common/components/LocalizationProvider";
 import TableShimmer from "../../common/components/TableShimmer";
 import useReportStyles from "../common/useReportStyles";
+import { analyticsActions } from "../../store";
 
 const AnalyticsTable = ({ columnsHead, items, keys }) => {
   const classes = useReportStyles();
   const t = useTranslation();
+  const dispatch = useDispatch();
   const loading = useSelector((state) => state.analytics.loading);
+  const token = useSelector((state) => state.session.user.attributes.apitoken);
+  const mapClick = useCallback(async ({from, to, id, tag}) => {
+    const data = await fetch(`https://med-reports.almajal.co/al/api/?token=${token}&${tag}&limit=0;100&bintypeid=${id}&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`);
+    const positions = await data.json();
+    dispatch(analyticsActions.updatePositions(positions.map(({id_bin, status, latitude,longitude}) => ({
+      id: id_bin,
+      color: `${status === "empty" ? "positive" : "negative"}`,
+      category: "trash",
+      latitude,
+      longitude,
+    }))))
+
+    
+
+  })
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -66,7 +85,7 @@ const AnalyticsTable = ({ columnsHead, items, keys }) => {
                         index === keys.length - 1 ? "center" : "inherit"
                       }`}
                     >
-                      {item[key]}
+                      {(key === "maps" && itemsIndex < items.length - 1) ? <Button onClick={() => mapClick(item[key])}><MapIcon/></Button> : item[key]}
                     </TableCell>
                   ))}
                 </TableRow>

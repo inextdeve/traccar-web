@@ -15,7 +15,7 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
         onClick(feature.properties.id, feature.properties.index);
       }
     },
-    [onClick]
+    [onClick],
   );
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
         "icon-allow-overlap": true,
       },
       paint: {
-        "icon-halo-blur": 1,
+        
       },
     });
 

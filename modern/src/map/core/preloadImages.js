@@ -3,6 +3,7 @@ import { loadImage, prepareIcon } from "./mapUtil";
 
 import directionSvg from "../../resources/images/direction.svg";
 import backgroundSvg from "../../resources/images/background.svg";
+import noBackgroundSvg from "../../resources/images/noBackground.svg";
 import animalSvg from "../../resources/images/icon/animal.svg";
 import bicycleSvg from "../../resources/images/icon/bicycle.svg";
 import boatSvg from "../../resources/images/icon/boat.svg";
@@ -51,13 +52,13 @@ export const mapIcons = {
   trash: trashSvg,
 };
 
-export const mapIconKey = (category) =>
-  mapIcons.hasOwnProperty(category) ? category : "default";
+export const mapIconKey = (category) => (mapIcons.hasOwnProperty(category) ? category : "default");
 
 export const mapImages = {};
 
 export default async () => {
   const background = await loadImage(backgroundSvg);
+  const noBackground = await loadImage(noBackgroundSvg);
   mapImages.background = await prepareIcon(background);
   mapImages.direction = await prepareIcon(await loadImage(directionSvg));
   await Promise.all(
@@ -66,15 +67,25 @@ export default async () => {
       ["primary", "positive", "negative", "neutral"].forEach((color) => {
         results.push(
           loadImage(mapIcons[category]).then((icon) => {
+            //Add here any category if you want to be transparent BG
+            if (category === "trash") {
+              mapImages[`${category}-${color}`] = prepareIcon(
+                noBackground,
+                icon,
+                palette.colors[color],
+              );
+              return;
+            }
             mapImages[`${category}-${color}`] = prepareIcon(
               background,
               icon,
-              palette.colors[color]
+              palette.colors[color],
             );
-          })
+            
+          }),
         );
       });
       await Promise.all(results);
-    })
+    }),
   );
 };

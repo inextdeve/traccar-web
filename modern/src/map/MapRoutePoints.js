@@ -18,7 +18,7 @@ const MapPositions = ({ positions, onClick }) => {
         onClick(feature.properties.id, feature.properties.index);
       }
     },
-    [onClick]
+    [onClick],
   );
 
   useEffect(() => {

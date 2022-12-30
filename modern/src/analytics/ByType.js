@@ -39,6 +39,7 @@ const ByType = () => {
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
   const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const positions = useSelector((state) => state.analytics.positions)
 
   // Table Data Processing
   const columnsHead = [
@@ -47,12 +48,25 @@ const ByType = () => {
     "empted",
     "notEmpted",
     "completionRate",
+    "maps"
   ];
   const data = useSelector((state) => state.analytics.items);
-  const keys = ["bintype", "total", "empty_bin", "un_empty_bin", "rate"];
+  const keys = ["bintype", "total", "empty_bin", "un_empty_bin", "rate", "maps"];
   const items = data.map((item) => ({
     ...item,
     rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
+    maps: {
+      id: item.id_type,
+      from: {
+        date: item.date_from.split(" ")[0],
+        time: item.date_from.split(" ")[1]
+      },
+      to: {
+        date: item.date_to.split(" ")[0],
+        time: item.date_to.split(" ")[1]
+      },
+      tag: "bins"
+    }
   }));
   items.push({
     bintype: t("total"),
@@ -78,82 +92,34 @@ const ByType = () => {
   }, []);
 
   // MAP TESTING
+  
+
   const testBins = [
     {
-      color: "primary",
-      id: 134434,
-      attributes: {
-        priority: 0,
-        sat: 0,
-        event: 240,
-        ignition: false,
-        motion: true,
-        in2: true,
-        io113: 59,
-        power: 12.026,
-        io24: 0,
-        odometer: 0,
-        io11: 89966011000,
-        io14: 30799631,
-        distance: 0,
-        totalDistance: 6092721.82,
-        hours: -4854091,
-      },
-      deviceId: 6,
-      protocol: "teltonika",
-      serverTime: "2022-12-20T23:36:46.000+00:00",
-      deviceTime: "2022-12-20T23:36:44.000+00:00",
-      fixTime: "2022-12-20T23:36:44.000+00:00",
-      outdated: false,
-      valid: false,
-      latitude: 0,
-      longitude: 0,
-      altitude: 0,
-      speed: 0,
-      course: 0,
-      address: null,
-      accuracy: 0,
-      network: null,
-      category: "default",
+      id_bin: 1000,
+      bintype: "2 Yard",
+      route: "QU 1015",
+      status: "empty",
+      last_time_empty: "2022-12-29 02:36:42",
+      latitude: 28.0680683,
+      longitude: 49.603775,
+      category: "trash",
+      color: "primary"
     },
     {
-      id: 195795,
-      attributes: {
-        priority: 0,
-        sat: 17,
-        event: 0,
-        ignition: false,
-        motion: true,
-        in2: false,
-        io113: 63,
-        power: 12.505,
-        io24: 9,
-        odometer: 41,
-        io11: 89966011000,
-        io14: 30799631,
-        distance: 2.6,
-        totalDistance: 12188060.61,
-        hours: -4854091,
-      },
-      deviceId: 6,
-      protocol: "teltonika",
-      serverTime: "2022-12-23T03:04:23.000+00:00",
-      deviceTime: "2022-12-23T03:04:22.000+00:00",
-      fixTime: "2022-12-23T03:04:22.000+00:00",
-      outdated: false,
-      valid: true,
-      latitude: 27.0680683,
+      id_bin: 2000,
+      bintype: "6 Yard",
+      route: "QU 1015",
+      status: "empty",
+      last_time_empty: "2022-12-29 02:36:42",
+      latitude: 28.4680683,
       longitude: 49.603775,
-      altitude: 0,
-      speed: 2.15983,
-      course: 181,
-      address: null,
-      accuracy: 0,
-      network: null,
-      color: "primary",
-      category: "default",
+      category: "trash",
+      color: "primary"
     },
   ];
+
+
 
   const [selectedItem] = useState(true);
 
@@ -173,10 +139,10 @@ const ByType = () => {
           <div className={classes.containerMap}>
             <MapView>
               <MapGeofence />
-              <MapMarkersAnalytics positions={testBins} onClick={onMarkClick} />
+              <MapMarkersAnalytics positions={positions} onClick={onMarkClick} />
             </MapView>
 
-            <MapCamera positions={testBins} />
+            <MapCamera positions={positions} />
           </div>
         )}
         <Box className={classes.containerMain} sx={{ p: 2 }}>
