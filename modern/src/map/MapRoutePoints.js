@@ -1,8 +1,11 @@
 import { useId, useCallback, useEffect } from "react";
+import { useTheme } from "@mui/styles";
 import { map } from "./core/MapView";
 
-const MapMarkersAnalytics = ({ positions, onClick }) => {
+const MapPositions = ({ positions, onClick }) => {
   const id = useId();
+
+  const theme = useTheme();
 
   const onMouseEnter = () => (map.getCanvas().style.cursor = "pointer");
   const onMouseLeave = () => (map.getCanvas().style.cursor = "");
@@ -12,11 +15,7 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
       event.preventDefault();
       const feature = event.features[0];
       if (onClick) {
-        onClick(
-          feature.properties.id,
-          feature.properties.position,
-          feature.properties.index,
-        );
+        onClick(feature.properties.id, feature.properties.index);
       }
     },
     [onClick],
@@ -32,13 +31,12 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
     });
     map.addLayer({
       id,
-      type: "symbol",
+      type: "circle",
       source: id,
-      layout: {
-        "icon-image": "{category}-{color}",
-        "icon-allow-overlap": true,
+      paint: {
+        "circle-radius": 5,
+        "circle-color": theme.palette.colors.geometry,
       },
-      paint: {},
     });
 
     map.on("mouseenter", id, onMouseEnter);
@@ -71,13 +69,6 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
         properties: {
           index,
           id: position.id,
-          position: {
-            longitude: position.longitude,
-            latitude: position.latitude,
-          },
-
-          category: position.category || "default",
-          color: position.color || "primary",
         },
       })),
     });
@@ -86,4 +77,4 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
   return null;
 };
 
-export default MapMarkersAnalytics;
+export default MapPositions;
