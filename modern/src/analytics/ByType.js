@@ -1,10 +1,15 @@
-import React, {
-  useCallback, useEffect, useRef, useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Grid, Typography, Box, Skeleton, Button,
+  Grid,
+  Typography,
+  Box,
+  Skeleton,
+  Button,
+  LinearProgress,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import MapIcon from "@mui/icons-material/Map";
+import { Popup } from "maplibre-gl";
 import Print from "./common/Print";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
@@ -18,9 +23,9 @@ import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
 import BinsStatusChart from "./components/Charts/BinsStatusChart";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
+
 // MAP IMPORTS
 import MapView, { map } from "../map/core/MapView";
-
 import MapCamera from "../map/MapCamera";
 import MapGeofence from "../map/MapGeofence";
 
@@ -32,14 +37,54 @@ const ByType = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
-  const positions = useSelector((state) => state.analytics.positions)
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
+
+  // Map Processing
+  const positions = useSelector((state) => state.analytics.positions);
+  const [mapLoading, setMapLoading] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(false);
+  const mapButtonClick = useCallback(async ({ from, to, id, tag }) => {
+    setSelectedItem(true);
+    setMapLoading(null);
+    const data = await fetch(
+      `https://med-reports.almajal.co/al/api/?token=${token}&${tag}&limit=0;10000&bintypeid=${id}&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`
+    );
+    setMapLoading(false);
+    const positions = await data.json();
+    console.log(positions.forEach((pos) => console.log("fst", pos.status)));
+    dispatch(
+      analyticsActions.updatePositions(
+        positions.map(({ id_bin, status, latitude, longitude }) => {
+          console.log(status);
+          return {
+            id: id_bin,
+            category: `${
+              status === "unempty" ? "trashNegative" : "trashPositive"
+            }`,
+            latitude,
+            longitude,
+          };
+        })
+      )
+    );
+  });
+
+  const onMarkClick = useCallback((id, positionStr) => {
+    const position = JSON.parse(positionStr);
+
+    new Popup({ closeOnClick: false })
+      .setLngLat([position.longitude, position.latitude])
+      .setHTML("<h1>Bins Info</h1>")
+      .addTo(map);
+  });
 
   // Table Data Processing
   const columnsHead = [
@@ -48,26 +93,41 @@ const ByType = () => {
     "empted",
     "notEmpted",
     "completionRate",
-    "maps"
+    "maps",
   ];
   const data = useSelector((state) => state.analytics.items);
-  const keys = ["bintype", "total", "empty_bin", "un_empty_bin", "rate", "maps"];
-  const items = data.map((item) => ({
-    ...item,
-    rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
-    maps: {
+  const keys = [
+    "bintype",
+    "total",
+    "empty_bin",
+    "un_empty_bin",
+    "rate",
+    "mapButton",
+  ];
+  const items = data.map((item) => {
+    const requestParams = {
       id: item.id_type,
       from: {
         date: item.date_from.split(" ")[0],
-        time: item.date_from.split(" ")[1]
+        time: "00:00",
       },
       to: {
         date: item.date_to.split(" ")[0],
-        time: item.date_to.split(" ")[1]
+        time: item.date_to.split(" ")[1],
       },
-      tag: "bins"
-    }
-  }));
+      tag: "bins",
+    };
+
+    return {
+      ...item,
+      rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
+      mapButton: (
+        <Button onClick={() => mapButtonClick(requestParams)}>
+          <MapIcon />
+        </Button>
+      ),
+    };
+  });
   items.push({
     bintype: t("total"),
     total: countTotal(items, "total"),
@@ -91,47 +151,8 @@ const ByType = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
-  // MAP TESTING
-  
+  // Drawer
 
-  const testBins = [
-    {
-      id_bin: 1000,
-      bintype: "2 Yard",
-      route: "QU 1015",
-      status: "empty",
-      last_time_empty: "2022-12-29 02:36:42",
-      latitude: 28.0680683,
-      longitude: 49.603775,
-      category: "trash",
-      color: "primary"
-    },
-    {
-      id_bin: 2000,
-      bintype: "6 Yard",
-      route: "QU 1015",
-      status: "empty",
-      last_time_empty: "2022-12-29 02:36:42",
-      latitude: 28.4680683,
-      longitude: 49.603775,
-      category: "trash",
-      color: "primary"
-    },
-  ];
-
-
-
-  const [selectedItem] = useState(true);
-
-  // useEffect(() => (new Popup({ closeOnClick: false })
-  //   .setLngLat([testBins[0].longitude, testBins[0].latitude])
-  //   .setHTML("<h1>Hello World!</h1>")
-  //   .addTo(map)
-  // ), []);
-
-  const onMarkClick = (id) => {
-    alert(`Hello ${id}`);
-  };
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
       <div className={classes.container}>
@@ -139,12 +160,16 @@ const ByType = () => {
           <div className={classes.containerMap}>
             <MapView>
               <MapGeofence />
-              <MapMarkersAnalytics positions={positions} onClick={onMarkClick} />
+              <MapMarkersAnalytics
+                positions={positions}
+                onClick={onMarkClick}
+              />
             </MapView>
 
             <MapCamera positions={positions} />
           </div>
         )}
+        {mapLoading ?? <LinearProgress sx={{ padding: "0.1rem" }} />}
         <Box className={classes.containerMain} sx={{ p: 2 }}>
           <Box
             sx={{
@@ -157,7 +182,7 @@ const ByType = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -165,7 +190,7 @@ const ByType = () => {
                 >
                   {t("advancedReportPrint")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box ref={TableRef}>
@@ -228,7 +253,7 @@ const ByType = () => {
                     <BinsStatusChart
                       title={t("binsStatusByType")}
                       subtitle={t(
-                        "theProportionOfEmptedAndUnemptedBinsByTypes",
+                        "theProportionOfEmptedAndUnemptedBinsByTypes"
                       )}
                       bins={chartData.map((item) => {
                         const empted = (item.empty_bin * 100) / item.total;
@@ -236,7 +261,7 @@ const ByType = () => {
                         return {
                           name: item.bintype,
                           empted: countRate(item.total, item.empty_bin).toFixed(
-                            2,
+                            2
                           ),
                           unempted: 100 - empted,
                           amt: 100,

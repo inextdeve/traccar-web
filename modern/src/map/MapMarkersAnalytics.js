@@ -12,10 +12,14 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
       event.preventDefault();
       const feature = event.features[0];
       if (onClick) {
-        onClick(feature.properties.id, feature.properties.index);
+        onClick(
+          feature.properties.id,
+          feature.properties.position,
+          feature.properties.index
+        );
       }
     },
-    [onClick],
+    [onClick]
   );
 
   useEffect(() => {
@@ -33,9 +37,6 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
       layout: {
         "icon-image": "{category}-{color}",
         "icon-allow-overlap": true,
-      },
-      paint: {
-        
       },
     });
 
@@ -60,19 +61,25 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
   useEffect(() => {
     map.getSource(id).setData({
       type: "FeatureCollection",
-      features: positions.map((position, index) => ({
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [position.longitude, position.latitude],
-        },
-        properties: {
-          index,
-          id: position.id,
-          category: position.category || "default",
-          color: position.color || "primary",
-        },
-      })),
+      features: positions.map((position, index) => {
+        return {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [position.longitude, position.latitude],
+          },
+          properties: {
+            index,
+            id: position.id,
+            position: {
+              longitude: position.longitude,
+              latitude: position.latitude,
+            },
+            category: position.category || "default",
+            color: position.color || "primary",
+          },
+        };
+      }),
     });
   }, [positions]);
 
