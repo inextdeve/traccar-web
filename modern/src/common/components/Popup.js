@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import Draggable from "react-draggable";
 import {
   Card,
@@ -14,14 +13,16 @@ import {
   TableCell,
   CircularProgress,
   Box,
+  TableHead,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 
 import DeleteIcon from "@mui/icons-material/Delete";
-import PendingIcon from "@mui/icons-material/Pending";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
 import { useTranslation } from "./LocalizationProvider";
 import RemoveDialog from "./RemoveDialog";
@@ -29,6 +30,8 @@ import RemoveDialog from "./RemoveDialog";
 import { devicesActions } from "../../store";
 import { useCatch } from "../../reactHelper";
 import moment from "moment";
+import { toast } from "react-toastify";
+
 const useStyles = makeStyles((theme) => ({
   card: {
     width: theme.dimensions.popupMaxWidth,
@@ -47,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: theme.spacing(1, 1, 0, 2),
+    padding: theme.spacing(1, 1, 1, 2),
   },
   content: {
     paddingTop: theme.spacing(1),
@@ -106,14 +109,7 @@ const StatusRow = ({ name, content }) => {
   );
 };
 
-const Popup = ({
-  deviceId,
-  position,
-  onClose,
-  disableActions,
-  desktopPadding = 0,
-  bin,
-}) => {
+const Popup = ({ onClose, desktopPadding = 0 }) => {
   const classes = useStyles({ desktopPadding });
   const dispatch = useDispatch();
   const t = useTranslation();
@@ -135,43 +131,158 @@ const Popup = ({
   //MY Code
   const popup = useSelector((state) => state.analytics.popup);
   const binData = useSelector((state) => state.analytics.binData);
+  const [showMore, setShowMore] = useState(false);
 
-  console.log("BIN DATA", binData);
+  const toggleDetails = () => {
+    setShowMore((prev) => !prev);
+  };
+
+  const sendMessage = async () => {
+    const data = fetch("https://api.ultramsg.com/instance27714/messages/chat", {
+      method: "POST",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+      },
+      body: `token=x6lf1axmx0kmiimb&to=+212704866309&body=testmessage&priority=1&referenceId=`,
+    });
+
+    toast.promise(data, {
+      pending: t("sending"),
+      success: t("sent"),
+      error: t("sentError"),
+    });
+  };
+
+  const lastOperation = () => {
+    const last7days = binData[1].last7days.filter((item) => item.datetime);
+
+    return last7days[last7days.length - 1].datetime;
+  };
+
   return (
     <div className={classes.root}>
       {popup.show && (
         <Draggable handle={`.${classes.media}, .${classes.header}`}>
           <Card elevation={3} className={classes.card}>
-            <div className={classes.header}>
-              <Typography variant="body2" color="textSecondary">
-                {popup.binType} - {popup.id}
-              </Typography>
+            <Box
+              className={classes.header}
+              sx={{
+                background: `${
+                  binData && (binData[0]?.status === "empty" ? "green" : "red")
+                }`,
+                color: "white",
+              }}
+            >
+              <Typography variant="body2">Details</Typography>
               <IconButton size="small" onClick={onClose} onTouchStart={onClose}>
                 <CloseIcon fontSize="small" />
               </IconButton>
-            </div>
+            </Box>
             {binData ? (
               <CardContent className={classes.content}>
                 <Table size="small" classes={{ root: classes.table }}>
                   <TableBody>
-                    <StatusRow name="status" content={binData[0].status} />
+                    <StatusRow name={t("id")} content={popup.id} />
+                    <StatusRow name={t("binType")} content={popup.binType} />
                     <StatusRow
-                      name="Last Emptied Time"
-                      content={moment(binData[0].datetime).format("MMM Do YY")}
+                      name={t("status")}
+                      content={
+                        <span
+                          style={{
+                            color: `${
+                              binData[0].status === "empty" ? "green" : "red"
+                            }`,
+                          }}
+                        >
+                          {binData[0].status}
+                        </span>
+                      }
+                    />
+                    <StatusRow
+                      name={t("lastOperation")}
+                      content={moment(lastOperation()).format("MMM Do YY")}
+                    />
+                    <StatusRow name="Driver" content={binData[0].driver} />
+                    <StatusRow
+                      name={t("position")}
+                      content={`${binData[0].latitude}, ${binData[0].longitude}`}
+                    />
+                    <StatusRow
+                      name={t("position")}
+                      content={
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
+                          target="_blank"
+                        >
+                          Google Map
+                        </a>
+                      }
                     />
                   </TableBody>
                 </Table>
+                {showMore && (
+                  <Box xs={{ mt: "2rem" }}>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>
+                            <Typography variant="body2">Status</Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2">Last Empted</Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2">By</Typography>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {binData[1].last7days.map((item) => {
+                          return (
+                            <TableRow>
+                              <TableCell className={classes.cell}>
+                                <Typography
+                                  variant="body2"
+                                  color="textSecondary"
+                                >
+                                  {item.status}
+                                </Typography>
+                              </TableCell>
+                              <TableCell className={classes.cell}>
+                                <Typography
+                                  variant="body2"
+                                  color="textSecondary"
+                                >
+                                  {moment(item.date).format("MMM Do YY")}
+                                </Typography>
+                              </TableCell>
+                              <TableCell className={classes.cell}>
+                                <Typography
+                                  variant="body2"
+                                  color="textSecondary"
+                                >
+                                  {item.emptied_by}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </Box>
+                )}
               </CardContent>
             ) : (
               <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
                 <CircularProgress />
               </Box>
             )}
+
             <CardActions classes={{ root: classes.actions }} disableSpacing>
-              <IconButton color="secondary">
-                <PendingIcon />
+              <IconButton color="secondary" onClick={toggleDetails}>
+                {showMore ? <RemoveCircleOutlineIcon /> : <ControlPointIcon />}
               </IconButton>
-              <IconButton color="secondary">
+              <IconButton color="secondary" onClick={sendMessage}>
                 <WhatsAppIcon />
               </IconButton>
               <IconButton className={classes.negative}>

@@ -27,6 +27,7 @@
     "react-router-dom": "^6.4.3",
     "react-scripts": "^5.0.1",
     "react-to-print": "^2.14.10",
+    "react-toastify": "^9.1.1",
     "react-virtualized-auto-sizer": "^1.0.7",
     "react-window": "^1.8.8",
     "recharts": "^2.1.16",

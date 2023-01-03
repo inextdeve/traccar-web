@@ -591,5 +591,11 @@
   "time": "Time",
   "date": "Date",
   "id": "ID",
-  "maps": "Maps"
+  "maps": "Maps",
+  "sending": "Sending",
+  "sent": "Sent Successfully",
+  "sentError": "Error Try Again",
+  "status": "Status",
+  "position": "Position",
+  "lastOperation": "Last operation"
 }

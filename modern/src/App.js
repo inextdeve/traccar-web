@@ -9,6 +9,8 @@ import SocketController from "./SocketController";
 import CachingController from "./CachingController";
 import { useEffectAsync } from "./reactHelper";
 import { sessionActions } from "./store";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const useStyles = makeStyles(() => ({
   page: {
@@ -41,8 +43,22 @@ const App = () => {
     return null;
   }, [initialized]);
 
-  return !initialized ? (<LinearProgress />) : (
+  return !initialized ? (
+    <LinearProgress />
+  ) : (
     <>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable={false}
+        pauseOnHover
+        theme="light"
+      />
       <SocketController />
       <CachingController />
       <div className={classes.page}>
