@@ -13,6 +13,8 @@ const { reducer, actions } = createSlice({
       .locale("en")
       .format(moment.HTML5_FMT.DATETIME_LOCAL),
     to: moment().locale("en").format(moment.HTML5_FMT.DATETIME_LOCAL),
+    popup: false,
+    binData: null,
   },
   reducers: {
     updateLoading(state, action) {
@@ -32,6 +34,12 @@ const { reducer, actions } = createSlice({
     },
     updateTo(state, action) {
       state.to = action.payload;
+    },
+    updatePopup(state, action) {
+      state.popup = action.payload;
+    },
+    updateBinData(state, action) {
+      state.binData = action.payload;
     },
   },
 });

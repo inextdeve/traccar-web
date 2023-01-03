@@ -12,15 +12,12 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Menu,
-  MenuItem,
-  CardMedia,
+  CircularProgress,
+  Box,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
-import ReplayIcon from "@mui/icons-material/Replay";
-import PublishIcon from "@mui/icons-material/Publish";
-import EditIcon from "@mui/icons-material/Edit";
+
 import DeleteIcon from "@mui/icons-material/Delete";
 import PendingIcon from "@mui/icons-material/Pending";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
@@ -28,13 +25,10 @@ import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 
 import { useTranslation } from "./LocalizationProvider";
 import RemoveDialog from "./RemoveDialog";
-import PositionValue from "./PositionValue";
-import { useDeviceReadonly, useRestriction } from "../util/permissions";
-import usePositionAttributes from "../attributes/usePositionAttributes";
-import { devicesActions } from "../../store";
-import { useCatch, useCatchCallback } from "../../reactHelper";
-import { useAttributePreference } from "../util/preferences";
 
+import { devicesActions } from "../../store";
+import { useCatch } from "../../reactHelper";
+import moment from "moment";
 const useStyles = makeStyles((theme) => ({
   card: {
     width: theme.dimensions.popupMaxWidth,
@@ -118,26 +112,11 @@ const Popup = ({
   onClose,
   disableActions,
   desktopPadding = 0,
+  bin,
 }) => {
   const classes = useStyles({ desktopPadding });
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const t = useTranslation();
-
-  const readonly = useRestriction("readonly");
-  const deviceReadonly = useDeviceReadonly();
-
-  const device = useSelector((state) => state.devices.items[deviceId]);
-
-  const deviceImage = device?.attributes?.deviceImage;
-
-  const positionAttributes = usePositionAttributes(t);
-  const positionItems = useAttributePreference(
-    "positionItems",
-    "speed,address,totalDistance,course"
-  );
-
-  const [anchorEl, setAnchorEl] = useState(null);
 
   const [removing, setRemoving] = useState(false);
 
@@ -153,80 +132,47 @@ const Popup = ({
     setRemoving(false);
   });
 
-  const handleGeofence = useCatchCallback(async () => {
-    const newItem = {
-      name: "",
-      area: `CIRCLE (${position.latitude} ${position.longitude}, 50)`,
-    };
-    const response = await fetch("/api/geofences", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newItem),
-    });
-    if (response.ok) {
-      const item = await response.json();
-      const permissionResponse = await fetch("/api/permissions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          deviceId: position.deviceId,
-          geofenceId: item.id,
-        }),
-      });
-      if (!permissionResponse.ok) {
-        throw Error(await permissionResponse.text());
-      }
-      navigate(`/settings/geofence/${item.id}`);
-    } else {
-      throw Error(await response.text());
-    }
-  }, [navigate, position]);
+  //MY Code
+  const popup = useSelector((state) => state.analytics.popup);
+  const binData = useSelector((state) => state.analytics.binData);
 
+  console.log("BIN DATA", binData);
   return (
     <div className={classes.root}>
-      {true && (
+      {popup.show && (
         <Draggable handle={`.${classes.media}, .${classes.header}`}>
           <Card elevation={3} className={classes.card}>
-            {deviceImage ? (
-              <CardMedia className={classes.media} image="">
-                <IconButton
-                  size="small"
-                  onClick={onClose}
-                  onTouchStart={onClose}
-                >
-                  <CloseIcon fontSize="small" className={classes.mediaButton} />
-                </IconButton>
-              </CardMedia>
-            ) : (
-              <div className={classes.header}>
-                <Typography variant="body2" color="textSecondary">
-                  "Bin Type"
-                </Typography>
-                <IconButton
-                  size="small"
-                  onClick={onClose}
-                  onTouchStart={onClose}
-                >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-              </div>
-            )}
-            {true && (
+            <div className={classes.header}>
+              <Typography variant="body2" color="textSecondary">
+                {popup.binType} - {popup.id}
+              </Typography>
+              <IconButton size="small" onClick={onClose} onTouchStart={onClose}>
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </div>
+            {binData ? (
               <CardContent className={classes.content}>
                 <Table size="small" classes={{ root: classes.table }}>
-                  <TableBody>"Table Body"</TableBody>
+                  <TableBody>
+                    <StatusRow name="status" content={binData[0].status} />
+                    <StatusRow
+                      name="Last Emptied Time"
+                      content={moment(binData[0].datetime).format("MMM Do YY")}
+                    />
+                  </TableBody>
                 </Table>
               </CardContent>
+            ) : (
+              <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+                <CircularProgress />
+              </Box>
             )}
             <CardActions classes={{ root: classes.actions }} disableSpacing>
               <IconButton color="secondary">
                 <PendingIcon />
               </IconButton>
-              <IconButton>
+              <IconButton color="secondary">
                 <WhatsAppIcon />
-              </IconButton>
-              <IconButton>
-                <AssignmentIndIcon />
               </IconButton>
               <IconButton className={classes.negative}>
                 <DeleteIcon />
@@ -235,12 +181,12 @@ const Popup = ({
           </Card>
         </Draggable>
       )}
-      <RemoveDialog
+      {/* <RemoveDialog
         open={removing}
         endpoint="devices"
         itemId={deviceId}
         onResult={(removed) => handleRemove(removed)}
-      />
+      /> */}
     </div>
   );
 };

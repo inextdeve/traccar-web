@@ -52,37 +52,36 @@ const ByType = () => {
   const positions = useSelector((state) => state.analytics.positions);
   const [mapLoading, setMapLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+  const selectedBin = useSelector((state) => state.analytics.selectedBin);
   const mapButtonClick = useCallback(async ({ from, to, id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
     const url = `https://med-reports.almajal.co/al/api/?token=${token}&${tag}&limit=0;10&bintypeid=${id}&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`;
-    console.log(url);
 
     // const data = await fetch(url);
 
     const data = [
       {
-        id_bin: "31832",
+        id: "31832",
         description: "558329",
         bintype: "2 Yard",
         route: "QU 1019 S2",
         center_name: "هجرة 10",
         status: "empty",
         last_time_empty: "2023-01-02 20:08:28",
-        x: "24.3860117",
-        y: "39.5966683",
+        latitude: "24.3860117",
+        longitude: "39.5966683",
       },
       {
-        id_bin: "32678",
+        id: "32678",
         description: "559091",
         bintype: "2 Yard",
         route: "QU 1021 S2",
         center_name: "هجرة 10",
         status: "empty",
         last_time_empty: "2023-01-02 20:07:08",
-        x: "24.3529932",
-        y: "39.5707179",
+        latitude: "24.3529932",
+        longitude: "39.5707179",
       },
     ];
     const positions = data;
@@ -92,23 +91,42 @@ const ByType = () => {
     console.log(positions.forEach((pos) => console.log("fst", pos.status)));
     dispatch(
       analyticsActions.updatePositions(
-        positions.map(({ id_bin, status, latitude, longitude, x, y }) => {
+        positions.map(({ id, status, latitude, longitude, bintype }) => {
           console.log(status);
           return {
-            id: id_bin,
+            id: id,
             category: `${
               status === "unempty" ? "trashNegative" : "trashPositive"
             }`,
-            latitude: x,
-            longitude: y,
+            latitude,
+            longitude,
+            binType: bintype,
           };
         })
       )
     );
   });
-  const onMarkClick = (id, positionStr) => {
-    setShowPopup(true);
-  };
+
+  const onMarkClick = useCallback(async (bin, positionStr) => {
+    const { id, binType } = JSON.parse(bin);
+
+    dispatch(
+      analyticsActions.updatePopup({
+        show: true,
+        id,
+        binType,
+      })
+    );
+    dispatch(analyticsActions.updateBinData(null));
+
+    const data = await fetch(
+      `https://med-reports.almajal.co/al/api/?token=${token}&bin=${id}`
+    );
+
+    const binData = await data.json();
+
+    dispatch(analyticsActions.updateBinData(binData));
+  });
 
   // Table Data Processing
   const columnsHead = [
@@ -176,15 +194,14 @@ const ByType = () => {
   }, []);
 
   const onClose = () => {
-    setShowPopup(false);
+    dispatch(analyticsActions.updatePopup(false));
+    dispatch(analyticsActions.updateBinData(null));
   };
 
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
       <div className={classes.container}>
         <Popup
-          deviceId=""
-          position=""
           desktopPadding={theme.dimensions.drawerWidthDesktop}
           onClose={onClose}
         />

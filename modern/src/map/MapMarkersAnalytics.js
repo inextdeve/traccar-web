@@ -3,7 +3,6 @@ import { map } from "./core/MapView";
 
 const MapMarkersAnalytics = ({ positions, onClick }) => {
   const id = useId();
-
   const onMouseEnter = () => (map.getCanvas().style.cursor = "pointer");
   const onMouseLeave = () => (map.getCanvas().style.cursor = "");
 
@@ -13,13 +12,13 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
       const feature = event.features[0];
       if (onClick) {
         onClick(
-          feature.properties.id,
+          feature.properties.bin,
           feature.properties.position,
-          feature.properties.index,
+          feature.properties.index
         );
       }
     },
-    [onClick],
+    [onClick]
   );
 
   useEffect(() => {
@@ -70,7 +69,10 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
         },
         properties: {
           index,
-          id: position.id,
+          bin: {
+            id: position.id,
+            binType: position.binType,
+          },
           position: {
             longitude: position.longitude,
             latitude: position.latitude,
