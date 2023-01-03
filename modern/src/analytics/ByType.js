@@ -1,6 +1,4 @@
-import React, {
-  useCallback, useEffect, useRef, useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Grid,
   Typography,
@@ -11,7 +9,8 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import MapIcon from "@mui/icons-material/Map";
-import { Popup } from "maplibre-gl";
+// import { Popup } from "maplibre-gl";
+import { useTheme } from "@mui/material/styles";
 import Print from "./common/Print";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
@@ -30,61 +29,86 @@ import PrintingHeader from "../common/components/PrintingHeader";
 import MapView, { map } from "../map/core/MapView";
 import MapCamera from "../map/MapCamera";
 import MapGeofence from "../map/MapGeofence";
-
 import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
+import Popup from "../common/components/Popup";
 
 const ByType = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const dispatch = useDispatch();
   const TableRef = useRef(null);
-
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const theme = useTheme();
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   // Map Processing
   const positions = useSelector((state) => state.analytics.positions);
   const [mapLoading, setMapLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const mapButtonClick = useCallback(async ({ from, to, id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
-    const data = await fetch(
-      `https://med-reports.almajal.co/al/api/?token=${token}&${tag}&limit=0;10000&bintypeid=${id}&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`,
-    );
+    const url = `https://med-reports.almajal.co/al/api/?token=${token}&${tag}&limit=0;10&bintypeid=${id}&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`;
+    console.log(url);
+
+    // const data = await fetch(url);
+
+    const data = [
+      {
+        id_bin: "31832",
+        description: "558329",
+        bintype: "2 Yard",
+        route: "QU 1019 S2",
+        center_name: "هجرة 10",
+        status: "empty",
+        last_time_empty: "2023-01-02 20:08:28",
+        x: "24.3860117",
+        y: "39.5966683",
+      },
+      {
+        id_bin: "32678",
+        description: "559091",
+        bintype: "2 Yard",
+        route: "QU 1021 S2",
+        center_name: "هجرة 10",
+        status: "empty",
+        last_time_empty: "2023-01-02 20:07:08",
+        x: "24.3529932",
+        y: "39.5707179",
+      },
+    ];
+    const positions = data;
+
     setMapLoading(false);
-    const positions = await data.json();
+    // const positions = await data.json();
     console.log(positions.forEach((pos) => console.log("fst", pos.status)));
     dispatch(
       analyticsActions.updatePositions(
-        positions.map(({ id_bin, status, latitude, longitude }) => {
+        positions.map(({ id_bin, status, latitude, longitude, x, y }) => {
           console.log(status);
           return {
             id: id_bin,
             category: `${
               status === "unempty" ? "trashNegative" : "trashPositive"
             }`,
-            latitude,
-            longitude,
+            latitude: x,
+            longitude: y,
           };
-        }),
-      ),
+        })
+      )
     );
   });
-
-  const onMarkClick = useCallback((id, positionStr) => {
-    const position = JSON.parse(positionStr);
-
-    new Popup({ closeOnClick: false })
-      .setLngLat([position.longitude, position.latitude])
-      .setHTML("<h1>Bins Info</h1>")
-      .addTo(map);
-  });
+  const onMarkClick = (id, positionStr) => {
+    setShowPopup(true);
+  };
 
   // Table Data Processing
   const columnsHead = [
@@ -151,11 +175,19 @@ const ByType = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
-  // Drawer
+  const onClose = () => {
+    setShowPopup(false);
+  };
 
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
       <div className={classes.container}>
+        <Popup
+          deviceId=""
+          position=""
+          desktopPadding={theme.dimensions.drawerWidthDesktop}
+          onClose={onClose}
+        />
         {selectedItem && (
           <div className={classes.containerMap}>
             <MapView>
@@ -165,7 +197,6 @@ const ByType = () => {
                 onClick={onMarkClick}
               />
             </MapView>
-
             <MapCamera positions={positions} />
           </div>
         )}
@@ -182,7 +213,7 @@ const ByType = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -190,7 +221,7 @@ const ByType = () => {
                 >
                   {t("advancedReportPrint")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box ref={TableRef}>
@@ -253,7 +284,7 @@ const ByType = () => {
                     <BinsStatusChart
                       title={t("binsStatusByType")}
                       subtitle={t(
-                        "theProportionOfEmptedAndUnemptedBinsByTypes",
+                        "theProportionOfEmptedAndUnemptedBinsByTypes"
                       )}
                       bins={chartData.map((item) => {
                         const empted = (item.empty_bin * 100) / item.total;
@@ -261,7 +292,7 @@ const ByType = () => {
                         return {
                           name: item.bintype,
                           empted: countRate(item.total, item.empty_bin).toFixed(
-                            2,
+                            2
                           ),
                           unempted: 100 - empted,
                           amt: 100,

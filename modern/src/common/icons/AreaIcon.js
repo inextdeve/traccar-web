@@ -9,7 +9,7 @@ const AreaIcon = () => (
     fillRule="evenodd"
     clipRule="evenodd"
     viewBox="0 0 512 406.05"
-    className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-vubbuv"
+    className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
     // MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-vubbuv : For Prod
     focusable={false}
     aria-hidden
