@@ -14,11 +14,11 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
         onClick(
           feature.properties.bin,
           feature.properties.position,
-          feature.properties.index
+          feature.properties.index,
         );
       }
     },
-    [onClick]
+    [onClick],
   );
 
   useEffect(() => {

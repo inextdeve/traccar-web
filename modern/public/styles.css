@@ -34,8 +34,8 @@ canvas {
 @media print {
   .fprint {
     display: block;
-    margin-top: 909px;
-    background: red;
+  }
+  .print-mt {
   }
 }
 .filterTab .Mui-selected {

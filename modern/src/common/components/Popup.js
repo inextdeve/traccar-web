@@ -24,13 +24,13 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
+import moment from "moment";
+import { toast } from "react-toastify";
 import { useTranslation } from "./LocalizationProvider";
 import RemoveDialog from "./RemoveDialog";
 
 import { devicesActions } from "../../store";
 import { useCatch } from "../../reactHelper";
-import moment from "moment";
-import { toast } from "react-toastify";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -128,7 +128,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
     setRemoving(false);
   });
 
-  //MY Code
+  // MY Code
   const popup = useSelector((state) => state.analytics.popup);
   const binData = useSelector((state) => state.analytics.binData);
   const [showMore, setShowMore] = useState(false);
@@ -137,13 +137,13 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
     setShowMore((prev) => !prev);
   };
 
-  const sendMessage = async () => {
+  const sendMessage = () => {
     const data = fetch("https://api.ultramsg.com/instance27714/messages/chat", {
       method: "POST",
       headers: {
         "content-type": "application/x-www-form-urlencoded",
       },
-      body: `token=x6lf1axmx0kmiimb&to=+212704866309&body=testmessage&priority=1&referenceId=`,
+      body: "token=x6lf1axmx0kmiimb&to=+212704866309&body=testmessage&priority=1&referenceId=",
     });
 
     toast.promise(data, {
@@ -200,24 +200,31 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     />
                     <StatusRow
                       name={t("lastOperation")}
-                      content={moment(lastOperation()).format("MMM Do YY")}
+                      content={moment(lastOperation()).format(
+                        "MMM Do YY, H:mm"
+                      )}
                     />
-                    <StatusRow name="Driver" content={binData[0].driver} />
-                    <StatusRow
-                      name={t("position")}
-                      content={`${binData[0].latitude}, ${binData[0].longitude}`}
-                    />
-                    <StatusRow
-                      name={t("position")}
-                      content={
-                        <a
-                          href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
-                          target="_blank"
-                        >
-                          Google Map
-                        </a>
-                      }
-                    />
+                    {binData[0].status === "empty" ? (
+                      <>
+                        <StatusRow name="Driver" content={binData[0].driver} />
+                        <StatusRow
+                          name={t("position")}
+                          content={`${binData[0].latitude}, ${binData[0].longitude}`}
+                        />
+                        <StatusRow
+                          name={t("position")}
+                          content={
+                            <a
+                              href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Google Map
+                            </a>
+                          }
+                        />
+                      </>
+                    ) : null}
                   </TableBody>
                 </Table>
                 {showMore && (
@@ -237,36 +244,29 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {binData[1].last7days.map((item) => {
-                          return (
-                            <TableRow>
-                              <TableCell className={classes.cell}>
-                                <Typography
-                                  variant="body2"
-                                  color="textSecondary"
-                                >
-                                  {item.status}
-                                </Typography>
-                              </TableCell>
-                              <TableCell className={classes.cell}>
-                                <Typography
-                                  variant="body2"
-                                  color="textSecondary"
-                                >
-                                  {moment(item.date).format("MMM Do YY")}
-                                </Typography>
-                              </TableCell>
-                              <TableCell className={classes.cell}>
-                                <Typography
-                                  variant="body2"
-                                  color="textSecondary"
-                                >
-                                  {item.emptied_by}
-                                </Typography>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
+                        {binData[1].last7days.map((item, index) => (
+                          <TableRow key={index}>
+                            <TableCell className={classes.cell}>
+                              <Typography variant="body2" color="textSecondary">
+                                {item.status}
+                              </Typography>
+                            </TableCell>
+                            <TableCell className={classes.cell}>
+                              <Typography variant="body2" color="textSecondary">
+                                {item.datetime
+                                  ? moment(item.datetime).format(
+                                      "MMM Do YY, H:mm"
+                                    )
+                                  : "-"}
+                              </Typography>
+                            </TableCell>
+                            <TableCell className={classes.cell}>
+                              <Typography variant="body2" color="textSecondary">
+                                {item.emptied_by}
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                       </TableBody>
                     </Table>
                   </Box>
@@ -282,7 +282,11 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
               <IconButton color="secondary" onClick={toggleDetails}>
                 {showMore ? <RemoveCircleOutlineIcon /> : <ControlPointIcon />}
               </IconButton>
-              <IconButton color="secondary" onClick={sendMessage}>
+              <IconButton
+                color="secondary"
+                onClick={sendMessage}
+                disabled={binData ? binData[0]?.status !== "empty" : true}
+              >
                 <WhatsAppIcon />
               </IconButton>
               <IconButton className={classes.negative}>

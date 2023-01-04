@@ -1,7 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import {
-  Grid, Typography, Box, Skeleton, Button,
-} from "@mui/material";
+import { Grid, Typography, Box, Skeleton, Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 
 import PageLayout from "../common/components/PageLayout";
@@ -24,13 +22,15 @@ const ByArea = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   // Table Data Processing
   const columnsHead = [
@@ -83,7 +83,7 @@ const ByArea = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -91,87 +91,94 @@ const ByArea = () => {
                 >
                   {t("advancedReportPrint")}
                 </Button>
-              )}
+              }
             />
           </Box>
 
           <Box ref={TableRef}>
             <PrintingHeader />
-            <AnalyticsTable
-              columnsHead={columnsHead}
-              items={items}
-              keys={keys}
-            />
-            {!loading ? (
-              <Typography
-                component="h3"
-                variant="h3"
-                sx={{ textAlign: "center", p: 3 }}
-              >
-                Overview
-              </Typography>
-            ) : (
-              <Skeleton
-                animation="wave"
-                variant="rounded"
-                width={210}
-                height={60}
-                sx={{ textAlign: "center", my: 3, mx: "auto" }}
+            <div className="print-mt">
+              <AnalyticsTable
+                columnsHead={columnsHead}
+                items={items}
+                keys={keys}
               />
-            )}
-            <Grid container className={classes.charts}>
               {!loading ? (
-                <>
-                  <Grid item xs={12} lg={5} className={classes.chart}>
-                    <BinsChart
-                      title={t("binsStatus")}
-                      subtitle={t("theProportionOfTheEmptedBinsAndTheUnempted")}
-                      bins={[
-                        {
-                          name: "Empted",
-                          value:
-                            countTotal(chartData, "rate") / chartData.length,
-                        },
-                        {
-                          name: "Unempted",
-                          value:
-                            100 -
-                            countTotal(chartData, "rate") / chartData.length,
-                        },
-                      ]}
-                    />
-                  </Grid>
-                  <Grid xs={12} lg={6} item className={classes.chart}>
-                    <BinsPercentageChart
-                      title={t("theProportionOfArea")}
-                      subtitle={t("theProportionOfEachArea")}
-                      data={chartData.map((item) => ({
-                        name: item.center_name,
-                        value: parseInt(item.total, 10),
-                      }))}
-                    />
-                  </Grid>
-                  <Grid xs={12} item className={classes.chart}>
-                    <BinsStatusChart
-                      title={t("binsStatusByArea")}
-                      subtitle={t("theProportionOfEmptedAndUnemptedBinsByArea")}
-                      bins={chartData.map((item) => {
-                        const empted = (item.empty_bin * 100) / item.total;
-
-                        return {
+                <Typography
+                  component="h3"
+                  variant="h3"
+                  sx={{ textAlign: "center", p: 3 }}
+                >
+                  Overview
+                </Typography>
+              ) : (
+                <Skeleton
+                  animation="wave"
+                  variant="rounded"
+                  width={210}
+                  height={60}
+                  sx={{ textAlign: "center", my: 3, mx: "auto" }}
+                />
+              )}
+              <Grid container className={classes.charts}>
+                {!loading ? (
+                  <>
+                    <Grid item xs={12} lg={5} className={classes.chart}>
+                      <BinsChart
+                        title={t("binsStatus")}
+                        subtitle={t(
+                          "theProportionOfTheEmptedBinsAndTheUnempted"
+                        )}
+                        bins={[
+                          {
+                            name: "Empted",
+                            value:
+                              countTotal(chartData, "rate") / chartData.length,
+                          },
+                          {
+                            name: "Unempted",
+                            value:
+                              100 -
+                              countTotal(chartData, "rate") / chartData.length,
+                          },
+                        ]}
+                      />
+                    </Grid>
+                    <Grid xs={12} lg={6} item className={classes.chart}>
+                      <BinsPercentageChart
+                        title={t("theProportionOfArea")}
+                        subtitle={t("theProportionOfEachArea")}
+                        data={chartData.map((item) => ({
                           name: item.center_name,
-                          empted: countRate(item.total, item.empty_bin).toFixed(
-                            2,
-                          ),
-                          unempted: 100 - empted,
-                          amt: 100,
-                        };
-                      })}
-                    />
-                  </Grid>
-                </>
-              ) : null}
-            </Grid>
+                          value: parseInt(item.total, 10),
+                        }))}
+                      />
+                    </Grid>
+                    <Grid xs={12} item className={classes.chart}>
+                      <BinsStatusChart
+                        title={t("binsStatusByArea")}
+                        subtitle={t(
+                          "theProportionOfEmptedAndUnemptedBinsByArea"
+                        )}
+                        bins={chartData.map((item) => {
+                          const empted = (item.empty_bin * 100) / item.total;
+
+                          return {
+                            name: item.center_name,
+                            empted: countRate(
+                              item.total,
+                              item.empty_bin
+                            ).toFixed(2),
+                            unempted: 100 - empted,
+                            amt: 100,
+                          };
+                        })}
+                      />
+                    </Grid>
+                  </>
+                ) : null}
+              </Grid>
+            </div>
           </Box>
         </Box>
       </div>
