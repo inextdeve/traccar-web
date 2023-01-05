@@ -25,7 +25,7 @@ import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
 
 // MAP IMPORTS
-import MapView, { map } from "../map/core/MapView";
+import MapView from "../map/core/MapView";
 import MapCamera from "../map/MapCamera";
 import MapGeofence from "../map/MapGeofence";
 import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
@@ -57,51 +57,48 @@ const ByType = () => {
     setMapLoading(null);
     const url = `https://med-reports.almajal.co/al/api/?token=${token}&${tag}&limit=0;10&bintypeid=${id}&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`;
 
-    // const data = await fetch(url);
+    const data = await fetch(url);
 
-    const data = [
-      {
-        id: "31832",
-        description: "558329",
-        bintype: "2 Yard",
-        route: "QU 1019 S2",
-        center_name: "هجرة 10",
-        status: "empty",
-        last_time_empty: "2023-01-02 20:08:28",
-        latitude: "24.3860117",
-        longitude: "39.5966683",
-      },
-      {
-        id: "32678",
-        description: "559091",
-        bintype: "2 Yard",
-        route: "QU 1021 S2",
-        center_name: "هجرة 10",
-        status: "empty",
-        last_time_empty: "2023-01-02 20:07:08",
-        latitude: "24.3529932",
-        longitude: "39.5707179",
-      },
-    ];
-    const positions = data;
+    // const data = [
+    //   {
+    //     id: "31832",
+    //     description: "558329",
+    //     bintype: "2 Yard",
+    //     route: "QU 1019 S2",
+    //     center_name: "هجرة 10",
+    //     status: "empty",
+    //     last_time_empty: "2023-01-02 20:08:28",
+    //     latitude: "24.3860117",
+    //     longitude: "39.5966683",
+    //   },
+    //   {
+    //     id: "32678",
+    //     description: "559091",
+    //     bintype: "2 Yard",
+    //     route: "QU 1021 S2",
+    //     center_name: "هجرة 10",
+    //     status: "empty",
+    //     last_time_empty: "2023-01-02 20:07:08",
+    //     latitude: "24.3529932",
+    //     longitude: "39.5707179",
+    //   },
+    // ];
+    // const positions = data;
 
     setMapLoading(false);
-    // const positions = await data.json();
-    console.log(positions.forEach((pos) => console.log("fst", pos.status)));
+    const positions = await data.json();
+
     dispatch(
       analyticsActions.updatePositions(
-        positions.map(({ id, status, latitude, longitude, bintype }) => {
-          console.log(status);
-          return {
-            id,
-            category: `${
-              status === "unempty" ? "trashNegative" : "trashPositive"
-            }`,
-            latitude,
-            longitude,
-            binType: bintype,
-          };
-        })
+        positions.map(({ id_bin, status, latitude, longitude, bintype }) => ({
+          id: id_bin,
+          category: `${
+            status === "unempty" ? "trashNegative" : "trashPositive"
+          }`,
+          latitude,
+          longitude,
+          binType: bintype,
+        }))
       )
     );
   });

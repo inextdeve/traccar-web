@@ -24,6 +24,8 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
+import { green, red } from "@mui/material/colors";
+
 import moment from "moment";
 import { toast } from "react-toastify";
 import { useTranslation } from "./LocalizationProvider";
@@ -137,13 +139,30 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
     setShowMore((prev) => !prev);
   };
 
+  const lastOperation = () => {
+    console.log("From Last Op", binData[1].last7days);
+    const last7days = binData[1].last7days.filter((item) => item.datetime);
+
+    return last7days[last7days.length - 1]?.datetime || "-";
+  };
   const sendMessage = () => {
+    const msg = `Hello! hisham
+                JCR Cleaning Project 
+                Alarm Bin Not Empty 
+                DateTime: 2022-12-29 20:39:47
+                Bin no: ${popup.id}
+                RoutNo: QU 1008 S1
+                Area: Hijar 1
+                Bin Type: ${popup.binType}
+                Last Time Emptied: ${lastOperation()}
+                https://www.google.com/maps/place/24.4237354,39.6328711`;
+
     const data = fetch("https://api.ultramsg.com/instance27714/messages/chat", {
       method: "POST",
       headers: {
         "content-type": "application/x-www-form-urlencoded",
       },
-      body: "token=x6lf1axmx0kmiimb&to=+212704866309&body=testmessage&priority=1&referenceId=",
+      body: `token=x6lf1axmx0kmiimb&to=+212704866309&body=${msg}&priority=1&referenceId=`,
     });
 
     toast.promise(data, {
@@ -151,12 +170,6 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
       success: t("sent"),
       error: t("sentError"),
     });
-  };
-
-  const lastOperation = () => {
-    const last7days = binData[1].last7days.filter((item) => item.datetime);
-
-    return last7days[last7days.length - 1].datetime;
   };
 
   return (
@@ -167,8 +180,9 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
             <Box
               className={classes.header}
               sx={{
-                background: `${
-                  binData && (binData[0]?.status === "empty" ? "green" : "red")
+                backgroundColor: `${
+                  binData &&
+                  (binData[0]?.status === "empty" ? green[500] : red[500])
                 }`,
                 color: "white",
               }}
@@ -190,7 +204,9 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         <span
                           style={{
                             color: `${
-                              binData[0].status === "empty" ? "green" : "red"
+                              binData[0].status === "empty"
+                                ? green[500]
+                                : red[500]
                             }`,
                           }}
                         >
