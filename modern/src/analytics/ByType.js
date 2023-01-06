@@ -87,7 +87,6 @@ const ByType = () => {
 
     setMapLoading(false);
     const positions = await data.json();
-
     dispatch(
       analyticsActions.updatePositions(
         positions.map(({ id_bin, status, latitude, longitude, bintype }) => ({

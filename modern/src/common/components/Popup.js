@@ -31,7 +31,7 @@ import { toast } from "react-toastify";
 import { useTranslation } from "./LocalizationProvider";
 import RemoveDialog from "./RemoveDialog";
 
-import { devicesActions } from "../../store";
+import { analyticsActions, devicesActions } from "../../store";
 import { useCatch } from "../../reactHelper";
 
 const useStyles = makeStyles((theme) => ({
@@ -120,10 +120,17 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
 
   const handleRemove = useCatch(async (removed) => {
     if (removed) {
-      const response = await fetch("/api/devices");
+      const response = await fetch(
+        `https://med-reports.almajal.co/al/api/post/?token=e9840591ace41c95608e6a7744fbbc83&bin_delete${popup.id}`,
+        {
+          method: "POST",
+        }
+      );
       if (response.ok) {
-        dispatch(devicesActions.refresh(await response.json()));
+        dispatch(analyticsActions.refreshPositions(popup.id));
+        console.log("OK");
       } else {
+        console.log("FAIL");
         throw Error(await response.text());
       }
     }
@@ -140,12 +147,18 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
   };
 
   const lastOperation = () => {
+    console.log("bin Data from Popup", binData);
     console.log("From Last Op", binData[1].last7days);
     const last7days = binData[1].last7days.filter((item) => item.datetime);
 
     return last7days[last7days.length - 1]?.datetime || "-";
   };
+
   const sendMessage = () => {
+    if (!binData[0]?.driver_phone) {
+      return;
+    }
+
     const msg = `Hello! hisham
                 JCR Cleaning Project 
                 Alarm Bin Not Empty 
@@ -162,7 +175,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
       headers: {
         "content-type": "application/x-www-form-urlencoded",
       },
-      body: `token=x6lf1axmx0kmiimb&to=+212704866309&body=${msg}&priority=1&referenceId=`,
+      body: `token=x6lf1axmx0kmiimb&to=+${binData[0].driver_phone}&body=${msg}&priority=1&referenceId=`,
     });
 
     toast.promise(data, {
@@ -220,27 +233,23 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         "MMM Do YY, H:mm"
                       )}
                     />
-                    {binData[0].status === "empty" ? (
-                      <>
-                        <StatusRow name="Driver" content={binData[0].driver} />
-                        <StatusRow
-                          name={t("position")}
-                          content={`${binData[0].latitude}, ${binData[0].longitude}`}
-                        />
-                        <StatusRow
-                          name={t("position")}
-                          content={
-                            <a
-                              href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              Google Map
-                            </a>
-                          }
-                        />
-                      </>
-                    ) : null}
+                    <StatusRow name="Driver" content={binData[0].driver} />
+                    <StatusRow
+                      name={t("position")}
+                      content={`${binData[0].latitude}, ${binData[0].longitude}`}
+                    />
+                    <StatusRow
+                      name={t("position")}
+                      content={
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Google Map
+                        </a>
+                      }
+                    />
                   </TableBody>
                 </Table>
                 {showMore && (
@@ -301,23 +310,27 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
               <IconButton
                 color="secondary"
                 onClick={sendMessage}
-                disabled={binData ? binData[0]?.status !== "empty" : true}
+                disabled={binData ? !binData[0]?.driver_phone : true}
               >
                 <WhatsAppIcon />
               </IconButton>
-              <IconButton className={classes.negative}>
+              <IconButton
+                onClick={() => setRemoving(true)}
+                // disabled={disableActions || deviceReadonly}
+                className={classes.negative}
+              >
                 <DeleteIcon />
               </IconButton>
             </CardActions>
           </Card>
         </Draggable>
       )}
-      {/* <RemoveDialog
+      <RemoveDialog
         open={removing}
         endpoint="devices"
-        itemId={deviceId}
+        itemId={popup.id}
         onResult={(removed) => handleRemove(removed)}
-      /> */}
+      />
     </div>
   );
 };

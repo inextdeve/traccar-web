@@ -26,6 +26,11 @@ const { reducer, actions } = createSlice({
     updatePositions(state, action) {
       state.positions = action.payload;
     },
+    refreshPositions(state, action) {
+      state.positions = state.positions.filter(
+        (position) => position.id !== action.payload
+      );
+    },
     updatePeriod(state, action) {
       state.period = action.payload;
     },
