@@ -59,32 +59,6 @@ const ByType = () => {
 
     const data = await fetch(url);
 
-    // const data = [
-    //   {
-    //     id: "31832",
-    //     description: "558329",
-    //     bintype: "2 Yard",
-    //     route: "QU 1019 S2",
-    //     center_name: "هجرة 10",
-    //     status: "empty",
-    //     last_time_empty: "2023-01-02 20:08:28",
-    //     latitude: "24.3860117",
-    //     longitude: "39.5966683",
-    //   },
-    //   {
-    //     id: "32678",
-    //     description: "559091",
-    //     bintype: "2 Yard",
-    //     route: "QU 1021 S2",
-    //     center_name: "هجرة 10",
-    //     status: "empty",
-    //     last_time_empty: "2023-01-02 20:07:08",
-    //     latitude: "24.3529932",
-    //     longitude: "39.5707179",
-    //   },
-    // ];
-    // const positions = data;
-
     setMapLoading(false);
     const positions = await data.json();
     dispatch(
@@ -102,7 +76,7 @@ const ByType = () => {
     );
   });
 
-  const onMarkClick = useCallback(async (bin, positionStr) => {
+  const onMarkClick = useCallback(async (bin) => {
     const { id, binType } = JSON.parse(bin);
 
     dispatch(
