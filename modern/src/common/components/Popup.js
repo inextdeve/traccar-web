@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Draggable from "react-draggable";
 import {
   Card,
@@ -17,22 +17,14 @@ import {
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
-
-import DeleteIcon from "@mui/icons-material/Delete";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-
 import { green, red } from "@mui/material/colors";
-
 import moment from "moment";
 import { toast } from "react-toastify";
+import sendMessage from "../util/sendMessage";
 import { useTranslation } from "./LocalizationProvider";
-import RemoveDialog from "./RemoveDialog";
-
-import { analyticsActions, devicesActions } from "../../store";
-import { useCatch } from "../../reactHelper";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -113,31 +105,8 @@ const StatusRow = ({ name, content }) => {
 
 const Popup = ({ onClose, desktopPadding = 0 }) => {
   const classes = useStyles({ desktopPadding });
-  const dispatch = useDispatch();
   const t = useTranslation();
 
-  const [removing, setRemoving] = useState(false);
-
-  const handleRemove = useCatch(async (removed) => {
-    if (removed) {
-      const response = await fetch(
-        `https://med-reports.almajal.co/al/api/post/?token=e9840591ace41c95608e6a7744fbbc83&bin_delete${popup.id}`,
-        {
-          method: "POST",
-        }
-      );
-      if (response.ok) {
-        dispatch(analyticsActions.refreshPositions(popup.id));
-        console.log("OK");
-      } else {
-        console.log("FAIL");
-        throw Error(await response.text());
-      }
-    }
-    setRemoving(false);
-  });
-
-  // MY Code
   const popup = useSelector((state) => state.analytics.popup);
   const binData = useSelector((state) => state.analytics.binData);
   const [showMore, setShowMore] = useState(false);
@@ -147,19 +116,12 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
   };
 
   const lastOperation = () => {
-    console.log("bin Data from Popup", binData);
-    console.log("From Last Op", binData[1].last7days);
     const last7days = binData[1].last7days.filter((item) => item.datetime);
 
     return last7days[last7days.length - 1]?.datetime || "-";
   };
 
-  const sendMessage = () => {
-    if (!binData[0]?.driver_phone) {
-      return;
-    }
-
-    const msg = `Hello! hisham
+  const generateMessage = () => `Hello! ${binData[0].driver}
                 JCR Cleaning Project 
                 Alarm Bin Not Empty 
                 DateTime: 2022-12-29 20:39:47
@@ -169,21 +131,6 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 Bin Type: ${popup.binType}
                 Last Time Emptied: ${lastOperation()}
                 https://www.google.com/maps/place/24.4237354,39.6328711`;
-
-    const data = fetch("https://api.ultramsg.com/instance27714/messages/chat", {
-      method: "POST",
-      headers: {
-        "content-type": "application/x-www-form-urlencoded",
-      },
-      body: `token=x6lf1axmx0kmiimb&to=+${binData[0].driver_phone}&body=${msg}&priority=1&referenceId=`,
-    });
-
-    toast.promise(data, {
-      pending: t("sending"),
-      success: t("sent"),
-      error: t("sentError"),
-    });
-  };
 
   return (
     <div className={classes.root}>
@@ -209,11 +156,14 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
               <CardContent className={classes.content}>
                 <Table size="small" classes={{ root: classes.table }}>
                   <TableBody>
-                    <StatusRow name={t("id")} content={popup.id} />
+                    <StatusRow
+                      name={t("sharedDescription")}
+                      content={popup.id}
+                    />
                     <StatusRow name={t("binType")} content={popup.binType} />
                     <StatusRow
                       name={t("status")}
-                      content={
+                      content={(
                         <span
                           style={{
                             color: `${
@@ -225,12 +175,12 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           {binData[0].status}
                         </span>
-                      }
+                      )}
                     />
                     <StatusRow
                       name={t("lastOperation")}
                       content={moment(lastOperation()).format(
-                        "MMM Do YY, H:mm"
+                        "MMM Do YY, H:mm",
                       )}
                     />
                     <StatusRow name="Driver" content={binData[0].driver} />
@@ -240,7 +190,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     />
                     <StatusRow
                       name={t("position")}
-                      content={
+                      content={(
                         <a
                           href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
                           target="_blank"
@@ -248,7 +198,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           Google Map
                         </a>
-                      }
+                      )}
                     />
                   </TableBody>
                 </Table>
@@ -280,8 +230,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                               <Typography variant="body2" color="textSecondary">
                                 {item.datetime
                                   ? moment(item.datetime).format(
-                                      "MMM Do YY, H:mm"
-                                    )
+                                    "MMM Do YY, H:mm",
+                                  )
                                   : "-"}
                               </Typography>
                             </TableCell>
@@ -309,28 +259,15 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
               </IconButton>
               <IconButton
                 color="secondary"
-                onClick={sendMessage}
+                onClick={() => sendMessage(generateMessage(), binData[0].driver_phone)}
                 disabled={binData ? !binData[0]?.driver_phone : true}
               >
                 <WhatsAppIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => setRemoving(true)}
-                // disabled={disableActions || deviceReadonly}
-                className={classes.negative}
-              >
-                <DeleteIcon />
               </IconButton>
             </CardActions>
           </Card>
         </Draggable>
       )}
-      <RemoveDialog
-        open={removing}
-        endpoint="devices"
-        itemId={popup.id}
-        onResult={(removed) => handleRemove(removed)}
-      />
     </div>
   );
 };

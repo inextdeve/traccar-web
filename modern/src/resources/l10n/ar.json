@@ -596,5 +596,6 @@
   "sentError": "خظأ أعد المحاولة",
   "status": "الحالة",
   "position": "الموقع",
-  "lastOperation": "آخر عملية"
+  "lastOperation": "آخر عملية",
+  "actions": "اجراءات"
 }

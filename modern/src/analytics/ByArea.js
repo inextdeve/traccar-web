@@ -1,9 +1,17 @@
-import React, { useEffect, useRef } from "react";
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from "react";
 import {
-  Grid, Typography, Box, Skeleton, Button,
+  Grid,
+  Typography,
+  Box,
+  Skeleton,
+  Button,
+  LinearProgress,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-
+import MapIcon from "@mui/icons-material/Map";
+import { useTheme } from "@mui/material/styles";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
 import ReportsMenu from "./components/ReportsMenu";
@@ -18,11 +26,19 @@ import BinsStatusChart from "./components/Charts/BinsStatusChart";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
 
+// MAP IMPORTS
+import MapView from "../map/core/MapView";
+import MapCamera from "../map/MapCamera";
+import MapGeofence from "../map/MapGeofence";
+import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
+import Popup from "../common/components/Popup";
+
 const ByArea = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const dispatch = useDispatch();
   const TableRef = useRef(null);
+  const theme = useTheme();
 
   const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
@@ -32,6 +48,57 @@ const ByArea = () => {
   const loading = useSelector((state) => state.analytics.loading);
   const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
 
+  // Map Processing
+  const positions = useSelector((state) => state.analytics.positions);
+  const [mapLoading, setMapLoading] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(false);
+
+  const mapButtonClick = useCallback(async ({ id, tag }) => {
+    setSelectedItem(true);
+    setMapLoading(null);
+    const url = `https://med-reports.almajal.co/al/api/?token=${token}&bins&limit=0;10&${tag}=${id}`;
+    console.log("URL", url);
+    const data = await fetch(url);
+
+    setMapLoading(false);
+    const positions = await data.json();
+    dispatch(
+      analyticsActions.updatePositions(
+        positions.map(({ id_bin, status, latitude, longitude, bintype }) => ({
+          id: id_bin,
+          category: `${
+            status === "unempty" ? "trashNegative" : "trashPositive"
+          }`,
+          latitude,
+          longitude,
+          binType: bintype,
+        })),
+      ),
+    );
+  });
+
+  const onMarkClick = async (bin) => {
+    const { id, binType } = JSON.parse(bin);
+
+    dispatch(
+      analyticsActions.updatePopup({
+        show: true,
+        id,
+        binType,
+      }),
+    );
+    dispatch(analyticsActions.updateBinData(null));
+
+    const data = await fetch(
+      `https://med-reports.almajal.co/al/api/?token=${token}&bin=${id}`,
+    );
+
+    const binData = await data.json();
+    console.log(binData);
+
+    dispatch(analyticsActions.updateBinData(binData));
+  };
+
   // Table Data Processing
   const columnsHead = [
     "area",
@@ -39,13 +106,33 @@ const ByArea = () => {
     "empted",
     "notEmpted",
     "completionRate",
+    "maps",
   ];
-  const keys = ["center_name", "total", "empty_bin", "un_empty_bin", "rate"];
+  const keys = [
+    "center_name",
+    "total",
+    "empty_bin",
+    "un_empty_bin",
+    "rate",
+    "mapButton",
+  ];
   const data = useSelector((state) => state.analytics.items);
-  const items = data.map((item) => ({
-    ...item,
-    rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
-  }));
+  const items = data.map((item) => {
+    const requestParams = {
+      id: item.center_id,
+      tag: "centerid",
+    };
+
+    return {
+      ...item,
+      rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
+      mapButton: (
+        <Button onClick={() => mapButtonClick(requestParams)}>
+          <MapIcon />
+        </Button>
+      ),
+    };
+  });
   items.push({
     center_name: t("total"),
     total: countTotal(items, "total"),
@@ -59,6 +146,7 @@ const ByArea = () => {
 
   useEffect(() => {
     setIsLoading(true);
+
     fetch(`https://med-reports.almajal.co/al/api/?token=${token}&bins_centers`)
       .then((data) => {
         setIsLoading(false);
@@ -68,9 +156,30 @@ const ByArea = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
+  const onClose = () => {
+    dispatch(analyticsActions.updatePopup(false));
+    dispatch(analyticsActions.updateBinData(null));
+  };
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
       <div className={classes.container}>
+        <Popup
+          desktopPadding={theme.dimensions.drawerWidthDesktop}
+          onClose={onClose}
+        />
+        {selectedItem && (
+          <div className={classes.containerMap}>
+            <MapView>
+              <MapGeofence />
+              <MapMarkersAnalytics
+                positions={positions}
+                onClick={onMarkClick}
+              />
+            </MapView>
+            <MapCamera positions={positions} />
+          </div>
+        )}
+        {mapLoading ?? <LinearProgress sx={{ padding: "0.1rem" }} />}
         <Box className={classes.containerMain} sx={{ p: 2 }}>
           <Box
             sx={{

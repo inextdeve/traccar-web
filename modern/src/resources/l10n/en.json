@@ -597,5 +597,6 @@
   "sentError": "Error Try Again",
   "status": "Status",
   "position": "Position",
-  "lastOperation": "Last operation"
+  "lastOperation": "Last operation",
+  "actions": "Actions"
 }

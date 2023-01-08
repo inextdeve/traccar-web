@@ -105,7 +105,6 @@ const RouteReportPage = () => {
                 const positions = items.filter(
                   (position) => position.deviceId === deviceId,
                 );
-                console.log("Positions", positions);
                 return (
                   <Fragment key={deviceId}>
                     <MapRoutePath positions={positions} />
