@@ -1,6 +1,8 @@
-import React, {
-  useEffect, useRef, useState, useCallback,
-} from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import moment from "moment";
+import { useDispatch, useSelector } from "react-redux";
+import { analyticsActions } from "../store";
+
 import {
   Grid,
   Typography,
@@ -15,8 +17,7 @@ import {
 import MapIcon from "@mui/icons-material/Map";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { useTheme } from "@mui/material/styles";
-import { useDispatch, useSelector } from "react-redux";
-import moment from "moment";
+
 import Print from "./common/Print";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
@@ -24,7 +25,7 @@ import ReportsMenu from "./components/ReportsMenu";
 import AnalyticsTable from "./components/AnalyticsTable";
 import { useTranslation } from "../common/components/LocalizationProvider";
 import ReportFilter from "./components/ReportFilter";
-import { analyticsActions } from "../store";
+
 import sendMessage from "../common/util/sendMessage";
 import BinsChart from "./components/Charts/BinsChart";
 import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
@@ -32,11 +33,7 @@ import BinsStatusChart from "./components/Charts/BinsStatusChart";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
 
-// MAP IMPORTS
-import MapView from "../map/core/MapView";
-import MapCamera from "../map/MapCamera";
-import MapGeofence from "../map/MapGeofence";
-import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
+import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
 
 const ByRoutes = () => {
@@ -46,13 +43,15 @@ const ByRoutes = () => {
   const TableRef = useRef(null);
   const theme = useTheme();
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   const positions = useSelector((state) => state.analytics.positions);
   const [mapLoading, setMapLoading] = useState(false);
@@ -60,17 +59,17 @@ const ByRoutes = () => {
 
   const generateMessage = async (tag, id, driverName, routeName) => {
     const url = `https://med-reports.almajal.co/al/api/?token=${token}&bins&limit=0;10&${tag}=${id}&status=unempty`;
-    console.log("URL,", url);
+
     const data = await fetch(url);
     const unemptyBins = await data.json();
-    console.log("Data,", unemptyBins);
+
     const bins = unemptyBins
       .map(
         (item, index) => `${index} - 
               Bin Code: ${item.id_bin}
               Bin Type: ${item.bintype}
               https://www.google.com/maps/place/${item.longitude},${item.latitude}
-              ** `,
+              ** `
       )
       .join("\n");
 
@@ -90,7 +89,6 @@ const ByRoutes = () => {
     setSelectedItem(true);
     setMapLoading(null);
     const url = `https://med-reports.almajal.co/al/api/?token=${token}&bins&limit=0;10&${tag}=${id}`;
-
     const data = await fetch(url);
 
     setMapLoading(false);
@@ -105,31 +103,11 @@ const ByRoutes = () => {
           latitude,
           longitude,
           binType: bintype,
-        })),
-      ),
+        }))
+      )
     );
   });
 
-  const onMarkClick = async (bin) => {
-    const { id, binType } = JSON.parse(bin);
-
-    dispatch(
-      analyticsActions.updatePopup({
-        show: true,
-        id,
-        binType,
-      }),
-    );
-    dispatch(analyticsActions.updateBinData(null));
-
-    const data = await fetch(
-      `https://med-reports.almajal.co/al/api/?token=${token}&bin=${id}`,
-    );
-
-    const binData = await data.json();
-
-    dispatch(analyticsActions.updateBinData(binData));
-  };
   // Table Data Processing
   const columnsHead = [
     "trackCode",
@@ -165,15 +143,17 @@ const ByRoutes = () => {
         <>
           <IconButton
             color="secondary"
-            onClick={() => sendMessage(
-              generateMessage(
-                "routid",
-                item.route_id,
-                item.driver,
-                item.route_name,
-              ),
-              item.phone,
-            )}
+            onClick={() =>
+              sendMessage(
+                generateMessage(
+                  "routid",
+                  item.route_id,
+                  item.driver,
+                  item.route_name
+                ),
+                item.phone
+              )
+            }
             disabled={false}
           >
             <WhatsAppIcon />
@@ -240,14 +220,7 @@ const ByRoutes = () => {
         />
         {selectedItem && (
           <div className={classes.containerMap}>
-            <MapView>
-              <MapGeofence />
-              <MapMarkersAnalytics
-                positions={positions}
-                onClick={onMarkClick}
-              />
-            </MapView>
-            <MapCamera positions={positions} />
+            <MapAnalytics />
           </div>
         )}
         {mapLoading ?? <LinearProgress sx={{ padding: "0.1rem" }} />}
@@ -263,7 +236,7 @@ const ByRoutes = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -271,7 +244,7 @@ const ByRoutes = () => {
                 >
                   {t("advancedReportPrint")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box
@@ -356,7 +329,7 @@ const ByRoutes = () => {
                     <BinsStatusChart
                       title={t("binsStatusByTrack")}
                       subtitle={t(
-                        "theProportionOfEmptedAndUnemptedBinsByTypes",
+                        "theProportionOfEmptedAndUnemptedBinsByTypes"
                       )}
                       bins={chartData.map((item) => {
                         const empted = (item.empty_bin * 100) / item.total;
@@ -364,7 +337,7 @@ const ByRoutes = () => {
                         return {
                           name: item.route_name,
                           empted: countRate(item.total, item.empty_bin).toFixed(
-                            2,
+                            2
                           ),
                           unempted: 100 - empted,
                           amt: 100,

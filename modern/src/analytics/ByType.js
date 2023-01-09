@@ -1,6 +1,4 @@
-import React, {
-  useCallback, useEffect, useRef, useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Grid,
   Typography,
@@ -28,11 +26,9 @@ import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
 
 // MAP IMPORTS
-import MapView from "../map/core/MapView";
-import MapCamera from "../map/MapCamera";
-import MapGeofence from "../map/MapGeofence";
-import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
 import Popup from "../common/components/Popup";
+
+import MapAnalytics from "../map/MapAnalytics";
 
 const ByType = () => {
   const classes = useReportStyles();
@@ -40,16 +36,17 @@ const ByType = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
   const theme = useTheme();
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   // Map Processing
-  const positions = useSelector((state) => state.analytics.positions);
   const [mapLoading, setMapLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(false);
 
@@ -57,7 +54,6 @@ const ByType = () => {
     setSelectedItem(true);
     setMapLoading(null);
     const url = `https://med-reports.almajal.co/al/api/?token=${token}&bins&limit=0;10&${tag}=${id}`;
-
     const data = await fetch(url);
 
     setMapLoading(false);
@@ -72,32 +68,10 @@ const ByType = () => {
           latitude,
           longitude,
           binType: bintype,
-        })),
-      ),
+        }))
+      )
     );
   });
-
-  const onMarkClick = async (bin) => {
-    const { id, binType } = JSON.parse(bin);
-
-    dispatch(
-      analyticsActions.updatePopup({
-        show: true,
-        id,
-        binType,
-      }),
-    );
-    dispatch(analyticsActions.updateBinData(null));
-
-    const data = await fetch(
-      `https://med-reports.almajal.co/al/api/?token=${token}&bin=${id}`,
-    );
-
-    const binData = await data.json();
-    console.log(binData);
-
-    dispatch(analyticsActions.updateBinData(binData));
-  };
 
   // Table Data Processing
   const columnsHead = [
@@ -170,14 +144,7 @@ const ByType = () => {
         />
         {selectedItem && (
           <div className={classes.containerMap}>
-            <MapView>
-              <MapGeofence />
-              <MapMarkersAnalytics
-                positions={positions}
-                onClick={onMarkClick}
-              />
-            </MapView>
-            <MapCamera positions={positions} />
+            <MapAnalytics />
           </div>
         )}
         {mapLoading ?? <LinearProgress sx={{ padding: "0.1rem" }} />}
@@ -193,7 +160,7 @@ const ByType = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -201,7 +168,7 @@ const ByType = () => {
                 >
                   {t("advancedReportPrint")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box ref={TableRef}>
@@ -236,7 +203,7 @@ const ByType = () => {
                       <BinsChart
                         title={t("binsStatus")}
                         subtitle={t(
-                          "theProportionOfTheEmptedBinsAndTheUnempted",
+                          "theProportionOfTheEmptedBinsAndTheUnempted"
                         )}
                         bins={[
                           {
@@ -267,7 +234,7 @@ const ByType = () => {
                       <BinsStatusChart
                         title={t("binsStatusByType")}
                         subtitle={t(
-                          "theProportionOfEmptedAndUnemptedBinsByTypes",
+                          "theProportionOfEmptedAndUnemptedBinsByTypes"
                         )}
                         bins={chartData.map((item) => {
                           const empted = (item.empty_bin * 100) / item.total;
@@ -276,7 +243,7 @@ const ByType = () => {
                             name: item.bintype,
                             empted: countRate(
                               item.total,
-                              item.empty_bin,
+                              item.empty_bin
                             ).toFixed(2),
                             unempted: 100 - empted,
                             amt: 100,
