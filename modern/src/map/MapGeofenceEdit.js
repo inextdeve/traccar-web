@@ -21,20 +21,23 @@ const draw = new MapboxDraw({
     trash: true,
   },
   userProperties: true,
-  styles: [...theme, {
-    id: "gl-draw-title",
-    type: "symbol",
-    filter: ["all"],
-    layout: {
-      "text-field": "{user_name}",
-      "text-font": ["Roboto Regular"],
-      "text-size": 12,
+  styles: [
+    ...theme,
+    {
+      id: "gl-draw-title",
+      type: "symbol",
+      filter: ["all"],
+      layout: {
+        "text-field": "{user_name}",
+        "text-font": ["Roboto Regular"],
+        "text-size": 12,
+      },
+      paint: {
+        "text-halo-color": "white",
+        "text-halo-width": 1,
+      },
     },
-    paint: {
-      "text-halo-color": "white",
-      "text-halo-width": 1,
-    },
-  }],
+  ],
 });
 
 const MapGeofenceEdit = ({ selectedGeofenceId }) => {
@@ -47,7 +50,22 @@ const MapGeofenceEdit = ({ selectedGeofenceId }) => {
   const refreshGeofences = useCatchCallback(async () => {
     const response = await fetch("/api/geofences");
     if (response.ok) {
-      dispatch(geofencesActions.refresh(await response.json()));
+      const data = await response.json();
+      dispatch(geofencesActions.refresh(data));
+      //Dispatch just bins devices
+      dispatch(
+        geofencesActions.refreshBins(
+          data
+            .filter((item) => item.attributes.bins === "yes")
+            .map((item) => {
+              return {
+                ...item,
+                longitude: item.area.split(" ")[0].split("(")[1],
+                latitude: item.area.split(" ")[1].split(",")[0],
+              };
+            })
+        )
+      );
     } else {
       throw Error(await response.text());
     }
@@ -90,7 +108,9 @@ const MapGeofenceEdit = ({ selectedGeofenceId }) => {
     const listener = async (event) => {
       const feature = event.features[0];
       try {
-        const response = await fetch(`/api/geofences/${feature.id}`, { method: "DELETE" });
+        const response = await fetch(`/api/geofences/${feature.id}`, {
+          method: "DELETE",
+        });
         if (response.ok) {
           refreshGeofences();
         } else {
@@ -148,10 +168,12 @@ const MapGeofenceEdit = ({ selectedGeofenceId }) => {
       }
       const bounds = coordinates.reduce(
         (bounds, coordinate) => bounds.extend(coordinate),
-        new maplibregl.LngLatBounds(coordinates[0], coordinates[1]),
+        new maplibregl.LngLatBounds(coordinates[0], coordinates[1])
       );
       const canvas = map.getCanvas();
-      map.fitBounds(bounds, { padding: Math.min(canvas.width, canvas.height) * 0.1 });
+      map.fitBounds(bounds, {
+        padding: Math.min(canvas.width, canvas.height) * 0.1,
+      });
     }
   }, [selectedGeofenceId]);
 
