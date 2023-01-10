@@ -19,12 +19,12 @@ const MapAnalytics = () => {
         show: true,
         id,
         binType,
-      })
+      }),
     );
     dispatch(analyticsActions.updateBinData(null));
 
     const data = await fetch(
-      `https://med-reports.almajal.co/al/api/?token=${token}&bin=${id}`
+      `https://med-reports.almajal.co/al/api/?token=${token}&bin=${id}`,
     );
 
     const binData = await data.json();
@@ -34,7 +34,6 @@ const MapAnalytics = () => {
   return (
     <>
       <MapView>
-        <MapGeofence />
         <MapMarkersAnalytics positions={positions} onClick={onMarkClick} />
       </MapView>
       <MapCamera positions={positions} />

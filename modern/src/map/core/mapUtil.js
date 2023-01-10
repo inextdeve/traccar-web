@@ -43,9 +43,21 @@ export const prepareIcon = (background, icon, color) => {
     const imageWidth = canvas.width * iconRatio;
     const imageHeight = canvas.height * iconRatio;
     if (navigator.userAgent.indexOf("Firefox") > 0) {
-      context.drawImage(icon, (canvas.width - imageWidth) / 2, (canvas.height - imageHeight) / 2, imageWidth, imageHeight);
+      context.drawImage(
+        icon,
+        (canvas.width - imageWidth) / 2,
+        (canvas.height - imageHeight) / 2,
+        imageWidth,
+        imageHeight,
+      );
     } else {
-      context.drawImage(canvasTintImage(icon, color), (canvas.width - imageWidth) / 2, (canvas.height - imageHeight) / 2, imageWidth, imageHeight);
+      context.drawImage(
+        canvasTintImage(icon, color),
+        (canvas.width - imageWidth) / 2,
+        (canvas.height - imageHeight) / 2,
+        imageWidth,
+        imageHeight,
+      );
     }
   }
 
@@ -55,7 +67,8 @@ export const prepareIcon = (background, icon, color) => {
 export const reverseCoordinates = (it) => {
   if (!it) {
     return it;
-  } if (Array.isArray(it)) {
+  }
+  if (Array.isArray(it)) {
     if (it.length === 2 && !Number.isNaN(it[0]) && !Number.isNaN(it[1])) {
       return [it[1], it[0]];
     }
@@ -70,9 +83,16 @@ export const reverseCoordinates = (it) => {
 export const geofenceToFeature = (theme, item) => {
   let geometry;
   if (item.area.indexOf("CIRCLE") > -1) {
-    const coordinates = item.area.replace(/CIRCLE|\(|\)|,/g, " ").trim().split(/ +/);
+    const coordinates = item.area
+      .replace(/CIRCLE|\(|\)|,/g, " ")
+      .trim()
+      .split(/ +/);
     const options = { steps: 32, units: "meters" };
-    const polygon = circle([Number(coordinates[1]), Number(coordinates[0])], Number(coordinates[2]), options);
+    const polygon = circle(
+      [Number(coordinates[1]), Number(coordinates[0])],
+      Number(coordinates[2]),
+      options,
+    );
     geometry = polygon.geometry;
   } else {
     geometry = reverseCoordinates(parse(item.area));
