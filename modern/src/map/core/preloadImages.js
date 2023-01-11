@@ -27,6 +27,7 @@ import truckSvg from "../../resources/images/icon/truck.svg";
 import vanSvg from "../../resources/images/icon/van.svg";
 import trashPositiveSvg from "../../resources/images/icon/trashPositive.svg";
 import trashNegativeSvg from "../../resources/images/icon/trashNegative.svg";
+import binSvg from "../../resources/images/icon/bin.svg";
 
 export const mapIcons = {
   animal: animalSvg,
@@ -52,9 +53,11 @@ export const mapIcons = {
   van: vanSvg,
   trashPositive: trashPositiveSvg,
   trashNegative: trashNegativeSvg,
+  bin: binSvg,
 };
 
-export const mapIconKey = (category) => (mapIcons.hasOwnProperty(category) ? category : "default");
+export const mapIconKey = (category) =>
+  mapIcons.hasOwnProperty(category) ? category : "default";
 
 export const mapImages = {};
 
@@ -70,23 +73,27 @@ export default async () => {
         results.push(
           loadImage(mapIcons[category]).then((icon) => {
             // Add here any category if you want to be transparent BG
-            if (category === "trashPositive" || category === "trashNegative") {
+            if (
+              category === "trashPositive" ||
+              category === "trashNegative" ||
+              category === "bin"
+            ) {
               mapImages[`${category}-${color}`] = prepareIcon(
                 noBackground,
                 icon,
-                "#FFFFFF00",
+                "#FFFFFF00"
               );
               return;
             }
             mapImages[`${category}-${color}`] = prepareIcon(
               background,
               icon,
-              palette.colors[color],
+              palette.colors[color]
             );
-          }),
+          })
         );
       });
       await Promise.all(results);
-    }),
+    })
   );
 };

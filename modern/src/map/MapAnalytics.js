@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { analyticsActions } from "../store";
 import MapView from "./core/MapView";
 import MapCamera from "./MapCamera";
-import MapGeofence from "./MapGeofence";
 import MapMarkersAnalytics from "./MapMarkersAnalytics";
 
 const MapAnalytics = () => {
@@ -31,6 +30,7 @@ const MapAnalytics = () => {
 
     dispatch(analyticsActions.updateBinData(binData));
   };
+
   return (
     <>
       <MapView>

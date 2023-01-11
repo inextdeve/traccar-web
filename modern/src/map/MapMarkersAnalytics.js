@@ -71,7 +71,7 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
           index,
           bin: {
             id: position.id,
-            binType: position.binType,
+            binType: position.binType || "",
           },
           position: {
             longitude: position.longitude,

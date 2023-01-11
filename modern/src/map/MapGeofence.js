@@ -14,14 +14,6 @@ const MapGeofence = () => {
 
   const geofences = useSelector((state) => state.geofences.items);
 
-  console.log(
-    Object.values(geofences).map((item) => ({
-      ...item,
-      longitude: item.area.split(" ")[0].split("(")[1],
-      latitude: item.area.split(" ")[1].split(",")[0],
-    })),
-  );
-
   useEffect(() => {
     if (mapGeofences) {
       map.addSource(id, {
@@ -88,9 +80,7 @@ const MapGeofence = () => {
     if (mapGeofences) {
       map.getSource(id).setData({
         type: "FeatureCollection",
-        features: Object.values(geofences).map((geofence) => {
-          geofenceToFeature(theme, geofence);
-        }),
+        features: Object.values(geofences).map((geofence) => geofenceToFeature(theme, geofence)),
       });
     }
   }, [mapGeofences, geofences]);

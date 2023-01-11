@@ -1,7 +1,10 @@
 import { useDispatch, useSelector, connect } from "react-redux";
 
 import {
-  geofencesActions, groupsActions, driversActions, maintenancesActions,
+  geofencesActions,
+  groupsActions,
+  driversActions,
+  maintenancesActions,
 } from "./store";
 import { useEffectAsync } from "./reactHelper";
 
@@ -13,7 +16,16 @@ const CachingController = () => {
     if (authenticated) {
       const response = await fetch("/api/geofences");
       if (response.ok) {
-        dispatch(geofencesActions.update(await response.json()));
+        const data = await response.json();
+        console.log(
+          "Init",
+          data.filter((item) => item.attributes.bins !== "yes")
+        );
+        dispatch(
+          geofencesActions.update(
+            data.filter((item) => item.attributes.bins !== "yes")
+          )
+        );
       } else {
         throw Error(await response.text());
       }

@@ -50,22 +50,7 @@ const MapGeofenceEdit = ({ selectedGeofenceId }) => {
   const refreshGeofences = useCatchCallback(async () => {
     const response = await fetch("/api/geofences");
     if (response.ok) {
-      const data = await response.json();
-      dispatch(geofencesActions.refresh(data));
-      //Dispatch just bins devices
-      dispatch(
-        geofencesActions.refreshBins(
-          data
-            .filter((item) => item.attributes.bins === "yes")
-            .map((item) => {
-              return {
-                ...item,
-                longitude: item.area.split(" ")[0].split("(")[1],
-                latitude: item.area.split(" ")[1].split(",")[0],
-              };
-            })
-        )
-      );
+      dispatch(geofencesActions.refresh(await response.json()));
     } else {
       throw Error(await response.text());
     }
@@ -168,7 +153,7 @@ const MapGeofenceEdit = ({ selectedGeofenceId }) => {
       }
       const bounds = coordinates.reduce(
         (bounds, coordinate) => bounds.extend(coordinate),
-        new maplibregl.LngLatBounds(coordinates[0], coordinates[1])
+        new maplibregl.LngLatBounds(coordinates[0], coordinates[1]),
       );
       const canvas = map.getCanvas();
       map.fitBounds(bounds, {
