@@ -18,7 +18,6 @@ import MapGeocoder from "../map/geocoder/MapGeocoder";
 import MapScale from "../map/MapScale";
 import MapNotification from "../map/notification/MapNotification";
 import useFeatures from "../common/util/useFeatures";
-import MapBinsMarkers from "../map/MapBinsMarkers";
 import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
 
 const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
@@ -35,28 +34,29 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
     (_, deviceId) => {
       dispatch(devicesActions.select(deviceId));
     },
-    [dispatch]
+    [dispatch],
   );
   const authenticated = useSelector((state) => !!state.session.user);
   const binsP = useSelector((state) => state.geofences.bins);
   useEffect(() => {
     if (authenticated) {
-      fetch("/api/geofences")
+      fetch(
+        "https://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bins&limit=0;10000",
+      )
         .then((data) => data.json())
         .then((data) => {
           dispatch(
             geofencesActions.updateBins(
-              data
-                .filter((item) => item.attributes.bins === "yes")
-                .map((item) => ({
-                  id: `${item.id}`,
-                  latitude: item.area.split(" ")[0].split("(")[1],
-                  longitude: item.area.split(" ")[1].split(",")[0],
-                  category: "bin",
-                  binType: "2 yard",
-                  color: "primary",
-                }))
-            )
+              data.map(({ id_bin, status, latitude, longitude, bintype }) => ({
+                id: id_bin,
+                category: `${
+                  status === "unempty" ? "trashNegative" : "trashPositive"
+                }`,
+                latitude,
+                longitude,
+                binType: bintype,
+              })),
+            ),
           );
         });
     }

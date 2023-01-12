@@ -1,7 +1,7 @@
 import { useId, useCallback, useEffect } from "react";
 import { map } from "./core/MapView";
 
-const MapMarkersAnalytics = ({ positions, onClick }) => {
+const MapMarkersAnalytics = ({ minzoom, positions, onClick }) => {
   const id = useId();
   const onMouseEnter = () => (map.getCanvas().style.cursor = "pointer");
   const onMouseLeave = () => (map.getCanvas().style.cursor = "");
@@ -38,6 +38,7 @@ const MapMarkersAnalytics = ({ positions, onClick }) => {
         "icon-allow-overlap": true,
       },
       paint: {},
+      minzoom: minzoom | null,
     });
 
     map.on("mouseenter", id, onMouseEnter);

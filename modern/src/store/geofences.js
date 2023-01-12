@@ -9,10 +9,14 @@ const { reducer, actions } = createSlice({
   reducers: {
     refresh(state, action) {
       state.items = {};
-      action.payload.forEach((item) => (state.items[item.id] = item));
+      action.payload
+        .filter((item) => item.attributes.bins !== "yes")
+        .forEach((item) => (state.items[item.id] = item));
     },
     update(state, action) {
-      action.payload.forEach((item) => (state.items[item.id] = item));
+      action.payload
+        .filter((item) => item.attributes.bins !== "yes")
+        .forEach((item) => (state.items[item.id] = item));
     },
     updateBins(state, action) {
       state.bins = action.payload;

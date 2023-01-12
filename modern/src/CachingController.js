@@ -17,15 +17,7 @@ const CachingController = () => {
       const response = await fetch("/api/geofences");
       if (response.ok) {
         const data = await response.json();
-        console.log(
-          "Init",
-          data.filter((item) => item.attributes.bins !== "yes")
-        );
-        dispatch(
-          geofencesActions.update(
-            data.filter((item) => item.attributes.bins !== "yes")
-          )
-        );
+        dispatch(geofencesActions.update(data));
       } else {
         throw Error(await response.text());
       }
