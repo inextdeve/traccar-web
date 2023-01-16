@@ -1,16 +1,21 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
+  Box,
   Paper,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
   DialogActions,
   Button,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
+  CircularProgress,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormLabel
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useTheme } from "@mui/material/styles";
@@ -19,7 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import DeviceList from "./DeviceList";
 import BottomMenu from "../common/components/BottomMenu";
 import StatusCard from "../common/components/StatusCard";
-import { devicesActions } from "../store";
+import { binsActions, devicesActions } from "../store";
 import usePersistedState from "../common/util/usePersistedState";
 import EventsDrawer from "./EventsDrawer";
 import useFilter from "./useFilter";
@@ -122,7 +127,9 @@ const MainPage = () => {
     dialogEl.current.style.display = "none";
   };
 
+  const loading = useSelector((state) => state.bins.loading);
   const filterSet = useSelector((state) => state.bins.filterSet);
+  const binsPositions = useSelector((state) => state.bins.bins);
 
   const [selectedItems, setSelectedItems] = useState({
     route: [],
@@ -131,9 +138,23 @@ const MainPage = () => {
   });
 
   const handleFilter = () => {
-    const byRoute = 90;
-    const byArea = undefined;
-    const byCenter = undefined;
+    const filteredBins = binsPositions.filter(item => {
+
+      //Conditions Check
+      const route = selectedItems.route.length ? selectedItems.route.some(filter => item.route === filter) : true;
+      const bintype = selectedItems.bintype.length ? selectedItems.bintype.some(filter => item.bintype === filter) : true;
+      const center_name = selectedItems.center_name.length ? selectedItems.center_name.some(filter => item.center_name === filter) : true;
+      let status = true;
+
+      if (selectedItems.status === "empty" || selectedItems.status === "unempty") {
+        status = item.status === selectedItems.status;
+      }
+
+      return route && bintype && center_name && status;
+    });
+    
+    dispatch(binsActions.updateFilteredBin(filteredBins));
+
   };
 
   return (
@@ -147,7 +168,9 @@ const MainPage = () => {
       >
         <DialogTitle id="alert-dialog-title">Filter</DialogTitle>
         <DialogContent style={{ minWidth: "400px" }}>
-          <FormControl className={classes.formControl} fullWidth>
+          {loading ? <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+                <CircularProgress />
+              </Box> : <><FormControl className={classes.formControl} fullWidth>
             <InputLabel>Route</InputLabel>
             <Select
               label={"route"}
@@ -201,6 +224,24 @@ const MainPage = () => {
               ))}
             </Select>
           </FormControl>
+          <FormLabel id="demo-radio-buttons-group-label">Status</FormLabel>
+          <RadioGroup
+            aria-labelledby="demo-radio-buttons-group-label"
+            defaultValue="all"
+            name="radio-buttons-group"
+            onChange={(e) => {
+              setSelectedItems((prev) => ({
+                ...prev,
+                status: e.target.value,
+              }));
+            }}
+          >
+            <FormControlLabel value="all" control={<Radio />} label="All" />
+            <FormControlLabel value="empty" control={<Radio />} label="Empty" />
+            <FormControlLabel value="unempty" control={<Radio />} label="Unempty" />
+          </RadioGroup>
+          
+          </>}
         </DialogContent>
         <DialogActions>
           <Button onClick={closeDialog}>Close</Button>
