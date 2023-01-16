@@ -19,10 +19,13 @@ import MapScale from "../map/MapScale";
 import MapNotification from "../map/notification/MapNotification";
 import useFeatures from "../common/util/useFeatures";
 import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
+import { analyticsActions, binsActions } from "../store";
+import Popup from "../common/components/Popup";
 
 const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.session.user.attributes.apitoken);
 
   const desktop = useMediaQuery(theme.breakpoints.up("md"));
 
@@ -34,19 +37,27 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
     (_, deviceId) => {
       dispatch(devicesActions.select(deviceId));
     },
-    [dispatch],
+    [dispatch]
   );
   const authenticated = useSelector((state) => !!state.session.user);
-  const binsP = useSelector((state) => state.geofences.bins);
+  const binsPositions = useSelector((state) => state.bins.bins);
   useEffect(() => {
     if (authenticated) {
       fetch(
-        "https://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bins&limit=0;10000",
+        "https://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bins&limit=0;10"
       )
         .then((data) => data.json())
         .then((data) => {
+          const filterSet = {
+            route: [...new Set(data.map((item) => item.route))],
+            bintype: [...new Set(data.map((item) => item.bintype))],
+            center_name: [...new Set(data.map((item) => item.center_name))],
+          };
+
+          dispatch(binsActions.updateFilterSet(filterSet));
+
           dispatch(
-            geofencesActions.updateBins(
+            binsActions.updateBins(
               data.map(({ id_bin, status, latitude, longitude, bintype }) => ({
                 id: id_bin,
                 category: `${
@@ -55,19 +66,50 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
                 latitude,
                 longitude,
                 binType: bintype,
-              })),
-            ),
+              }))
+            )
           );
         });
     }
   }, []);
 
+  const onMarkClick = useCallback(
+    async (bin) => {
+      const { id, binType } = JSON.parse(bin);
+
+      dispatch(
+        analyticsActions.updatePopup({
+          show: true,
+          id,
+          binType,
+        })
+      );
+      dispatch(analyticsActions.updateBinData(null));
+
+      const data = await fetch(
+        `https://med-reports.almajal.co/al/api/?token=${token}&bin=${id}`
+      );
+
+      const binData = await data.json();
+
+      dispatch(analyticsActions.updateBinData(binData));
+    },
+    [binsPositions]
+  );
+  const onClose = () => {
+    dispatch(analyticsActions.updatePopup(false));
+    dispatch(analyticsActions.updateBinData(null));
+  };
   return (
     <>
+      <Popup
+        desktopPadding={theme.dimensions.drawerWidthDesktop}
+        onClose={onClose}
+      />
       <MapView>
         <MapOverlay />
         <MapGeofence />
-        <MapMarkersAnalytics positions={binsP} />
+        <MapMarkersAnalytics positions={binsPositions} onClick={onMarkClick} />
         <MapAccuracy positions={filteredPositions} />
         <MapLiveRoutes />
         <MapPositions

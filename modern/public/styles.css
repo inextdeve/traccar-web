@@ -44,3 +44,6 @@ canvas {
   color: #fff !important;
   border: 0 !important;
 }
+#filterDialog {
+  display: none;
+}

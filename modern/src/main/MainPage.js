@@ -1,7 +1,17 @@
-import React, {
-  useState, useCallback, useEffect,
-} from "react";
-import { Paper } from "@mui/material";
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import {
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -55,12 +65,16 @@ const useStyles = makeStyles((theme) => ({
     gridArea: "1 / 1",
     zIndex: 4,
   },
+  formControl: {
+    margin: "10px 0",
+  },
 }));
 
 const MainPage = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const theme = useTheme();
+  const dialogEl = useRef();
 
   const desktop = useMediaQuery(theme.breakpoints.up("md"));
 
@@ -69,7 +83,9 @@ const MainPage = () => {
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
   const positions = useSelector((state) => state.session.positions);
   const [filteredPositions, setFilteredPositions] = useState([]);
-  const selectedPosition = filteredPositions.find((position) => selectedDeviceId && position.deviceId === selectedDeviceId);
+  const selectedPosition = filteredPositions.find(
+    (position) => selectedDeviceId && position.deviceId === selectedDeviceId
+  );
 
   const [filteredDevices, setFilteredDevices] = useState([]);
 
@@ -92,10 +108,107 @@ const MainPage = () => {
     }
   }, [desktop, mapOnSelect, selectedDeviceId]);
 
-  useFilter(keyword, filter, filterSort, filterMap, positions, setFilteredDevices, setFilteredPositions);
+  useFilter(
+    keyword,
+    filter,
+    filterSort,
+    filterMap,
+    positions,
+    setFilteredDevices,
+    setFilteredPositions
+  );
+
+  const closeDialog = () => {
+    dialogEl.current.style.display = "none";
+  };
+
+  const filterSet = useSelector((state) => state.bins.filterSet);
+
+  const [selectedItems, setSelectedItems] = useState({
+    route: [],
+    bintype: [],
+    center_name: [],
+  });
+
+  const handleFilter = () => {
+    const byRoute = 90;
+    const byArea = undefined;
+    const byCenter = undefined;
+  };
 
   return (
     <div className={classes.root}>
+      <Dialog
+        open={true}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        id="filterDialog"
+        ref={dialogEl}
+      >
+        <DialogTitle id="alert-dialog-title">Filter</DialogTitle>
+        <DialogContent style={{ minWidth: "400px" }}>
+          <FormControl className={classes.formControl} fullWidth>
+            <InputLabel>Route</InputLabel>
+            <Select
+              label={"route"}
+              value={selectedItems?.route}
+              onChange={(e) => {
+                setSelectedItems((prev) => ({
+                  ...prev,
+                  route: [...e.target.value],
+                }));
+              }}
+              multiple
+            >
+              {filterSet?.route?.map((item) => (
+                <MenuItem value={item}>{item}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl className={classes.formControl} fullWidth>
+            <InputLabel>Bin Type</InputLabel>
+            <Select
+              label={"bintype"}
+              value={selectedItems?.bintype}
+              onChange={(e) => {
+                setSelectedItems((prev) => ({
+                  ...prev,
+                  bintype: [...e.target.value],
+                }));
+              }}
+              multiple
+            >
+              {filterSet?.bintype?.map((item) => (
+                <MenuItem value={item}>{item}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl className={classes.formControl} fullWidth>
+            <InputLabel>Center Name</InputLabel>
+            <Select
+              label={"CenterName"}
+              value={selectedItems?.center_name}
+              onChange={(e) => {
+                setSelectedItems((prev) => ({
+                  ...prev,
+                  center_name: [...e.target.value],
+                }));
+              }}
+              multiple
+            >
+              {filterSet?.center_name?.map((item) => (
+                <MenuItem value={item}>{item}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDialog}>Close</Button>
+          <Button onClick={handleFilter} autoFocus>
+            Apply
+          </Button>
+        </DialogActions>
+      </Dialog>
       {desktop && (
         <MainMap
           filteredPositions={filteredPositions}
@@ -129,7 +242,11 @@ const MainPage = () => {
               />
             </div>
           )}
-          <Paper square className={classes.contentList} style={devicesOpen ? {} : { visibility: "hidden" }}>
+          <Paper
+            square
+            className={classes.contentList}
+            style={devicesOpen ? {} : { visibility: "hidden" }}
+          >
             <DeviceList devices={filteredDevices} />
           </Paper>
         </div>

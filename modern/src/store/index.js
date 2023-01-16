@@ -10,6 +10,8 @@ import { driversReducer as drivers } from "./drivers";
 import { maintenancesReducer as maintenances } from "./maintenances";
 import { reportsReducer as reports } from "./reports";
 import { analyticsReducer as analytics } from "./analytics";
+import { popupReducer as popup } from "./popup";
+import { binsReducer as bins } from "./bins";
 import throttleMiddleware from "./throttleMiddleware";
 
 const reducer = combineReducers({
@@ -23,6 +25,8 @@ const reducer = combineReducers({
   maintenances,
   reports,
   analytics,
+  popup,
+  bins,
 });
 
 export { errorsActions } from "./errors";
@@ -35,8 +39,11 @@ export { driversActions } from "./drivers";
 export { maintenancesActions } from "./maintenances";
 export { reportsActions } from "./reports";
 export { analyticsActions } from "./analytics";
+export { popupActions } from "./popup";
+export { binsActions } from "./bins";
 
 export default configureStore({
   reducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(throttleMiddleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(throttleMiddleware),
 });

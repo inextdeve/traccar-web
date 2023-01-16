@@ -1,8 +1,6 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import maplibregl from "maplibre-gl";
-import React, {
-  useRef, useLayoutEffect, useEffect, useState,
-} from "react";
+import React, { useRef, useLayoutEffect, useEffect, useState } from "react";
 import { SwitcherControl } from "../switcher/switcher";
 import {
   useAttributePreference,
@@ -13,6 +11,7 @@ import usePersistedState, {
 } from "../../common/util/usePersistedState";
 import { mapImages } from "./preloadImages";
 import useMapStyles from "./useMapStyles";
+import { FilterSwitcher } from "../filterSwitcher/filterSwitcher";
 
 const element = document.createElement("div");
 element.style.width = "100%";
@@ -69,10 +68,16 @@ const switcher = new SwitcherControl(
       };
       waiting();
     });
-  },
+  }
 );
 
 map.addControl(switcher);
+
+const filterSwitcher = new FilterSwitcher(() => {
+  const filterDialog = document.getElementById("filterDialog");
+  filterDialog.style.display = "block";
+});
+map.addControl(filterSwitcher, "top-right");
 
 const MapView = ({ children }) => {
   const containerEl = useRef(null);
@@ -82,11 +87,11 @@ const MapView = ({ children }) => {
   const mapStyles = useMapStyles();
   const activeMapStyles = useAttributePreference(
     "activeMapStyles",
-    "locationIqStreets,osm,carto",
+    "locationIqStreets,osm,carto"
   );
   const [defaultMapStyle] = usePersistedState(
     "selectedMapStyle",
-    usePreference("map", "locationIqStreets"),
+    usePreference("map", "locationIqStreets")
   );
   const mapboxAccessToken = useAttributePreference("mapboxAccessToken");
   const maxZoom = useAttributePreference("web.maxZoom");
@@ -103,7 +108,7 @@ const MapView = ({ children }) => {
 
   useEffect(() => {
     const filteredStyles = mapStyles.filter(
-      (s) => s.available && activeMapStyles.includes(s.id),
+      (s) => s.available && activeMapStyles.includes(s.id)
     );
     const styles = filteredStyles.length
       ? filteredStyles

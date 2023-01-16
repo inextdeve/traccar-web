@@ -14,11 +14,11 @@ const MapMarkersAnalytics = ({ minzoom, positions, onClick }) => {
         onClick(
           feature.properties.bin,
           feature.properties.position,
-          feature.properties.index,
+          feature.properties.index
         );
       }
     },
-    [onClick],
+    [onClick]
   );
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const MapMarkersAnalytics = ({ minzoom, positions, onClick }) => {
         "icon-allow-overlap": true,
       },
       paint: {},
-      minzoom: minzoom | null,
+      minzoom: minzoom || 0,
     });
 
     map.on("mouseenter", id, onMouseEnter);
