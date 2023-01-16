@@ -1,6 +1,4 @@
-import React, {
-  useCallback, useEffect, useRef, useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Grid,
   Typography,
@@ -38,13 +36,15 @@ const ByType = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
   const theme = useTheme();
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   // Map Processing
   const [mapLoading, setMapLoading] = useState(false);
@@ -53,7 +53,7 @@ const ByType = () => {
   const mapButtonClick = useCallback(async ({ id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
-    const url = `https://med-reports.almajal.co/al/api/?token=${token}&bins&limit=0;10&${tag}=${id}`;
+    const url = `https://med-reports.almajal.co/al/api/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
     const data = await fetch(url);
 
     setMapLoading(false);
@@ -68,8 +68,8 @@ const ByType = () => {
           latitude,
           longitude,
           binType: bintype,
-        })),
-      ),
+        }))
+      )
     );
   });
 
@@ -160,7 +160,7 @@ const ByType = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -168,7 +168,7 @@ const ByType = () => {
                 >
                   {t("advancedReportPrint")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box ref={TableRef}>
@@ -203,7 +203,7 @@ const ByType = () => {
                       <BinsChart
                         title={t("binsStatus")}
                         subtitle={t(
-                          "theProportionOfTheEmptedBinsAndTheUnempted",
+                          "theProportionOfTheEmptedBinsAndTheUnempted"
                         )}
                         bins={[
                           {
@@ -234,7 +234,7 @@ const ByType = () => {
                       <BinsStatusChart
                         title={t("binsStatusByType")}
                         subtitle={t(
-                          "theProportionOfEmptedAndUnemptedBinsByTypes",
+                          "theProportionOfEmptedAndUnemptedBinsByTypes"
                         )}
                         bins={chartData.map((item) => {
                           const empted = (item.empty_bin * 100) / item.total;
@@ -243,7 +243,7 @@ const ByType = () => {
                             name: item.bintype,
                             empted: countRate(
                               item.total,
-                              item.empty_bin,
+                              item.empty_bin
                             ).toFixed(2),
                             unempted: 100 - empted,
                             amt: 100,

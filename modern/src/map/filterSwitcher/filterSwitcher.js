@@ -2,7 +2,8 @@ export class FilterSwitcher {
   constructor(callback) {
     this.callback = callback;
   }
-  onAdd(map) {
+
+  onAdd() {
     const div = document.createElement("div");
     div.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
     div.innerHTML = `<button>
@@ -12,10 +13,10 @@ export class FilterSwitcher {
     div.addEventListener("click", () => {
       if (this.callback) {
         this.callback();
-        return;
       }
     });
 
     return div;
   }
 }
+export default FilterSwitcher;

@@ -1,4 +1,6 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, {
+  useState, useCallback, useEffect, useRef,
+} from "react";
 import {
   Box,
   Paper,
@@ -15,7 +17,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  FormLabel
+  FormLabel,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useTheme } from "@mui/material/styles";
@@ -89,7 +91,7 @@ const MainPage = () => {
   const positions = useSelector((state) => state.session.positions);
   const [filteredPositions, setFilteredPositions] = useState([]);
   const selectedPosition = filteredPositions.find(
-    (position) => selectedDeviceId && position.deviceId === selectedDeviceId
+    (position) => selectedDeviceId && position.deviceId === selectedDeviceId,
   );
 
   const [filteredDevices, setFilteredDevices] = useState([]);
@@ -120,7 +122,7 @@ const MainPage = () => {
     filterMap,
     positions,
     setFilteredDevices,
-    setFilteredPositions
+    setFilteredPositions,
   );
 
   const closeDialog = () => {
@@ -138,12 +140,11 @@ const MainPage = () => {
   });
 
   const handleFilter = () => {
-    const filteredBins = binsPositions.filter(item => {
-
-      //Conditions Check
-      const route = selectedItems.route.length ? selectedItems.route.some(filter => item.route === filter) : true;
-      const bintype = selectedItems.bintype.length ? selectedItems.bintype.some(filter => item.bintype === filter) : true;
-      const center_name = selectedItems.center_name.length ? selectedItems.center_name.some(filter => item.center_name === filter) : true;
+    const filteredBins = binsPositions.filter((item) => {
+      // Conditions Check
+      const route = selectedItems.route.length ? selectedItems.route.some((filter) => item.route === filter) : true;
+      const bintype = selectedItems.bintype.length ? selectedItems.bintype.some((filter) => item.bintype === filter) : true;
+      const center_name = selectedItems.center_name.length ? selectedItems.center_name.some((filter) => item.center_name === filter) : true;
       let status = true;
 
       if (selectedItems.status === "empty" || selectedItems.status === "unempty") {
@@ -152,15 +153,14 @@ const MainPage = () => {
 
       return route && bintype && center_name && status;
     });
-    
-    dispatch(binsActions.updateFilteredBin(filteredBins));
 
+    dispatch(binsActions.updateFilteredBin(filteredBins));
   };
 
   return (
     <div className={classes.root}>
       <Dialog
-        open={true}
+        open
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
         id="filterDialog"
@@ -168,80 +168,85 @@ const MainPage = () => {
       >
         <DialogTitle id="alert-dialog-title">Filter</DialogTitle>
         <DialogContent style={{ minWidth: "400px" }}>
-          {loading ? <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
-                <CircularProgress />
-              </Box> : <><FormControl className={classes.formControl} fullWidth>
-            <InputLabel>Route</InputLabel>
-            <Select
-              label={"route"}
-              value={selectedItems?.route}
-              onChange={(e) => {
-                setSelectedItems((prev) => ({
-                  ...prev,
-                  route: [...e.target.value],
-                }));
-              }}
-              multiple
-            >
-              {filterSet?.route?.map((item) => (
-                <MenuItem value={item}>{item}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl className={classes.formControl} fullWidth>
-            <InputLabel>Bin Type</InputLabel>
-            <Select
-              label={"bintype"}
-              value={selectedItems?.bintype}
-              onChange={(e) => {
-                setSelectedItems((prev) => ({
-                  ...prev,
-                  bintype: [...e.target.value],
-                }));
-              }}
-              multiple
-            >
-              {filterSet?.bintype?.map((item) => (
-                <MenuItem value={item}>{item}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl className={classes.formControl} fullWidth>
-            <InputLabel>Center Name</InputLabel>
-            <Select
-              label={"CenterName"}
-              value={selectedItems?.center_name}
-              onChange={(e) => {
-                setSelectedItems((prev) => ({
-                  ...prev,
-                  center_name: [...e.target.value],
-                }));
-              }}
-              multiple
-            >
-              {filterSet?.center_name?.map((item) => (
-                <MenuItem value={item}>{item}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormLabel id="demo-radio-buttons-group-label">Status</FormLabel>
-          <RadioGroup
-            aria-labelledby="demo-radio-buttons-group-label"
-            defaultValue="all"
-            name="radio-buttons-group"
-            onChange={(e) => {
-              setSelectedItems((prev) => ({
-                ...prev,
-                status: e.target.value,
-              }));
-            }}
-          >
-            <FormControlLabel value="all" control={<Radio />} label="All" />
-            <FormControlLabel value="empty" control={<Radio />} label="Empty" />
-            <FormControlLabel value="unempty" control={<Radio />} label="Unempty" />
-          </RadioGroup>
-          
-          </>}
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <>
+              <FormControl className={classes.formControl} fullWidth>
+                <InputLabel>Route</InputLabel>
+                <Select
+                  label="route"
+                  value={selectedItems?.route}
+                  onChange={(e) => {
+                    setSelectedItems((prev) => ({
+                      ...prev,
+                      route: [...e.target.value],
+                    }));
+                  }}
+                  multiple
+                >
+                  {filterSet?.route?.map((item) => (
+                    <MenuItem value={item}>{item}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl className={classes.formControl} fullWidth>
+                <InputLabel>Bin Type</InputLabel>
+                <Select
+                  label="bintype"
+                  value={selectedItems?.bintype}
+                  onChange={(e) => {
+                    setSelectedItems((prev) => ({
+                      ...prev,
+                      bintype: [...e.target.value],
+                    }));
+                  }}
+                  multiple
+                >
+                  {filterSet?.bintype?.map((item) => (
+                    <MenuItem value={item}>{item}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl className={classes.formControl} fullWidth>
+                <InputLabel>Center Name</InputLabel>
+                <Select
+                  label="CenterName"
+                  value={selectedItems?.center_name}
+                  onChange={(e) => {
+                    setSelectedItems((prev) => ({
+                      ...prev,
+                      center_name: [...e.target.value],
+                    }));
+                  }}
+                  multiple
+                >
+                  {filterSet?.center_name?.map((item) => (
+                    <MenuItem value={item}>{item}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormLabel id="demo-radio-buttons-group-label">Status</FormLabel>
+              <RadioGroup
+                aria-labelledby="demo-radio-buttons-group-label"
+                defaultValue="all"
+                name="radio-buttons-group"
+                onChange={(e) => {
+                  setSelectedItems((prev) => ({
+                    ...prev,
+                    status: e.target.value,
+                  }));
+                }}
+              >
+                <FormControlLabel value="all" control={<Radio />} label="All" />
+                <FormControlLabel value="empty" control={<Radio />} label="Empty" />
+                <FormControlLabel value="unempty" control={<Radio />} label="Unempty" />
+              </RadioGroup>
+
+            </>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={closeDialog}>Close</Button>

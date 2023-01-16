@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { LinearProgress } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import MapView from "../map/core/MapView";
 import MapSelectedDevice from "../map/main/MapSelectedDevice";
@@ -9,7 +10,7 @@ import MapGeofence from "../map/MapGeofence";
 import MapCurrentLocation from "../map/MapCurrentLocation";
 import PoiMap from "../map/main/PoiMap";
 import MapPadding from "../map/MapPadding";
-import { devicesActions, geofencesActions } from "../store";
+import { devicesActions, analyticsActions, binsActions } from "../store";
 import MapDefaultCamera from "../map/main/MapDefaultCamera";
 import MapLiveRoutes from "../map/main/MapLiveRoutes";
 import MapPositions from "../map/MapPositions";
@@ -19,15 +20,13 @@ import MapScale from "../map/MapScale";
 import MapNotification from "../map/notification/MapNotification";
 import useFeatures from "../common/util/useFeatures";
 import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
-import { analyticsActions, binsActions } from "../store";
 import Popup from "../common/components/Popup";
-import { LinearProgress } from "@mui/material";
 
 const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.session.user.attributes.apitoken);
-  const loading = useSelector((state) => state.bins.loading)
+  const loading = useSelector((state) => state.bins.loading);
 
   const desktop = useMediaQuery(theme.breakpoints.up("md"));
 
@@ -53,7 +52,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
       )
         .then((data) => data.json())
         .then((data) => {
-          dispatch(binsActions.updateLoading(false))
+          dispatch(binsActions.updateLoading(false));
           const filterSet = {
             route: [...new Set(data.map((item) => item.route))],
             bintype: [...new Set(data.map((item) => item.bintype))],
@@ -64,23 +63,33 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
 
           dispatch(
             binsActions.updateBins(
-              data.map(({ id_bin, status, latitude, longitude, bintype, center_name, route }) => ({
-                id: id_bin,
-                category: `${
-                  status === "unempty" ? "trashNegative" : "trashPositive"
-                }`,
-                latitude,
-                longitude,
-                bintype,
-                center_name,
-                route,
-                status,
-                binType: bintype
-              }))
+              data.map(
+                ({
+                  id_bin,
+                  status,
+                  latitude,
+                  longitude,
+                  bintype,
+                  center_name,
+                  route,
+                }) => ({
+                  id: id_bin,
+                  category: `${
+                    status === "unempty" ? "trashNegative" : "trashPositive"
+                  }`,
+                  latitude,
+                  longitude,
+                  bintype,
+                  center_name,
+                  route,
+                  status,
+                  binType: bintype,
+                })
+              )
             )
           );
         })
-        .catch(e => dispatch(binsActions.updateLoading(false)));
+        .catch(() => dispatch(binsActions.updateLoading(false)));
     }
   }, []);
 
@@ -113,7 +122,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   };
   return (
     <>
-      {loading ? <LinearProgress /> : null }
+      {loading ? <LinearProgress /> : null}
       <Popup
         desktopPadding={theme.dimensions.drawerWidthDesktop}
         onClose={onClose}

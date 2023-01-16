@@ -44,6 +44,5 @@ export { binsActions } from "./bins";
 
 export default configureStore({
   reducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(throttleMiddleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(throttleMiddleware),
 });

@@ -8,7 +8,7 @@ const { reducer, actions } = createSlice({
     filter: "",
     filterSet: {},
     filteredBins: [],
-    loading: false
+    loading: false,
   },
   reducers: {
     updateBins(state, action) {
@@ -29,7 +29,7 @@ const { reducer, actions } = createSlice({
     },
     updateLoading(state, action) {
       state.loading = action.payload;
-    }
+    },
   },
 });
 
