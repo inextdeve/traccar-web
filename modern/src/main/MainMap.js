@@ -21,6 +21,7 @@ import MapNotification from "../map/notification/MapNotification";
 import useFeatures from "../common/util/useFeatures";
 import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
 import Popup from "../common/components/Popup";
+import { URL } from "../common/util/constant";
 
 const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   const theme = useTheme();
@@ -47,9 +48,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   useEffect(() => {
     if (authenticated) {
       dispatch(binsActions.updateLoading(true));
-      fetch(
-        "https://med-reports.almajal.co/al/api/?token=fb329817e3ca2132d39134dd26d894b2&bins&limit=0;10000"
-      )
+      fetch(`${URL}/?token=${token}&bins&limit=0;10000`)
         .then((data) => data.json())
         .then((data) => {
           dispatch(binsActions.updateLoading(false));
@@ -106,9 +105,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
       );
       dispatch(analyticsActions.updateBinData(null));
 
-      const data = await fetch(
-        `https://med-reports.almajal.co/al/api/?token=${token}&bin=${id}`
-      );
+      const data = await fetch(`${URL}/?token=${token}&bin=${id}`);
 
       const binData = await data.json();
 

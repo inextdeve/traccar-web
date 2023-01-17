@@ -1,6 +1,4 @@
-import React, {
-  useState, useCallback, useEffect, useRef,
-} from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   Box,
   Paper,
@@ -91,7 +89,7 @@ const MainPage = () => {
   const positions = useSelector((state) => state.session.positions);
   const [filteredPositions, setFilteredPositions] = useState([]);
   const selectedPosition = filteredPositions.find(
-    (position) => selectedDeviceId && position.deviceId === selectedDeviceId,
+    (position) => selectedDeviceId && position.deviceId === selectedDeviceId
   );
 
   const [filteredDevices, setFilteredDevices] = useState([]);
@@ -122,7 +120,7 @@ const MainPage = () => {
     filterMap,
     positions,
     setFilteredDevices,
-    setFilteredPositions,
+    setFilteredPositions
   );
 
   const closeDialog = () => {
@@ -142,12 +140,23 @@ const MainPage = () => {
   const handleFilter = () => {
     const filteredBins = binsPositions.filter((item) => {
       // Conditions Check
-      const route = selectedItems.route.length ? selectedItems.route.some((filter) => item.route === filter) : true;
-      const bintype = selectedItems.bintype.length ? selectedItems.bintype.some((filter) => item.bintype === filter) : true;
-      const center_name = selectedItems.center_name.length ? selectedItems.center_name.some((filter) => item.center_name === filter) : true;
+      const route = selectedItems.route.length
+        ? selectedItems.route.some((filter) => item.route === filter)
+        : true;
+      const bintype = selectedItems.bintype.length
+        ? selectedItems.bintype.some((filter) => item.bintype === filter)
+        : true;
+      const center_name = selectedItems.center_name.length
+        ? selectedItems.center_name.some(
+            (filter) => item.center_name === filter
+          )
+        : true;
       let status = true;
 
-      if (selectedItems.status === "empty" || selectedItems.status === "unempty") {
+      if (
+        selectedItems.status === "empty" ||
+        selectedItems.status === "unempty"
+      ) {
         status = item.status === selectedItems.status;
       }
 
@@ -155,6 +164,7 @@ const MainPage = () => {
     });
 
     dispatch(binsActions.updateFilteredBin(filteredBins));
+    document.getElementById("filterDialog").style.display = "none";
   };
 
   return (
@@ -164,6 +174,7 @@ const MainPage = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
         id="filterDialog"
+        style={{ display: "none" }}
         ref={dialogEl}
       >
         <DialogTitle id="alert-dialog-title">Filter</DialogTitle>
@@ -241,10 +252,17 @@ const MainPage = () => {
                 }}
               >
                 <FormControlLabel value="all" control={<Radio />} label="All" />
-                <FormControlLabel value="empty" control={<Radio />} label="Empty" />
-                <FormControlLabel value="unempty" control={<Radio />} label="Unempty" />
+                <FormControlLabel
+                  value="empty"
+                  control={<Radio />}
+                  label="Empty"
+                />
+                <FormControlLabel
+                  value="unempty"
+                  control={<Radio />}
+                  label="Unempty"
+                />
               </RadioGroup>
-
             </>
           )}
         </DialogContent>

@@ -29,6 +29,7 @@ import PrintingHeader from "../common/components/PrintingHeader";
 import Popup from "../common/components/Popup";
 
 import MapAnalytics from "../map/MapAnalytics";
+import { URL } from "../common/util/constant";
 
 const ByType = () => {
   const classes = useReportStyles();
@@ -53,7 +54,7 @@ const ByType = () => {
   const mapButtonClick = useCallback(async ({ id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
-    const url = `https://med-reports.almajal.co/al/api/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
+    const url = `${URL}/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
     const data = await fetch(url);
 
     setMapLoading(false);
@@ -119,7 +120,7 @@ const ByType = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`https://med-reports.almajal.co/al/api/?token=${token}&binstype`)
+    fetch(`${URL}/?token=${token}&binstype`)
       .then((data) => {
         setIsLoading(false);
         return data.json();

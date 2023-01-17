@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "../../common/components/LocalizationProvider";
 import useReportStyles from "../common/useReportStyles";
 import { analyticsActions } from "../../store";
+import { URL } from "../../common/util/constant";
 
 const ReportFilter = ({ tag }) => {
   const t = useTranslation();
@@ -19,13 +20,14 @@ const ReportFilter = ({ tag }) => {
   const [period, setPeriod] = useState("");
 
   const dispatch = useDispatch();
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
   const from = useSelector((state) => state.analytics.from);
   const to = useSelector((state) => state.analytics.to);
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
   const handleSubmit = ({ from, to }) => {
-    const url = `https://med-reports.almajal.co/al/api/?token=${token}&${tag}&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`;
+    const url = `${URL}/?token=${token}&${tag}&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`;
     setIsLoading(true);
     fetch(url)
       .then((data) => data.json())
@@ -109,7 +111,9 @@ const ReportFilter = ({ tag }) => {
             label={t("reportFrom")}
             type="datetime-local"
             value={from}
-            onChange={(e) => dispatch(analyticsActions.updateFrom(e.target.value))}
+            onChange={(e) =>
+              dispatch(analyticsActions.updateFrom(e.target.value))
+            }
             fullWidth
           />
         </div>
@@ -120,7 +124,9 @@ const ReportFilter = ({ tag }) => {
             label={t("reportTo")}
             type="datetime-local"
             value={to}
-            onChange={(e) => dispatch(analyticsActions.updateTo(e.target.value))}
+            onChange={(e) =>
+              dispatch(analyticsActions.updateTo(e.target.value))
+            }
             fullWidth
           />
         </div>

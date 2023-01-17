@@ -35,6 +35,7 @@ import PrintingHeader from "../common/components/PrintingHeader";
 
 import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
+import { URL } from "../common/util/constant";
 
 const ByRoutes = () => {
   const classes = useReportStyles();
@@ -58,7 +59,7 @@ const ByRoutes = () => {
   const [selectedItem, setSelectedItem] = useState(false);
 
   const generateMessage = async (tag, id, driverName, routeName) => {
-    const url = `https://med-reports.almajal.co/al/api/?token=${token}&bins&limit=0;10&${tag}=${id}&status=unempty`;
+    const url = `${URL}/?token=${token}&bins&limit=0;10&${tag}=${id}&status=unempty`;
 
     const data = await fetch(url);
     const unemptyBins = await data.json();
@@ -88,7 +89,7 @@ const ByRoutes = () => {
   const mapButtonClick = useCallback(async ({ id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
-    const url = `https://med-reports.almajal.co/al/api/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
+    const url = `${URL}/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
     const data = await fetch(url);
 
     setMapLoading(false);
@@ -178,7 +179,7 @@ const ByRoutes = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`https://med-reports.almajal.co/al/api/?token=${token}&bins_routes`)
+    fetch(`${URL}/?token=${token}&bins_routes`)
       .then((data) => {
         setIsLoading(false);
         return data.json();

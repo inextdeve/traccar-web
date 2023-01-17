@@ -158,12 +158,12 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                   <TableBody>
                     <StatusRow
                       name={t("sharedDescription")}
-                      content={popup.id}
+                      content={binData[0].description}
                     />
                     <StatusRow name={t("binType")} content={popup.binType} />
                     <StatusRow
                       name={t("status")}
-                      content={(
+                      content={
                         <span
                           style={{
                             color: `${
@@ -175,22 +175,22 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           {binData[0].status}
                         </span>
-                      )}
+                      }
                     />
                     <StatusRow
                       name={t("lastOperation")}
                       content={moment(lastOperation()).format(
-                        "MMM Do YY, H:mm",
+                        "MMM Do YY, H:mm"
                       )}
                     />
-                    <StatusRow name="Driver" content={binData[0].driver} />
+                    <StatusRow name="Driver" content={binData[0].emptied_by} />
                     <StatusRow
                       name={t("position")}
                       content={`${binData[0].latitude}, ${binData[0].longitude}`}
                     />
                     <StatusRow
                       name={t("position")}
-                      content={(
+                      content={
                         <a
                           href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
                           target="_blank"
@@ -198,7 +198,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           Google Map
                         </a>
-                      )}
+                      }
                     />
                   </TableBody>
                 </Table>
@@ -222,21 +222,48 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         {binData[1].last7days.map((item, index) => (
                           <TableRow key={index}>
                             <TableCell className={classes.cell}>
-                              <Typography variant="body2" color="textSecondary">
+                              <Typography
+                                variant="body2"
+                                style={{
+                                  color: `${
+                                    item.status === "empty"
+                                      ? "#4caf50"
+                                      : "#f44336"
+                                  }`,
+                                }}
+                              >
                                 {item.status}
                               </Typography>
                             </TableCell>
                             <TableCell className={classes.cell}>
-                              <Typography variant="body2" color="textSecondary">
+                              <Typography
+                                variant="body2"
+                                style={{
+                                  color: `${
+                                    item.status === "empty"
+                                      ? "#4caf50"
+                                      : "#f44336"
+                                  }`,
+                                }}
+                              >
                                 {item.datetime
                                   ? moment(item.datetime).format(
-                                    "MMM Do YY, H:mm",
-                                  )
+                                      "MMM Do YY, H:mm"
+                                    )
                                   : "-"}
                               </Typography>
                             </TableCell>
                             <TableCell className={classes.cell}>
-                              <Typography variant="body2" color="textSecondary">
+                              <Typography
+                                variant="body2"
+                                style={{
+                                  color: `${
+                                    item.status === "empty"
+                                      ? "#4caf50"
+                                      : "#f44336"
+                                  }`,
+                                }}
+                              >
                                 {item.emptied_by}
                               </Typography>
                             </TableCell>
@@ -259,7 +286,9 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
               </IconButton>
               <IconButton
                 color="secondary"
-                onClick={() => sendMessage(generateMessage(), binData[0].driver_phone)}
+                onClick={() =>
+                  sendMessage(generateMessage(), binData[0].driver_phone)
+                }
                 disabled={binData ? !binData[0]?.driver_phone : true}
               >
                 <WhatsAppIcon />
