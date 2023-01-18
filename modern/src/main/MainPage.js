@@ -31,6 +31,7 @@ import useFilter from "./useFilter";
 import MainToolbar from "./MainToolbar";
 import MainMap from "./MainMap";
 import { useAttributePreference } from "../common/util/preferences";
+import { useTranslation } from "../common/components/LocalizationProvider";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -80,6 +81,7 @@ const MainPage = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const dialogEl = useRef();
+  const t = useTranslation();
 
   const desktop = useMediaQuery(theme.breakpoints.up("md"));
 
@@ -167,6 +169,11 @@ const MainPage = () => {
     document.getElementById("filterDialog").style.display = "none";
   };
 
+  const showBins = useSelector((state) => state.bins.showBins);
+  const toggleBinsVisibility = () => {
+    dispatch(binsActions.toggleShowBins());
+  }
+
   return (
     <div className={classes.root}>
       <Dialog
@@ -177,7 +184,7 @@ const MainPage = () => {
         style={{ display: "none" }}
         ref={dialogEl}
       >
-        <DialogTitle id="alert-dialog-title">Filter</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{t("filter")}</DialogTitle>
         <DialogContent style={{ minWidth: "400px" }}>
           {loading ? (
             <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
@@ -186,7 +193,7 @@ const MainPage = () => {
           ) : (
             <>
               <FormControl className={classes.formControl} fullWidth>
-                <InputLabel>Route</InputLabel>
+                <InputLabel>{t("reportRoute")}</InputLabel>
                 <Select
                   label="route"
                   value={selectedItems?.route}
@@ -204,7 +211,7 @@ const MainPage = () => {
                 </Select>
               </FormControl>
               <FormControl className={classes.formControl} fullWidth>
-                <InputLabel>Bin Type</InputLabel>
+                <InputLabel>{t("binType")}</InputLabel>
                 <Select
                   label="bintype"
                   value={selectedItems?.bintype}
@@ -222,7 +229,7 @@ const MainPage = () => {
                 </Select>
               </FormControl>
               <FormControl className={classes.formControl} fullWidth>
-                <InputLabel>Center Name</InputLabel>
+                <InputLabel>{t("area")}</InputLabel>
                 <Select
                   label="CenterName"
                   value={selectedItems?.center_name}
@@ -239,7 +246,7 @@ const MainPage = () => {
                   ))}
                 </Select>
               </FormControl>
-              <FormLabel id="demo-radio-buttons-group-label">Status</FormLabel>
+              <FormLabel id="demo-radio-buttons-group-label">{t("status")}</FormLabel>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
                 defaultValue="all"
@@ -251,25 +258,26 @@ const MainPage = () => {
                   }));
                 }}
               >
-                <FormControlLabel value="all" control={<Radio />} label="All" />
+                <FormControlLabel value="all" control={<Radio />} label={t("all")} />
                 <FormControlLabel
                   value="empty"
                   control={<Radio />}
-                  label="Empty"
+                  label={t("empted")}
                 />
                 <FormControlLabel
                   value="unempty"
                   control={<Radio />}
-                  label="Unempty"
+                  label={t("notEmpted")}
                 />
               </RadioGroup>
             </>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeDialog}>Close</Button>
+          <Button onClick={toggleBinsVisibility}>{showBins ? t("sharedHide") : t("reportShow")}</Button>
+          <Button onClick={closeDialog}>{t("close")}</Button>
           <Button onClick={handleFilter} autoFocus>
-            Apply
+            {t("apply")}
           </Button>
         </DialogActions>
       </Dialog>

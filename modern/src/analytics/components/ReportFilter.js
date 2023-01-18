@@ -20,8 +20,7 @@ const ReportFilter = ({ tag }) => {
   const [period, setPeriod] = useState("");
 
   const dispatch = useDispatch();
-  const setIsLoading = (state) =>
-    dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
   const from = useSelector((state) => state.analytics.from);
   const to = useSelector((state) => state.analytics.to);
   const token = useSelector((state) => state.session.user.attributes.apitoken);
@@ -111,9 +110,7 @@ const ReportFilter = ({ tag }) => {
             label={t("reportFrom")}
             type="datetime-local"
             value={from}
-            onChange={(e) =>
-              dispatch(analyticsActions.updateFrom(e.target.value))
-            }
+            onChange={(e) => dispatch(analyticsActions.updateFrom(e.target.value))}
             fullWidth
           />
         </div>
@@ -124,9 +121,7 @@ const ReportFilter = ({ tag }) => {
             label={t("reportTo")}
             type="datetime-local"
             value={to}
-            onChange={(e) =>
-              dispatch(analyticsActions.updateTo(e.target.value))
-            }
+            onChange={(e) => dispatch(analyticsActions.updateTo(e.target.value))}
             fullWidth
           />
         </div>

@@ -26,6 +26,7 @@ import MapCamera from "../map/MapCamera";
 import MapGeofence from "../map/MapGeofence";
 import StatusCard from "../common/components/StatusCard";
 import { usePreference } from "../common/util/preferences";
+import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -162,12 +163,13 @@ const ReplayPage = () => {
     const query = new URLSearchParams({ deviceId: selectedDeviceId, from, to });
     window.location.assign(`/api/positions/kml?${query.toString()}`);
   };
-
+  const filteredBins = useSelector((state) => state.bins.filteredBins);
   return (
     <div className={classes.root}>
       <MapView>
         <MapGeofence />
         <MapRoutePath positions={positions} />
+        <MapMarkersAnalytics positions={filteredBins} />
         <MapRoutePoints positions={positions} onClick={onPointClick} />
         {index < positions.length && (
           <MapPositions

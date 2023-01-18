@@ -9,6 +9,8 @@ const { reducer, actions } = createSlice({
     filterSet: {},
     filteredBins: [],
     loading: false,
+    showBins: true,
+    refresh: false,
   },
   reducers: {
     updateBins(state, action) {
@@ -30,6 +32,12 @@ const { reducer, actions } = createSlice({
     updateLoading(state, action) {
       state.loading = action.payload;
     },
+    toggleShowBins(state) {
+      state.showBins = !state.showBins;
+    },
+    refresh(state) {
+      state.refresh = !state.refresh;
+    }
   },
 });
 

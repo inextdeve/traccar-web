@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Draggable from "react-draggable";
 import {
@@ -22,7 +22,6 @@ import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { green, red } from "@mui/material/colors";
 import moment from "moment";
-import { toast } from "react-toastify";
 import sendMessage from "../util/sendMessage";
 import { useTranslation } from "./LocalizationProvider";
 
@@ -124,14 +123,14 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
   const generateMessage = () => `Hello! ${binData[0].driver}
                 JCR Cleaning Project 
                 Alarm Bin Not Empty 
-                DateTime: 2022-12-29 20:39:47
+                DateTime: ${moment().format('MMMM Do YYYY, h:mm:ss a')}
                 Bin no: ${popup.id}
-                RoutNo: QU 1008 S1
-                Area: Hijar 1
+                RoutNo: ${binData[0].route}
+                Area: ${binData[0].center}
                 Bin Type: ${popup.binType}
                 Last Time Emptied: ${lastOperation()}
-                https://www.google.com/maps/place/24.4237354,39.6328711`;
-
+                https://www.google.com/maps/place/${binData.latitude},${binData.longitude}`;
+  
   return (
     <div className={classes.root}>
       {popup.show && (
@@ -183,7 +182,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         "MMM Do YY, H:mm"
                       )}
                     />
-                    <StatusRow name="Driver" content={binData[0].emptied_by} />
+                    <StatusRow name={t("emptiedBy")} content={binData[0].emptied_by} />
+                    <StatusRow name={t("sharedDriver")} content={binData[0].driver} />
                     <StatusRow
                       name={t("position")}
                       content={`${binData[0].latitude}, ${binData[0].longitude}`}
@@ -219,7 +219,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {binData[1].last7days.map((item, index) => (
+                        {[...binData[1].last7days].reverse().map((item, index) => (
                           <TableRow key={index}>
                             <TableCell className={classes.cell}>
                               <Typography

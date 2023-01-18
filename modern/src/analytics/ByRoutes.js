@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from "react";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -44,15 +46,13 @@ const ByRoutes = () => {
   const TableRef = useRef(null);
   const theme = useTheme();
 
-  const countTotal = (array, prop) =>
-    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) =>
-    dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
 
   const positions = useSelector((state) => state.analytics.positions);
   const [mapLoading, setMapLoading] = useState(false);
@@ -70,7 +70,7 @@ const ByRoutes = () => {
               Bin Code: ${item.id_bin}
               Bin Type: ${item.bintype}
               https://www.google.com/maps/place/${item.longitude},${item.latitude}
-              ** `
+              ** `,
       )
       .join("\n");
 
@@ -104,8 +104,8 @@ const ByRoutes = () => {
           latitude,
           longitude,
           binType: bintype,
-        }))
-      )
+        })),
+      ),
     );
   });
 
@@ -144,17 +144,15 @@ const ByRoutes = () => {
         <>
           <IconButton
             color="secondary"
-            onClick={() =>
-              sendMessage(
-                generateMessage(
-                  "routid",
-                  item.route_id,
-                  item.driver,
-                  item.route_name
-                ),
-                item.phone
-              )
-            }
+            onClick={() => sendMessage(
+              generateMessage(
+                "routid",
+                item.route_id,
+                item.driver,
+                item.route_name,
+              ),
+              item.phone,
+            )}
             disabled={false}
           >
             <WhatsAppIcon />
@@ -237,7 +235,7 @@ const ByRoutes = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={
+              button={(
                 <Button
                   variant="contained"
                   color="secondary"
@@ -245,7 +243,7 @@ const ByRoutes = () => {
                 >
                   {t("advancedReportPrint")}
                 </Button>
-              }
+              )}
             />
           </Box>
           <Box
@@ -283,7 +281,7 @@ const ByRoutes = () => {
                 variant="h3"
                 sx={{ textAlign: "center", p: 3 }}
               >
-                Overview
+                {t("overview")}
               </Typography>
             ) : (
               <Skeleton
@@ -330,7 +328,7 @@ const ByRoutes = () => {
                     <BinsStatusChart
                       title={t("binsStatusByTrack")}
                       subtitle={t(
-                        "theProportionOfEmptedAndUnemptedBinsByTypes"
+                        "theProportionOfEmptedAndUnemptedBinsByTypes",
                       )}
                       bins={chartData.map((item) => {
                         const empted = (item.empty_bin * 100) / item.total;
@@ -338,7 +336,7 @@ const ByRoutes = () => {
                         return {
                           name: item.route_name,
                           empted: countRate(item.total, item.empty_bin).toFixed(
-                            2
+                            2,
                           ),
                           unempted: 100 - empted,
                           amt: 100,

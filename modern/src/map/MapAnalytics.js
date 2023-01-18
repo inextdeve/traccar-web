@@ -4,6 +4,7 @@ import { analyticsActions } from "../store";
 import MapView from "./core/MapView";
 import MapCamera from "./MapCamera";
 import MapMarkersAnalytics from "./MapMarkersAnalytics";
+import { URL } from "../common/util/constant";
 
 const MapAnalytics = () => {
   const dispatch = useDispatch();
@@ -21,9 +22,8 @@ const MapAnalytics = () => {
       }),
     );
     dispatch(analyticsActions.updateBinData(null));
-
     const data = await fetch(
-      `https://med-reports.almajal.co/al/api/?token=${token}&bin=${id}`,
+      `${URL}/?token=${token}&bin=${id}`,
     );
 
     const binData = await data.json();

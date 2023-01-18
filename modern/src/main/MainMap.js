@@ -44,6 +44,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   const authenticated = useSelector((state) => !!state.session.user);
   const binsPositions = useSelector((state) => state.bins.bins);
   const filteredBins = useSelector((state) => state.bins.filteredBins);
+  const refresh = useSelector((state) => state.bins.refresh);
 
   useEffect(() => {
     if (authenticated) {
@@ -90,7 +91,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
         })
         .catch(() => dispatch(binsActions.updateLoading(false)));
     }
-  }, []);
+  }, [refresh]);
 
   const onMarkClick = useCallback(
     async (bin) => {
@@ -117,6 +118,9 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
     dispatch(analyticsActions.updatePopup(false));
     dispatch(analyticsActions.updateBinData(null));
   };
+
+  const showBins = useSelector((state) => state.bins.showBins);
+
   return (
     <>
       {loading ? <LinearProgress /> : null}
@@ -127,7 +131,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
       <MapView>
         <MapOverlay />
         <MapGeofence />
-        <MapMarkersAnalytics positions={filteredBins} onClick={onMarkClick} />
+        {showBins ? <MapMarkersAnalytics positions={filteredBins} onClick={onMarkClick} /> : null}
         <MapAccuracy positions={filteredPositions} />
         <MapLiveRoutes />
         <MapPositions

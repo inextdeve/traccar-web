@@ -597,5 +597,11 @@
   "status": "الحالة",
   "position": "الموقع",
   "lastOperation": "آخر عملية",
-  "actions": "اجراءات"
+  "actions": "اجراءات",
+  "all": "الكل",
+  "close": "خروج",
+  "apply": "طبّق",
+  "filter": "الفلتره",
+  "emptiedBy": "فرغت بواسطة",
+  "print": "الطباعة"
 }
