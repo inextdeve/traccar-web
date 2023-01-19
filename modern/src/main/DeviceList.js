@@ -38,7 +38,8 @@ const DeviceList = ({ devices }) => {
   useEffectAsync(async () => {
     const response = await fetch("/api/devices");
     if (response.ok) {
-      dispatch(devicesActions.refresh(await response.json()));
+      const data = await response.json();
+      dispatch(devicesActions.refresh(data));
     } else {
       throw Error(await response.text());
     }

@@ -11,6 +11,7 @@ const { reducer, actions } = createSlice({
     loading: false,
     showBins: true,
     refresh: false,
+    renderConstant: 0,
   },
   reducers: {
     updateBins(state, action) {
@@ -37,7 +38,10 @@ const { reducer, actions } = createSlice({
     },
     refresh(state) {
       state.refresh = !state.refresh;
-    }
+    },
+    updateRenderConstant(state) {
+      state.renderConstant = state.renderConstant + 1;
+    },
   },
 });
 

@@ -32,6 +32,7 @@ import MainToolbar from "./MainToolbar";
 import MainMap from "./MainMap";
 import { useAttributePreference } from "../common/util/preferences";
 import { useTranslation } from "../common/components/LocalizationProvider";
+import CameraCard from "../common/components/CameraCard";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -172,10 +173,13 @@ const MainPage = () => {
   const showBins = useSelector((state) => state.bins.showBins);
   const toggleBinsVisibility = () => {
     dispatch(binsActions.toggleShowBins());
-  }
+  };
+
+  const showCamera = useSelector((state) => state.devices.showCamera);
 
   return (
     <div className={classes.root}>
+      {showCamera ? <CameraCard /> : null}
       <Dialog
         open
         aria-labelledby="alert-dialog-title"
@@ -246,7 +250,9 @@ const MainPage = () => {
                   ))}
                 </Select>
               </FormControl>
-              <FormLabel id="demo-radio-buttons-group-label">{t("status")}</FormLabel>
+              <FormLabel id="demo-radio-buttons-group-label">
+                {t("status")}
+              </FormLabel>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
                 defaultValue="all"
@@ -258,7 +264,11 @@ const MainPage = () => {
                   }));
                 }}
               >
-                <FormControlLabel value="all" control={<Radio />} label={t("all")} />
+                <FormControlLabel
+                  value="all"
+                  control={<Radio />}
+                  label={t("all")}
+                />
                 <FormControlLabel
                   value="empty"
                   control={<Radio />}
@@ -274,7 +284,9 @@ const MainPage = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={toggleBinsVisibility}>{showBins ? t("sharedHide") : t("reportShow")}</Button>
+          <Button onClick={toggleBinsVisibility}>
+            {showBins ? t("sharedHide") : t("reportShow")}
+          </Button>
           <Button onClick={closeDialog}>{t("close")}</Button>
           <Button onClick={handleFilter} autoFocus>
             {t("apply")}

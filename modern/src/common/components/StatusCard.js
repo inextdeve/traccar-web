@@ -23,6 +23,7 @@ import PublishIcon from "@mui/icons-material/Publish";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PendingIcon from "@mui/icons-material/Pending";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
 import { useTranslation } from "./LocalizationProvider";
 import RemoveDialog from "./RemoveDialog";
@@ -134,7 +135,7 @@ const StatusCard = ({
   const positionAttributes = usePositionAttributes(t);
   const positionItems = useAttributePreference(
     "positionItems",
-    "speed,address,totalDistance,course",
+    "speed,address,totalDistance,course"
   );
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -182,6 +183,10 @@ const StatusCard = ({
     }
   }, [navigate, position]);
 
+  const showCamera = () => {
+    dispatch(devicesActions.updateShowCamera(true));
+  };
+
   return (
     <div className={classes.root}>
       {device && (
@@ -221,8 +226,9 @@ const StatusCard = ({
                     {positionItems
                       .split(",")
                       .filter(
-                        (key) => position.hasOwnProperty(key) ||
-                          position.attributes.hasOwnProperty(key),
+                        (key) =>
+                          position.hasOwnProperty(key) ||
+                          position.attributes.hasOwnProperty(key)
                       )
                       .map((key) => (
                         <StatusRow
@@ -232,7 +238,7 @@ const StatusCard = ({
                               ? positionAttributes[key].name
                               : key
                           }
-                          content={(
+                          content={
                             <PositionValue
                               position={position}
                               property={
@@ -242,7 +248,7 @@ const StatusCard = ({
                                 position.hasOwnProperty(key) ? null : key
                               }
                             />
-                          )}
+                          }
                         />
                       ))}
                   </TableBody>
@@ -269,6 +275,11 @@ const StatusCard = ({
               >
                 <PublishIcon />
               </IconButton>
+              {device.attributes.mdvr ? (
+                <IconButton onClick={showCamera}>
+                  <CameraAltIcon />
+                </IconButton>
+              ) : null}
               <IconButton
                 onClick={() => navigate(`/settings/device/${deviceId}`)}
                 disabled={disableActions || deviceReadonly}

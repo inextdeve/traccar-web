@@ -1,9 +1,26 @@
-import React, {
-  useState, useEffect, useRef, useCallback,
-} from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
-  IconButton, Paper, Slider, Toolbar, Typography,
+  IconButton,
+  Paper,
+  Slider,
+  Toolbar,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormLabel,
+  InputLabel,
+  Select,
+  Button,
+  MenuItem,
+  Box,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import TuneIcon from "@mui/icons-material/Tune";
@@ -13,7 +30,7 @@ import PauseIcon from "@mui/icons-material/Pause";
 import FastForwardIcon from "@mui/icons-material/FastForward";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import MapView from "../map/core/MapView";
 import MapRoutePath from "../map/MapRoutePath";
 import MapRoutePoints from "../map/MapRoutePoints";
@@ -27,6 +44,9 @@ import MapGeofence from "../map/MapGeofence";
 import StatusCard from "../common/components/StatusCard";
 import { usePreference } from "../common/util/preferences";
 import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
+import { analyticsActions, binsActions } from "../store";
+import Popup from "../common/components/Popup";
+import { URL } from "../common/util/constant";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -82,6 +102,11 @@ const ReplayPage = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const timerRef = useRef();
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  const dialogEl = useRef();
+
+  const token = useSelector((state) => state.session.user.attributes.apitoken);
 
   const hours12 = usePreference("twelveHourFormat");
 
@@ -129,14 +154,14 @@ const ReplayPage = () => {
     (_, index) => {
       setIndex(index);
     },
-    [setIndex],
+    [setIndex]
   );
 
   const onMarkerClick = useCallback(
     (positionId) => {
       setShowCard(!!positionId);
     },
-    [setShowCard],
+    [setShowCard]
   );
 
   const handleSubmit = useCatch(async ({ deviceId, from, to }) => {
@@ -164,12 +189,206 @@ const ReplayPage = () => {
     window.location.assign(`/api/positions/kml?${query.toString()}`);
   };
   const filteredBins = useSelector((state) => state.bins.filteredBins);
+
+  const onMarkClick = useCallback(
+    async (bin) => {
+      const { id, binType } = JSON.parse(bin);
+
+      dispatch(
+        analyticsActions.updatePopup({
+          show: true,
+          id,
+          binType,
+        })
+      );
+      dispatch(analyticsActions.updateBinData(null));
+
+      const data = await fetch(`${URL}/?token=${token}&bin=${id}`);
+
+      const binData = await data.json();
+
+      dispatch(analyticsActions.updateBinData(binData));
+    },
+    [filteredBins] //ROD LBAL M#A HADI LA W9a3 mochkil
+  );
+  const onClose = () => {
+    dispatch(analyticsActions.updatePopup(false));
+    dispatch(analyticsActions.updateBinData(null));
+  };
+
+  const closeDialog = () => {
+    dialogEl.current.style.display = "none";
+  };
+  const loading = useSelector((state) => state.bins.loading);
+  const filterSet = useSelector((state) => state.bins.filterSet);
+  const binsPositions = useSelector((state) => state.bins.bins);
+
+  const [selectedItems, setSelectedItems] = useState({
+    route: [],
+    bintype: [],
+    center_name: [],
+  });
+
+  const handleFilter = () => {
+    const filteredBins = binsPositions.filter((item) => {
+      // Conditions Check
+      const route = selectedItems.route.length
+        ? selectedItems.route.some((filter) => item.route === filter)
+        : true;
+      const bintype = selectedItems.bintype.length
+        ? selectedItems.bintype.some((filter) => item.bintype === filter)
+        : true;
+      const center_name = selectedItems.center_name.length
+        ? selectedItems.center_name.some(
+            (filter) => item.center_name === filter
+          )
+        : true;
+      let status = true;
+
+      if (
+        selectedItems.status === "empty" ||
+        selectedItems.status === "unempty"
+      ) {
+        status = item.status === selectedItems.status;
+      }
+
+      return route && bintype && center_name && status;
+    });
+
+    dispatch(binsActions.updateFilteredBin(filteredBins));
+    document.getElementById("filterDialog").style.display = "none";
+  };
+  const showBins = useSelector((state) => state.bins.showBins);
+
+  const toggleBinsVisibility = () => {
+    dispatch(binsActions.toggleShowBins());
+  };
+
   return (
     <div className={classes.root}>
+      <Dialog
+        open
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        id="filterDialog"
+        style={{ display: "none" }}
+        ref={dialogEl}
+      >
+        <DialogTitle id="alert-dialog-title">{t("filter")}</DialogTitle>
+        <DialogContent style={{ minWidth: "400px" }}>
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <>
+              <FormControl className={classes.formControl} fullWidth>
+                <InputLabel>{t("reportRoute")}</InputLabel>
+                <Select
+                  label="route"
+                  value={selectedItems?.route}
+                  onChange={(e) => {
+                    setSelectedItems((prev) => ({
+                      ...prev,
+                      route: [...e.target.value],
+                    }));
+                  }}
+                  multiple
+                >
+                  {filterSet?.route?.map((item) => (
+                    <MenuItem value={item}>{item}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl className={classes.formControl} fullWidth>
+                <InputLabel>{t("binType")}</InputLabel>
+                <Select
+                  label="bintype"
+                  value={selectedItems?.bintype}
+                  onChange={(e) => {
+                    setSelectedItems((prev) => ({
+                      ...prev,
+                      bintype: [...e.target.value],
+                    }));
+                  }}
+                  multiple
+                >
+                  {filterSet?.bintype?.map((item) => (
+                    <MenuItem value={item}>{item}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl className={classes.formControl} fullWidth>
+                <InputLabel>{t("area")}</InputLabel>
+                <Select
+                  label="CenterName"
+                  value={selectedItems?.center_name}
+                  onChange={(e) => {
+                    setSelectedItems((prev) => ({
+                      ...prev,
+                      center_name: [...e.target.value],
+                    }));
+                  }}
+                  multiple
+                >
+                  {filterSet?.center_name?.map((item) => (
+                    <MenuItem value={item}>{item}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormLabel id="demo-radio-buttons-group-label">
+                {t("status")}
+              </FormLabel>
+              <RadioGroup
+                aria-labelledby="demo-radio-buttons-group-label"
+                defaultValue="all"
+                name="radio-buttons-group"
+                onChange={(e) => {
+                  setSelectedItems((prev) => ({
+                    ...prev,
+                    status: e.target.value,
+                  }));
+                }}
+              >
+                <FormControlLabel
+                  value="all"
+                  control={<Radio />}
+                  label={t("all")}
+                />
+                <FormControlLabel
+                  value="empty"
+                  control={<Radio />}
+                  label={t("empted")}
+                />
+                <FormControlLabel
+                  value="unempty"
+                  control={<Radio />}
+                  label={t("notEmpted")}
+                />
+              </RadioGroup>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={toggleBinsVisibility}>
+            {showBins ? t("sharedHide") : t("reportShow")}
+          </Button>
+          <Button onClick={closeDialog}>{t("close")}</Button>
+          <Button onClick={handleFilter} autoFocus>
+            {t("apply")}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Popup
+        desktopPadding={theme.dimensions.drawerWidthDesktop}
+        onClose={onClose}
+      />
       <MapView>
         <MapGeofence />
         <MapRoutePath positions={positions} />
-        <MapMarkersAnalytics positions={filteredBins} />
+        {showBins ? (
+          <MapMarkersAnalytics positions={filteredBins} onClick={onMarkClick} />
+        ) : null}
         <MapRoutePoints positions={positions} onClick={onPointClick} />
         {index < positions.length && (
           <MapPositions

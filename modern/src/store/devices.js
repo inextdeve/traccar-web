@@ -5,20 +5,24 @@ const { reducer, actions } = createSlice({
   initialState: {
     items: {},
     selectedId: null,
+    showCamera: false,
   },
   reducers: {
     refresh(state, action) {
       state.items = {};
-      action.payload.forEach((item) => state.items[item.id] = item);
+      action.payload.forEach((item) => (state.items[item.id] = item));
     },
     update(state, action) {
-      action.payload.forEach((item) => state.items[item.id] = item);
+      action.payload.forEach((item) => (state.items[item.id] = item));
     },
     select(state, action) {
       state.selectedId = action.payload;
     },
     remove(state, action) {
       delete state.items[action.payload];
+    },
+    updateShowCamera(state, action) {
+      state.showCamera = action.payload;
     },
   },
 });

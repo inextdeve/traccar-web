@@ -22,6 +22,7 @@ import useFeatures from "../common/util/useFeatures";
 import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
 import Popup from "../common/components/Popup";
 import { URL } from "../common/util/constant";
+import MyMapButton from "../map/core/Buttons";
 
 const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   const theme = useTheme();
@@ -129,9 +130,12 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
         onClose={onClose}
       />
       <MapView>
+        <MyMapButton />
         <MapOverlay />
         <MapGeofence />
-        {showBins ? <MapMarkersAnalytics positions={filteredBins} onClick={onMarkClick} /> : null}
+        {showBins ? (
+          <MapMarkersAnalytics positions={filteredBins} onClick={onMarkClick} />
+        ) : null}
         <MapAccuracy positions={filteredPositions} />
         <MapLiveRoutes />
         <MapPositions

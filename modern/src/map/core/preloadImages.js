@@ -27,7 +27,8 @@ import truckSvg from "../../resources/images/icon/truck.svg";
 import vanSvg from "../../resources/images/icon/van.svg";
 import trashPositiveSvg from "../../resources/images/icon/trashPositive.svg";
 import trashNegativeSvg from "../../resources/images/icon/trashNegative.svg";
-import binSvg from "../../resources/images/icon/bin.svg";
+// import binSvg from "../../resources/images/icon/bin.svg";
+import cameraSvg from "../../resources/images/icon/camera.svg";
 
 export const mapIcons = {
   animal: animalSvg,
@@ -53,10 +54,12 @@ export const mapIcons = {
   van: vanSvg,
   trashPositive: trashPositiveSvg,
   trashNegative: trashNegativeSvg,
-  bin: binSvg,
+  // bin: binSvg,
+  camera: cameraSvg,
 };
 
-export const mapIconKey = (category) => (mapIcons.hasOwnProperty(category) ? category : "default");
+export const mapIconKey = (category) =>
+  mapIcons.hasOwnProperty(category) ? category : "default";
 
 export const mapImages = {};
 
@@ -80,19 +83,19 @@ export default async () => {
               mapImages[`${category}-${color}`] = prepareIcon(
                 noBackground,
                 icon,
-                "#FFFFFF00",
+                "#FFFFFF00"
               );
               return;
             }
             mapImages[`${category}-${color}`] = prepareIcon(
               background,
               icon,
-              palette.colors[color],
+              palette.colors[color]
             );
-          }),
+          })
         );
       });
       await Promise.all(results);
-    }),
+    })
   );
 };
