@@ -40,7 +40,7 @@ const { reducer, actions } = createSlice({
       state.refresh = !state.refresh;
     },
     updateRenderConstant(state) {
-      state.renderConstant = state.renderConstant + 1;
+      state.renderConstant += 1;
     },
   },
 });

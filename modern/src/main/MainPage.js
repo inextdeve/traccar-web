@@ -175,11 +175,8 @@ const MainPage = () => {
     dispatch(binsActions.toggleShowBins());
   };
 
-  const showCamera = useSelector((state) => state.devices.showCamera);
-
   return (
     <div className={classes.root}>
-      {showCamera ? <CameraCard /> : null}
       <Dialog
         open
         aria-labelledby="alert-dialog-title"

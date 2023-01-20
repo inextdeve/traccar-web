@@ -1,12 +1,10 @@
 import React from "react";
-import { Dialog, Box, IconButton, Slide, Tab, CardMedia } from "@mui/material";
+import { Box, Tab, Tabs } from "@mui/material";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { makeStyles } from "@mui/styles";
-import CloseIcon from "@mui/icons-material/Close";
 import { useDispatch } from "react-redux";
-import { devicesActions } from "../../store";
 
 const useStyles = makeStyles((theme) => {
   const appbarHeight = 64;
@@ -23,13 +21,8 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 const CameraCard = () => {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   const [value, setValue] = React.useState("1");
 
@@ -37,40 +30,25 @@ const CameraCard = () => {
     setValue(newValue);
   };
 
-  const handleClose = () => {
-    dispatch(devicesActions.updateShowCamera(false));
-  };
-
   return (
-    <Dialog
-      className={classes.root}
-      fullScreen
-      open={true}
-      TransitionComponent={Transition}
-    >
-      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-        <IconButton
-          edge="start"
-          color="inherit"
-          onClick={handleClose}
-          aria-label="close"
-        >
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      <Box sx={{ width: "100%", typography: "body1" }}>
+    <>
+      <Box>
         <TabContext value={value}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList
+          <Box
+            sx={{ maxWidth: { xs: 320, sm: 480 }, bgcolor: "background.paper" }}
+          >
+            <Tabs
+              value={value}
               onChange={handleTabChange}
-              aria-label="lab API tabs example"
-              className={classes.tabs}
+              variant="scrollable"
+              scrollButtons="auto"
+              aria-label="scrollable auto tabs example"
             >
-              <Tab label="Camera 1" value="1" />
-              <Tab label="Camera 2" value="2" />
-              <Tab label="Camera 3" value="3" />
-              <Tab label="All" value="4" />
-            </TabList>
+              <Tab value="1" label="Front" />
+              <Tab value="2" label="Back" />
+              <Tab value="3" label="Driver" />
+              <Tab value="4" label="All" />
+            </Tabs>
           </Box>
           <TabPanel value="1">
             <iframe
@@ -102,7 +80,7 @@ const CameraCard = () => {
           </TabPanel>
         </TabContext>
       </Box>
-    </Dialog>
+    </>
   );
 };
 

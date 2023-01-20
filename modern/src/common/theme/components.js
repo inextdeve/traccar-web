@@ -33,23 +33,23 @@ export default {
       },
     },
   },
-  MuiTabs: {
-    styleOverrides: {
-      root: {
-        backgroundColor: green[200],
-        borderRadius: "8px",
-        width: "fit-content",
-        padding: "0.3rem",
-      },
-    },
-  },
-  MuiTab: {
-    styleOverrides: {
-      root: {
-        backgroundColor: "transparent",
-        borderRadius: 1,
-        color: green[700],
-      },
-    },
-  },
+  // MuiTabs: {
+  //   styleOverrides: {
+  //     root: {
+  //       backgroundColor: green[200],
+  //       borderRadius: "8px",
+  //       width: "fit-content",
+  //       padding: "0.3rem",
+  //     },
+  //   },
+  // },
+  // MuiTab: {
+  //   styleOverrides: {
+  //     root: {
+  //       backgroundColor: "transparent",
+  //       borderRadius: 1,
+  //       color: green[700],
+  //     },
+  //   },
+  // },
 };
