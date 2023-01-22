@@ -19,6 +19,7 @@ export class MapButton {
 
     return div;
   }
+
   onRemove() {
     document.getElementById(this.id)?.remove();
   }

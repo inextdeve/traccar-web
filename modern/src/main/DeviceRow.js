@@ -9,7 +9,6 @@ import {
   ListItemText,
   ListItemButton,
   Box,
-  Badge,
 } from "@mui/material";
 import BatteryFullIcon from "@mui/icons-material/BatteryFull";
 import BatteryChargingFullIcon from "@mui/icons-material/BatteryChargingFull";

@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: theme.spacing(1, 1, 0, 2),
+    padding: theme.spacing(1, 1, 1, 1),
   },
   content: {
     paddingTop: theme.spacing(1),
@@ -203,9 +203,8 @@ const StatusCard = ({
             <Box
               className={classes.header}
               sx={{
-                backgroundColor: `${"red"}`,
+                backgroundColor: `${green[500]}`,
                 color: "white",
-                padding: "1rem 0",
               }}
             >
               <IconButton
@@ -215,10 +214,10 @@ const StatusCard = ({
               >
                 <ArrowBackIcon fontSize="small" />
               </IconButton>
-              <Typography variant="body2">Details</Typography>
+              <Typography variant="body2">{device.name}</Typography>
             </Box>
             <CardContent className={classes.content}>
-              <CameraCard />
+              <CameraCard mdvrid={device.attributes.mdvrID} />
             </CardContent>
           </Card>
         </Draggable>

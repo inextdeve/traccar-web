@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import Draggable from "react-draggable";
 import {
@@ -120,17 +120,21 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
     return last7days[last7days.length - 1]?.datetime || "-";
   };
 
-  const generateMessage = () => `Hello! ${binData[0].driver}
+  const generateMessage = () => {
+    return `Hello! ${binData[0].driver}
                 JCR Cleaning Project 
                 Alarm Bin Not Empty 
-                DateTime: ${moment().format('MMMM Do YYYY, h:mm:ss a')}
+                DateTime: ${moment().format("MMMM Do YYYY, h:mm:ss a")}
                 Bin no: ${popup.id}
                 RoutNo: ${binData[0].route}
                 Area: ${binData[0].center}
                 Bin Type: ${popup.binType}
                 Last Time Emptied: ${lastOperation()}
-                https://www.google.com/maps/place/${binData.latitude},${binData.longitude}`;
-  
+                https://www.google.com/maps/place/${binData[0].latitude},${
+      binData[0].longitude
+    }`;
+  };
+
   return (
     <div className={classes.root}>
       {popup.show && (
@@ -182,8 +186,14 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         "MMM Do YY, H:mm"
                       )}
                     />
-                    <StatusRow name={t("emptiedBy")} content={binData[0].emptied_by} />
-                    <StatusRow name={t("sharedDriver")} content={binData[0].driver} />
+                    <StatusRow
+                      name={t("emptiedBy")}
+                      content={binData[0].emptied_by}
+                    />
+                    <StatusRow
+                      name={t("sharedDriver")}
+                      content={binData[0].driver}
+                    />
                     <StatusRow
                       name={t("position")}
                       content={`${binData[0].latitude}, ${binData[0].longitude}`}
@@ -219,56 +229,58 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {[...binData[1].last7days].reverse().map((item, index) => (
-                          <TableRow key={index}>
-                            <TableCell className={classes.cell}>
-                              <Typography
-                                variant="body2"
-                                style={{
-                                  color: `${
-                                    item.status === "empty"
-                                      ? "#4caf50"
-                                      : "#f44336"
-                                  }`,
-                                }}
-                              >
-                                {item.status}
-                              </Typography>
-                            </TableCell>
-                            <TableCell className={classes.cell}>
-                              <Typography
-                                variant="body2"
-                                style={{
-                                  color: `${
-                                    item.status === "empty"
-                                      ? "#4caf50"
-                                      : "#f44336"
-                                  }`,
-                                }}
-                              >
-                                {item.datetime
-                                  ? moment(item.datetime).format(
-                                      "MMM Do YY, H:mm"
-                                    )
-                                  : "-"}
-                              </Typography>
-                            </TableCell>
-                            <TableCell className={classes.cell}>
-                              <Typography
-                                variant="body2"
-                                style={{
-                                  color: `${
-                                    item.status === "empty"
-                                      ? "#4caf50"
-                                      : "#f44336"
-                                  }`,
-                                }}
-                              >
-                                {item.emptied_by}
-                              </Typography>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {[...binData[1].last7days]
+                          .reverse()
+                          .map((item, index) => (
+                            <TableRow key={index}>
+                              <TableCell className={classes.cell}>
+                                <Typography
+                                  variant="body2"
+                                  style={{
+                                    color: `${
+                                      item.status === "empty"
+                                        ? "#4caf50"
+                                        : "#f44336"
+                                    }`,
+                                  }}
+                                >
+                                  {item.status}
+                                </Typography>
+                              </TableCell>
+                              <TableCell className={classes.cell}>
+                                <Typography
+                                  variant="body2"
+                                  style={{
+                                    color: `${
+                                      item.status === "empty"
+                                        ? "#4caf50"
+                                        : "#f44336"
+                                    }`,
+                                  }}
+                                >
+                                  {item.datetime
+                                    ? moment(item.datetime).format(
+                                        "MMM Do YY, H:mm"
+                                      )
+                                    : "-"}
+                                </Typography>
+                              </TableCell>
+                              <TableCell className={classes.cell}>
+                                <Typography
+                                  variant="body2"
+                                  style={{
+                                    color: `${
+                                      item.status === "empty"
+                                        ? "#4caf50"
+                                        : "#f44336"
+                                    }`,
+                                  }}
+                                >
+                                  {item.emptied_by}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
                   </Box>

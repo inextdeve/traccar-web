@@ -32,7 +32,8 @@ import MainToolbar from "./MainToolbar";
 import MainMap from "./MainMap";
 import { useAttributePreference } from "../common/util/preferences";
 import { useTranslation } from "../common/components/LocalizationProvider";
-import CameraCard from "../common/components/CameraCard";
+import CameraList from "./CameraList";
+import CameraPopup from "../common/components/CameraPopup";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -175,8 +176,28 @@ const MainPage = () => {
     dispatch(binsActions.toggleShowBins());
   };
 
+  const showCameraList = useSelector((state) => state.devices.showCameraList);
+
+  const selectedCamera = useSelector((state) => state.devices.selectedCamera);
+
+  const closeCameraPopup = (item) => {
+    dispatch(devicesActions.removeCamera(item.id));
+  };
+
   return (
     <div className={classes.root}>
+      {selectedCamera.map((camera, index) => {
+        return (
+          <CameraPopup
+            key={index}
+            camera={camera}
+            desktopPadding={theme.dimensions.drawerWidthDesktop}
+            onClose={() => closeCameraPopup(camera, index)}
+            index={index}
+          />
+        );
+      })}
+      {showCameraList && <CameraList />}
       <Dialog
         open
         aria-labelledby="alert-dialog-title"
