@@ -1,7 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import {
-  Grid, Typography, Box, Skeleton, Button,
-} from "@mui/material";
+import { Grid, Typography, Box, Skeleton, Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import Print from "./common/Print";
@@ -25,19 +23,21 @@ const Summary = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   // Table Data Processing
   const columnsHead = [
     "id",
-    "numberOfBins",
     "date",
+    "numberOfBins",
     "empted",
     "notEmpted",
     "completionRate",
@@ -45,8 +45,8 @@ const Summary = () => {
   const data = useSelector((state) => state.analytics.items);
   const keys = [
     "id",
-    "total",
     "date_from",
+    "total",
     "empty_bin",
     "un_empty_bin",
     "rate",
@@ -97,15 +97,15 @@ const Summary = () => {
             <ExcelExport excelData={items} fileName="SummarySheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
                   className={classes.filterButton}
                 >
-                  {t("advancedReportPrint")}
+                  {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box ref={TableRef}>
@@ -168,7 +168,7 @@ const Summary = () => {
                     <BinsStatusChart
                       title={t("binsStatusByType")}
                       subtitle={t(
-                        "theProportionOfEmptedAndUnemptedBinsByTypes",
+                        "theProportionOfEmptedAndUnemptedBinsByTypes"
                       )}
                       bins={chartData.map((item) => {
                         const empted = (item.on * 100) / item.total;
