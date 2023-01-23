@@ -82,19 +82,20 @@ const useStyles = makeStyles((theme) => ({
   actions: {
     justifyContent: "space-between",
   },
+  resize: {
+    resize: "both",
+  },
   root: ({ desktopPadding }) => ({
     position: "fixed",
     zIndex: 5,
     left: "50%",
     [theme.breakpoints.up("md")]: {
       left: `calc(50% + ${desktopPadding} / 2)`,
-      bottom: theme.spacing(3),
+      top: theme.spacing(3),
     },
     [theme.breakpoints.down("md")]: {
       left: "50%",
-      bottom: `calc(${theme.spacing(3)} + ${
-        theme.dimensions.bottomBarHeight
-      }px)`,
+      top: `calc(${theme.spacing(3)} + ${theme.dimensions.bottomBarHeight}px)`,
     },
     transform: "translateX(-50%)",
   }),
@@ -199,7 +200,7 @@ const StatusCard = ({
     <div className={classes.root}>
       {device?.attributes?.mdvr && camera ? (
         <Draggable handle={`.${classes.media}, .${classes.header}`}>
-          <Card elevation={3} className={classes.card}>
+          <Card elevation={3} className={`${classes.card} ${classes.resize}`}>
             <Box
               className={classes.header}
               sx={{
@@ -225,7 +226,12 @@ const StatusCard = ({
         <>
           {device && (
             <Draggable handle={`.${classes.media}, .${classes.header}`}>
-              <Card elevation={3} className={classes.card}>
+              <Card
+                elevation={3}
+                className={`${classes.card} ${
+                  device?.attributes?.mdvr ? classes.resize : null
+                }`}
+              >
                 {deviceImage ? (
                   <CardMedia
                     className={classes.media}

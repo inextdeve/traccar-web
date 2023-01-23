@@ -12,7 +12,6 @@ const { reducer, actions } = createSlice({
   },
   reducers: {
     refresh(state, action) {
-      //For generating position
       const getRandom = (min, max) =>
         Math.floor(Math.random() * (max - min + 1) + min);
       state.items = {};
@@ -20,7 +19,7 @@ const { reducer, actions } = createSlice({
       state.cameraList = action.payload
         .filter((item) => item.attributes.mdvr)
         .map((item) => {
-          return { ...item, top: getRandom(0, 50), left: getRandom(30, 40) };
+          return { ...item, top: getRandom(8, 60), left: getRandom(30, 40) };
         });
     },
     update(state, action) {
