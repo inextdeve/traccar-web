@@ -1,6 +1,13 @@
 import React from "react";
 import {
-  FormControl, InputLabel, Select, MenuItem, Button, TextField, Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+  TextField,
+  Typography,
+  Autocomplete,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -8,7 +15,14 @@ import { useTranslation } from "../../common/components/LocalizationProvider";
 import useReportStyles from "../common/useReportStyles";
 import { reportsActions } from "../../store";
 
-const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDevice, includeGroups }) => {
+const ReportFilter = ({
+  children,
+  handleSubmit,
+  showOnly,
+  ignoreDevice,
+  multiDevice,
+  includeGroups,
+}) => {
   const classes = useReportStyles();
   const dispatch = useDispatch();
   const t = useTranslation();
@@ -17,19 +31,29 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
   const groups = useSelector((state) => state.groups.items);
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
 
-  const deviceId = useSelector((state) => state.reports.deviceId || selectedDeviceId);
-  const deviceIds = useSelector((state) => (
+  const deviceId = useSelector(
+    (state) => state.reports.deviceId || selectedDeviceId
+  );
+  const deviceIds = useSelector((state) =>
     state.reports.deviceIds.length
-      ? state.reports.deviceIds : state.reports.deviceId
-        ? [state.reports.deviceId] : selectedDeviceId
-          ? [selectedDeviceId] : []
-  ));
+      ? state.reports.deviceIds
+      : state.reports.deviceId
+      ? [state.reports.deviceId]
+      : selectedDeviceId
+      ? [selectedDeviceId]
+      : []
+  );
   const groupIds = useSelector((state) => state.reports.groupIds);
   const period = useSelector((state) => state.reports.period);
   const from = useSelector((state) => state.reports.from);
   const to = useSelector((state) => state.reports.to);
 
-  const disabled = !ignoreDevice && !selectedDeviceId && !deviceId && !deviceIds.length && !groupIds.length;
+  const disabled =
+    !ignoreDevice &&
+    !selectedDeviceId &&
+    !deviceId &&
+    !deviceIds.length &&
+    !groupIds.length;
 
   const handleClick = (type) => {
     let selectedFrom;
@@ -80,17 +104,31 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
       {!ignoreDevice && (
         <div className={classes.filterItem}>
           <FormControl fullWidth>
-            <InputLabel>{t(multiDevice ? "deviceTitle" : "reportDevice")}</InputLabel>
-            <Select
-              label={t(multiDevice ? "deviceTitle" : "reportDevice")}
-              value={multiDevice ? deviceIds : deviceId || ""}
-              onChange={(e) => dispatch(multiDevice ? reportsActions.updateDeviceIds(e.target.value) : reportsActions.updateDeviceId(e.target.value))}
+            <Autocomplete
               multiple={multiDevice}
-            >
-              {Object.values(devices).sort((a, b) => a.name.localeCompare(b.name)).map((device) => (
-                <MenuItem key={device.id} value={device.id}>{device.name}</MenuItem>
-              ))}
-            </Select>
+              onChange={(event, value) => {
+                dispatch(
+                  multiDevice
+                    ? reportsActions.updateDeviceIds(value.map(({ id }) => id))
+                    : reportsActions.updateDeviceId(value?.id)
+                );
+              }}
+              isOptionEqualToValue={(option, value) => {
+                return option.id === value.id;
+              }}
+              disablePortal
+              limitTags={0}
+              id="combo-box-demo"
+              options={Object.values(devices)
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((device) => ({ ...device, label: device.name }))}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={t(multiDevice ? "deviceTitle" : "reportDevice")}
+                />
+              )}
+            />
           </FormControl>
         </div>
       )}
@@ -101,12 +139,18 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
             <Select
               label={t("settingsGroups")}
               value={groupIds}
-              onChange={(e) => dispatch(reportsActions.updateGroupIds(e.target.value))}
+              onChange={(e) =>
+                dispatch(reportsActions.updateGroupIds(e.target.value))
+              }
               multiple
             >
-              {Object.values(groups).sort((a, b) => a.name.localeCompare(b.name)).map((group) => (
-                <MenuItem key={group.id} value={group.id}>{group.name}</MenuItem>
-              ))}
+              {Object.values(groups)
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
         </div>
@@ -114,13 +158,21 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
       <div className={classes.filterItem}>
         <FormControl fullWidth>
           <InputLabel>{t("reportPeriod")}</InputLabel>
-          <Select label={t("reportPeriod")} value={period} onChange={(e) => dispatch(reportsActions.updatePeriod(e.target.value))}>
+          <Select
+            label={t("reportPeriod")}
+            value={period}
+            onChange={(e) =>
+              dispatch(reportsActions.updatePeriod(e.target.value))
+            }
+          >
             <MenuItem value="today">{t("reportToday")}</MenuItem>
             <MenuItem value="yesterday">{t("reportYesterday")}</MenuItem>
             <MenuItem value="thisWeek">{t("reportThisWeek")}</MenuItem>
             <MenuItem value="previousWeek">{t("reportPreviousWeek")}</MenuItem>
             <MenuItem value="thisMonth">{t("reportThisMonth")}</MenuItem>
-            <MenuItem value="previousMonth">{t("reportPreviousMonth")}</MenuItem>
+            <MenuItem value="previousMonth">
+              {t("reportPreviousMonth")}
+            </MenuItem>
             <MenuItem value="custom">{t("reportCustom")}</MenuItem>
           </Select>
         </FormControl>
@@ -131,7 +183,9 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
             label={t("reportFrom")}
             type="datetime-local"
             value={from}
-            onChange={(e) => dispatch(reportsActions.updateFrom(e.target.value))}
+            onChange={(e) =>
+              dispatch(reportsActions.updateFrom(e.target.value))
+            }
             fullWidth
           />
         </div>
@@ -177,7 +231,9 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
             className={classes.filterButton}
             disabled={disabled}
           >
-            <Typography variant="button" noWrap>{t("reportEmail")}</Typography>
+            <Typography variant="button" noWrap>
+              {t("reportEmail")}
+            </Typography>
           </Button>
         )}
       </div>

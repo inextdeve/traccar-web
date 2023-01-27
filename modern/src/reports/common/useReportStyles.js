@@ -11,7 +11,7 @@ export default makeStyles((theme) => ({
     flexShrink: 0,
   },
   containerMain: {
-    overflow: "auto",
+    overflow: "visible",
   },
   header: {
     position: "sticky",

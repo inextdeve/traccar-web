@@ -603,5 +603,11 @@
   "close": "Close",
   "apply": "Apply",
   "filter": "Filter",
-  "emptiedBy": "Emptied By"
+  "emptiedBy": "Emptied By",
+  "reportSpeed": "Speed",
+  "reportDeviceTime": "Device Time",
+  "gt": "Greater Than",
+  "lt": "Less Than",
+  "eq": "Equal"
+
 }

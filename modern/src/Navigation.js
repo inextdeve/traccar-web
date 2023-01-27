@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import {
-  Route, Routes, useLocation, useNavigate,
-} from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { LinearProgress } from "@mui/material";
 import MainPage from "./main/MainPage";
@@ -24,6 +22,7 @@ import EventReportPage from "./reports/EventReportPage";
 import ReplayPage from "./other/ReplayPage";
 import TripReportPage from "./reports/TripReportPage";
 import StopReportPage from "./reports/StopReportPage";
+import SpeedReportPage from "./reports/SpeedReportPage";
 import SummaryReportPage from "./reports/SummaryReportPage";
 import ChartReportPage from "./reports/ChartReportPage";
 import DriversPage from "./settings/DriversPage";
@@ -148,6 +147,7 @@ const Navigation = () => {
           <Route path="route" element={<RouteReportPage />} />
           <Route path="statistics" element={<StatisticsPage />} />
           <Route path="stop" element={<StopReportPage />} />
+          <Route path="speed" element={<SpeedReportPage />} />
           <Route path="summary" element={<SummaryReportPage />} />
           <Route path="trip" element={<TripReportPage />} />
         </Route>

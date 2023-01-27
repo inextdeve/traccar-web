@@ -1,12 +1,17 @@
 import React from "react";
 import {
-  Divider, List, ListItemButton, ListItemIcon, ListItemText,
+  Divider,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import PauseCircleFilledIcon from "@mui/icons-material/PauseCircleFilled";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import SpeedIcon from "@mui/icons-material/Speed";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import RouteIcon from "@mui/icons-material/Route";
@@ -14,9 +19,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "../../common/components/LocalizationProvider";
 import { useAdministrator } from "../../common/util/permissions";
 
-const MenuItem = ({
-  title, link, icon, selected,
-}) => (
+const MenuItem = ({ title, link, icon, selected }) => (
   <ListItemButton key={link} component={Link} to={link} selected={selected}>
     <ListItemIcon>{icon}</ListItemIcon>
     <ListItemText primary={title} />
@@ -55,6 +58,12 @@ const ReportsMenu = () => {
           link="/reports/stop"
           icon={<PauseCircleFilledIcon />}
           selected={location.pathname === "/reports/stop"}
+        />
+        <MenuItem
+          title={t("reportSpeed")}
+          link="/reports/speed"
+          icon={<SpeedIcon />}
+          selected={location.pathname === "/reports/speed"}
         />
         <MenuItem
           title={t("reportSummary")}
