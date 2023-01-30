@@ -11,6 +11,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 
 import Delete from "@mui/icons-material/Delete";
+import ReportIcon from "@mui/icons-material/Report";
 
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { Link, useLocation } from "react-router-dom";
@@ -75,6 +76,12 @@ const ReportsMenu = () => {
               link="/analytics/bin/byarea"
               icon={<AreaIcon />}
               selected={location.pathname === "/analytics/bin/byarea"}
+            />
+            <MenuItem
+              title={t("binsReports")}
+              link="/analytics/bin/binsreports"
+              icon={<ReportIcon />}
+              selected={location.pathname === "/analytics/bin/binsreports"}
             />
             <MenuItem
               title={t("reportSummary")}

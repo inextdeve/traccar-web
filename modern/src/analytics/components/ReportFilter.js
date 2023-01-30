@@ -14,7 +14,7 @@ import useReportStyles from "../common/useReportStyles";
 import { analyticsActions } from "../../store";
 import { URL } from "../../common/util/constant";
 
-const ReportFilter = ({ tag }) => {
+const ReportFilter = ({ tag, altURL }) => {
   const t = useTranslation();
   const classes = useReportStyles();
   const [period, setPeriod] = useState("");
@@ -27,8 +27,10 @@ const ReportFilter = ({ tag }) => {
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
   const handleSubmit = ({ from, to }) => {
-    const url = `${URL}/?token=${token}&${tag}&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`;
-    console.log(url);
+    const url = `${altURL || URL}/?token=${token}&${tag}&date_f=${
+      from.date
+    }&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`;
+
     setIsLoading(true);
     fetch(url)
       .then((data) => data.json())

@@ -608,6 +608,12 @@
   "reportDeviceTime": "Device Time",
   "gt": "Greater Than",
   "lt": "Less Than",
-  "eq": "Equal"
+  "eq": "Equal",
+  "reportID": "Report ID",
+  "binName": "Bin Name",
+  "reportType": "Report Type",
+  "reporterName": "Reporter Name",
+  "reporterPhone": "Phone",
+  "binsReports": "Bins Reports"
 
 }

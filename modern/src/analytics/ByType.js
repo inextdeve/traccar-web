@@ -55,6 +55,8 @@ const ByType = () => {
     setSelectedItem(true);
     setMapLoading(null);
     const url = `${URL}/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
+    console.log(url);
+
     const data = await fetch(url);
 
     setMapLoading(false);

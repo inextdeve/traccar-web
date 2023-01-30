@@ -52,6 +52,7 @@ import App from "./App";
 import ChangeServerPage from "./other/ChangeServerPage";
 import DevicesPage from "./settings/DevicesPage";
 import Summary from "./analytics/Summary";
+import BinsReports from "./analytics/BinsReports";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -157,6 +158,7 @@ const Navigation = () => {
           <Route path="bin/byroutes" element={<ByRoutes />} />
           <Route path="bin/byarea" element={<ByArea />} />
           <Route path="bin/summary" element={<Summary />} />
+          <Route path="bin/binsreports" element={<BinsReports />} />
         </Route>
       </Route>
     </Routes>

@@ -113,10 +113,12 @@ const SummaryReportPage = () => {
       deviceIds.forEach((deviceId) => query.append("deviceId", deviceId));
       groupIds.forEach((groupId) => query.append("groupId", groupId));
       if (type === "export") {
-        window.location.assign(`/api/reports/summary/xlsx?${query.toString()}`);
+        window.location.assign(
+          `/api/reports/positions/xlsx?${query.toString()}`
+        );
       } else if (type === "mail") {
         const response = await fetch(
-          `/api/reports/summary/mail?${query.toString()}`
+          `/api/reports/positions/mail?${query.toString()}`
         );
         if (!response.ok) {
           throw Error(await response.text());

@@ -608,5 +608,11 @@
   "reportDeviceTime": "الوقت بالجهاز",
   "gt": "أكبر من",
   "lt": "أصغر من",
-  "eq": "تساوي"
+  "eq": "تساوي",
+  "reportID": "رقم البلاغ",
+  "binName": "اسم الحاوية",
+  "reportType": "نوع البلاغ",
+  "reporterName": "اسم المبلغ",
+  "reporterPhone": "الهاتف",
+  "binsReports": "البلاغات"
 }
