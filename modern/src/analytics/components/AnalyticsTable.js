@@ -9,7 +9,6 @@ import {
   TableContainer,
   Paper,
 } from "@mui/material";
-
 import { useTranslation } from "../../common/components/LocalizationProvider";
 import TableShimmer from "../../common/components/TableShimmer";
 import useReportStyles from "../common/useReportStyles";
@@ -59,10 +58,10 @@ const AnalyticsTable = ({ columnsHead, items, keys }) => {
                         itemsIndex === items.length - 1
                           ? classes.lastCell
                           : key === "empty_bin"
-                            ? classes.emptyBin
-                            : key === "un_empty_bin"
-                              ? classes.unEmptyBin
-                              : null
+                          ? classes.emptyBin
+                          : key === "un_empty_bin"
+                          ? classes.unEmptyBin
+                          : null
                       }
                       align={`${
                         index === keys.length - 1 ? "center" : "inherit"

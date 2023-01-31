@@ -1,20 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import moment from "moment";
+
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  Grid,
-  Typography,
-  Box,
-  Skeleton,
-  Button,
-  Tabs,
-  Tab,
-  LinearProgress,
-  IconButton,
-} from "@mui/material";
+import { Box, Button, LinearProgress, IconButton } from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+
 import ImageIcon from "@mui/icons-material/Image";
 import { useTheme } from "@mui/material/styles";
 import { analyticsActions } from "../store";
@@ -26,11 +16,6 @@ import ReportsMenu from "./components/ReportsMenu";
 import AnalyticsTable from "./components/AnalyticsTable";
 import { useTranslation } from "../common/components/LocalizationProvider";
 import ReportFilter from "./components/ReportFilter";
-
-import sendMessage from "../common/util/sendMessage";
-import BinsChart from "./components/Charts/BinsChart";
-import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
-import BinsStatusChart from "./components/Charts/BinsStatusChart";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
 
@@ -46,45 +31,13 @@ const BinsReports = () => {
   const theme = useTheme();
   const url = "https://bins.rcj.care/api";
 
-  const countTotal = (array, prop) =>
-    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
-
-  const countRate = (total, n) => (n * 100) / total;
-
   const token = useSelector((state) => state.session.user.attributes.apitoken);
-  const loading = useSelector((state) => state.analytics.loading);
+
   const setIsLoading = (state) =>
     dispatch(analyticsActions.updateLoading(state));
   const [mapLoading, setMapLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(false);
 
-  const generateMessage = async (tag, id, driverName, routeName) => {
-    const url = `${URL}/?token=${token}&bins&limit=0;10&${tag}=${id}&status=unempty`;
-
-    const data = await fetch(url);
-    const unemptyBins = await data.json();
-
-    const bins = unemptyBins
-      .map(
-        (item, index) => `${index} - 
-              Bin Code: ${item.id_bin}
-              Bin Type: ${item.bintype}
-              https://www.google.com/maps/place/${item.longitude},${item.latitude}
-              ** `
-      )
-      .join("\n");
-
-    return `
-          Hello! ${driverName}
-          JCR Cleaning Project 
-          
-          Alarm Bins Not Empty 
-          DateTime ${moment().format("MMMM Do YYYY, h:mm:ss a")}
-          RoutNo: ${routeName}
-          
-          ${bins}
-          `;
-  };
   // MAP Proceessing
   const mapButtonClick = useCallback(async ({ id, tag }) => {
     setSelectedItem(true);

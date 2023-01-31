@@ -54,7 +54,6 @@ const ByRoutes = () => {
   const setIsLoading = (state) =>
     dispatch(analyticsActions.updateLoading(state));
 
-  const positions = useSelector((state) => state.analytics.positions);
   const [mapLoading, setMapLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(false);
 

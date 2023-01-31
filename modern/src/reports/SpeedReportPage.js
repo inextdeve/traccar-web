@@ -54,15 +54,14 @@ const SummaryReportPage = () => {
 
   const devices = useSelector((state) => state.devices.items);
 
-  const distanceUnit = useAttributePreference("distanceUnit");
   const speedUnit = useAttributePreference("speedUnit");
   const volumeUnit = useAttributePreference("volumeUnit");
   const hours12 = usePreference("twelveHourFormat");
 
   const [columns, setColumns] = usePersistedState("summaryColumns", [
     "deviceTime",
-    "distance",
     "speed",
+    "engineHours",
   ]);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -147,10 +146,6 @@ const SummaryReportPage = () => {
         return devices[item[key]].name;
       case "deviceTime":
         return formatTime(item[key], "minutes", hours12);
-      case "startOdometer":
-      case "endOdometer":
-      case "distance":
-        return formatDistance(item[key], distanceUnit, t);
       case "speed":
       case "maxSpeed":
         return formatSpeed(item[key], speedUnit, t);
@@ -268,7 +263,7 @@ const SummaryReportPage = () => {
               </TableRow>
             ))
           ) : (
-            <TableShimmer columns={columns.length + 1} />
+            <TableShimmer columns={columns.length + 2} fullWidth />
           )}
         </TableBody>
       </Table>

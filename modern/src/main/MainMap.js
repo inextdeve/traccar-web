@@ -21,7 +21,6 @@ import MapNotification from "../map/notification/MapNotification";
 import useFeatures from "../common/util/useFeatures";
 import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
 import Popup from "../common/components/Popup";
-import CameraPopup from "../common/components/CameraPopup";
 import { URL } from "../common/util/constant";
 import MyMapButton from "../map/core/Buttons";
 
@@ -51,6 +50,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   useEffect(() => {
     if (authenticated) {
       dispatch(binsActions.updateLoading(true));
+      console.log(`${URL}/?token=${token}&bins&limit=0;10000`);
       fetch(`${URL}/?token=${token}&bins&limit=0;10000`)
         .then((data) => data.json())
         .then((data) => {
@@ -125,8 +125,6 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
 
   return (
     <>
-      {/* Camera Popup */}
-
       {loading ? <LinearProgress /> : null}
       <Popup
         desktopPadding={theme.dimensions.drawerWidthDesktop}
