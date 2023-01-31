@@ -1,8 +1,19 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-
+import Carousel from "react-material-ui-carousel";
+import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Box, Button, LinearProgress, IconButton } from "@mui/material";
+import {
+  Box,
+  Button,
+  LinearProgress,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Paper,
+} from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
 
 import ImageIcon from "@mui/icons-material/Image";
@@ -23,6 +34,14 @@ import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
 import { URL } from "../common/util/constant";
 
+function Item(props) {
+  const classes = useReportStyles();
+
+  return (
+    <img className={classes.reportImg} src={props.item} alt="report-image" />
+  );
+}
+
 const BinsReports = () => {
   const classes = useReportStyles();
   const t = useTranslation();
@@ -32,6 +51,30 @@ const BinsReports = () => {
   const url = "https://bins.rcj.care/api";
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
+
+  const { from, to } = useSelector((state) => state.analytics);
+
+  const [reportImages, setReportImages] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const dateFrom = {
+    date: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
+      .toISOString()
+      .split("T")[0],
+    time: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
+      .toISOString()
+      .split("T")[1]
+      .split(".")[0],
+  };
+  const dateTo = {
+    date: moment(to, moment.HTML5_FMT.DATETIME_LOCAL)
+      .toISOString()
+      .split("T")[0],
+    time: moment(to, moment.HTML5_FMT.DATETIME_LOCAL)
+      .toISOString()
+      .split("T")[1]
+      .split(".")[0],
+  };
 
   const setIsLoading = (state) =>
     dispatch(analyticsActions.updateLoading(state));
@@ -80,8 +123,8 @@ const BinsReports = () => {
     "reportId",
     "time",
     "description_bin",
-    "reportType",
-    "area",
+    "type",
+    "center_name",
     "username",
     "phone",
     "status",
@@ -100,7 +143,14 @@ const BinsReports = () => {
       ...item,
       actions: (
         <>
-          <IconButton color="secondary" onClick={() => {}} disabled={false}>
+          <IconButton
+            color="secondary"
+            onClick={() => {
+              setReportImages([item.img, item.imgafter]);
+              setDialogOpen(true);
+            }}
+            disabled={false}
+          >
             <ImageIcon />
           </IconButton>
           <IconButton onClick={() => mapButtonClick(requestParams)}>
@@ -113,8 +163,11 @@ const BinsReports = () => {
 
   useEffect(() => {
     setIsLoading(true);
+
     fetch(
-      `${url}/?token=${token}&report_bins&time_f=00%3A00&date_f=2023-01-26&time_t=23%3A59&date_t=2023-01-26`
+      `${url}/?token=${token}&report_bins&time_f=${`00:00`}&date_f=${`2023-01-01`}&time_t=${
+        dateTo.time
+      }&date_t=${dateTo.date}`
     )
       .then((data) => {
         setIsLoading(false);
@@ -131,8 +184,45 @@ const BinsReports = () => {
     dispatch(analyticsActions.updatePopup(false));
     dispatch(analyticsActions.updateBinData(null));
   };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
+      <Dialog
+        open={dialogOpen}
+        onClose={handleDialogClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Report Images"}</DialogTitle>
+        <DialogContent sx={{ minWidth: "400px" }}>
+          <Carousel
+            indicators={false}
+            navButtonsAlwaysVisible
+            autoPlay={false}
+            height={300}
+          >
+            {reportImages.map((item, i) => {
+              if (!item)
+                return (
+                  <Item
+                    key={i}
+                    item="https://panthertech.fiu.edu/scs/extensions/SC/Manor/3.3.0/img/no_image_available.jpeg"
+                  />
+                );
+              return <Item key={i} item={item} />;
+            })}
+          </Carousel>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} autoFocus>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
       <div className={classes.container}>
         <Popup
           desktopPadding={theme.dimensions.drawerWidthDesktop}
@@ -173,6 +263,7 @@ const BinsReports = () => {
               columnsHead={columnsHead}
               items={items}
               keys={keys}
+              excludeTotal
             />
           </Box>
         </Box>

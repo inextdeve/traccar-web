@@ -13,7 +13,7 @@ import { useTranslation } from "../../common/components/LocalizationProvider";
 import TableShimmer from "../../common/components/TableShimmer";
 import useReportStyles from "../common/useReportStyles";
 
-const AnalyticsTable = ({ columnsHead, items, keys }) => {
+const AnalyticsTable = ({ columnsHead, items, keys, excludeTotal }) => {
   const classes = useReportStyles();
   const t = useTranslation();
   const loading = useSelector((state) => state.analytics.loading);
@@ -45,7 +45,9 @@ const AnalyticsTable = ({ columnsHead, items, keys }) => {
                   key={itemsIndex + 2}
                   hover={itemsIndex !== items.length - 1}
                   className={
-                    itemsIndex === items.length - 1 ? classes.greyRow : null
+                    itemsIndex === items.length - 1 && !excludeTotal
+                      ? classes.greyRow
+                      : null
                   }
                 >
                   <TableCell
@@ -55,7 +57,7 @@ const AnalyticsTable = ({ columnsHead, items, keys }) => {
                     <TableCell
                       key={index}
                       className={
-                        itemsIndex === items.length - 1
+                        itemsIndex === items.length - 1 && !excludeTotal
                           ? classes.lastCell
                           : key === "empty_bin"
                           ? classes.emptyBin

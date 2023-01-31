@@ -58,4 +58,7 @@ export default makeStyles((theme) => ({
   chartSubtitle: {
     color: theme.palette.colors.neutral,
   },
+  reportImg: {
+    width: "100%",
+  },
 }));
