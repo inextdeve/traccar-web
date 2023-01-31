@@ -1,5 +1,12 @@
 import {
-  amber, grey, green, indigo, red, common,
+  amber,
+  grey,
+  green,
+  indigo,
+  red,
+  common,
+  blue,
+  blueGrey,
 } from "@mui/material/colors";
 
 const colors = {
@@ -15,6 +22,8 @@ const colors = {
   bsDanger: "rgb(211, 47, 47)",
   bsSuccess: "rgb(46, 125, 50)",
   bsWarning: "#ffc107",
+  solidBlue: blue[300],
+  grey: blueGrey[500],
 };
 
 export default {
@@ -27,6 +36,12 @@ export default {
   secondary: {
     main: colors.secondary,
     contrastText: colors.white,
+  },
+  solidBlue: {
+    main: colors.solidBlue,
+  },
+  solidGrey: {
+    main: colors.grey,
   },
   colors,
 };

@@ -6,7 +6,7 @@ const sendMessage = async (message, number) => {
     headers: {
       "content-type": "application/x-www-form-urlencoded",
     },
-    body: `token=x6lf1axmx0kmiimb&to=+212704866309&body=${message}&priority=1&referenceId=`,
+    body: `token=x6lf1axmx0kmiimb&to=+${number}&body=${message}&priority=1&referenceId=`,
   });
   toast.promise(data, {
     pending: "Sending",

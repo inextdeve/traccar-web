@@ -52,7 +52,7 @@ const CameraCard = ({ mdvrid }) => {
             title="front"
             className={`${classes.iframe} iframeSelector`}
             allowFullScreen
-            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=0`}
+            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=3`}
           />
         </TabPanel>
         <TabPanel value="2">
@@ -76,7 +76,7 @@ const CameraCard = ({ mdvrid }) => {
             title="all"
             className={classes.iframe}
             allowFullScreen
-            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=3&chns=0,1,2`}
+            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=3&chns=3,1,2`}
           />
         </TabPanel>
       </TabContext>

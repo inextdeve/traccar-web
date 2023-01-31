@@ -12,7 +12,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Paper,
 } from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
 
@@ -38,7 +37,10 @@ function Item(props) {
   const classes = useReportStyles();
 
   return (
-    <img className={classes.reportImg} src={props.item} alt="report-image" />
+    <div className={classes.reportsImageContainer}>
+      <div className={classes.reportImageTitle}>{props.title}</div>
+      <img className={classes.reportImg} src={props.item} alt="report-image" />
+    </div>
   );
 }
 
@@ -144,7 +146,7 @@ const BinsReports = () => {
       actions: (
         <>
           <IconButton
-            color="secondary"
+            color="solidBlue"
             onClick={() => {
               setReportImages([item.img, item.imgafter]);
               setDialogOpen(true);
@@ -153,7 +155,10 @@ const BinsReports = () => {
           >
             <ImageIcon />
           </IconButton>
-          <IconButton onClick={() => mapButtonClick(requestParams)}>
+          <IconButton
+            color="solidGrey"
+            onClick={() => mapButtonClick(requestParams)}
+          >
             <MapIcon />
           </IconButton>
         </>
@@ -210,10 +215,17 @@ const BinsReports = () => {
                 return (
                   <Item
                     key={i}
+                    title={i == 0 ? "Report Image" : "After"}
                     item="https://panthertech.fiu.edu/scs/extensions/SC/Manor/3.3.0/img/no_image_available.jpeg"
                   />
                 );
-              return <Item key={i} item={item} />;
+              return (
+                <Item
+                  key={i}
+                  title={i == 0 ? "Report Image" : "After"}
+                  item={item}
+                />
+              );
             })}
           </Carousel>
         </DialogContent>
