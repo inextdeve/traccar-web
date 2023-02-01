@@ -37,8 +37,7 @@ function Item(props) {
   const classes = useReportStyles();
 
   return (
-    <div className={classes.reportsImageContainer}>
-      <div className={classes.reportImageTitle}>{props.title}</div>
+    <div>
       <img className={classes.reportImg} src={props.item} alt="report-image" />
     </div>
   );
@@ -57,17 +56,18 @@ const BinsReports = () => {
   const { from, to } = useSelector((state) => state.analytics);
 
   const [reportImages, setReportImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const dateFrom = {
-    date: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
-      .toISOString()
-      .split("T")[0],
-    time: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
-      .toISOString()
-      .split("T")[1]
-      .split(".")[0],
-  };
+  // const dateFrom = {
+  //   date: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
+  //     .toISOString()
+  //     .split("T")[0],
+  //   time: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
+  //     .toISOString()
+  //     .split("T")[1]
+  //     .split(".")[0],
+  // };
   const dateTo = {
     date: moment(to, moment.HTML5_FMT.DATETIME_LOCAL)
       .toISOString()
@@ -143,6 +143,7 @@ const BinsReports = () => {
 
     return {
       ...item,
+      status: parseInt(item.status) ? t("processing") : t("done"),
       actions: (
         <>
           <IconButton
@@ -202,27 +203,42 @@ const BinsReports = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Report Images"}</DialogTitle>
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{ display: "flex", justifyContent: "space-between" }}
+        >
+          <span>Report Images</span>{" "}
+          {selectedImage ? (
+            <span className={`${classes.positive} ${classes.imageReportTag}`}>
+              After
+            </span>
+          ) : (
+            <span className={`${classes.negative} ${classes.imageReportTag}`}>
+              Before
+            </span>
+          )}
+        </DialogTitle>
         <DialogContent sx={{ minWidth: "400px" }}>
           <Carousel
             indicators={false}
             navButtonsAlwaysVisible
             autoPlay={false}
             height={300}
+            onChange={(e) => setSelectedImage(e)}
           >
             {reportImages.map((item, i) => {
               if (!item)
                 return (
                   <Item
                     key={i}
-                    title={i == 0 ? "Report Image" : "After"}
+                    title={i === 0 ? "Report Image" : "After"}
                     item="https://panthertech.fiu.edu/scs/extensions/SC/Manor/3.3.0/img/no_image_available.jpeg"
                   />
                 );
               return (
                 <Item
                   key={i}
-                  title={i == 0 ? "Report Image" : "After"}
+                  title={i === 0 ? "Report Image" : "After"}
                   item={item}
                 />
               );

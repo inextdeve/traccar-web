@@ -53,6 +53,7 @@ import ChangeServerPage from "./other/ChangeServerPage";
 import DevicesPage from "./settings/DevicesPage";
 import Summary from "./analytics/Summary";
 import BinsReports from "./analytics/BinsReports";
+import WashingType from "./analytics/washing/ByType";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -159,6 +160,7 @@ const Navigation = () => {
           <Route path="bin/byarea" element={<ByArea />} />
           <Route path="bin/summary" element={<Summary />} />
           <Route path="bin/binsreports" element={<BinsReports />} />
+          <Route path="bin/washing/bytype" element={<WashingType />} />
         </Route>
       </Route>
     </Routes>

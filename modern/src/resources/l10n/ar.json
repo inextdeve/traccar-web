@@ -614,5 +614,7 @@
   "reportType": "نوع البلاغ",
   "reporterName": "اسم المبلغ",
   "reporterPhone": "الهاتف",
-  "binsReports": "البلاغات"
+  "binsReports": "البلاغات",
+  "processing": "جاري التنفيذ",
+  "done": "تم التنفيذ"
 }

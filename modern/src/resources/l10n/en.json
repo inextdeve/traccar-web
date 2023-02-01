@@ -614,6 +614,8 @@
   "reportType": "Report Type",
   "reporterName": "Reporter Name",
   "reporterPhone": "Phone",
-  "binsReports": "Bins Reports"
+  "binsReports": "Bins Reports",
+  "processing": "Processing",
+  "done": "Done"
 
 }

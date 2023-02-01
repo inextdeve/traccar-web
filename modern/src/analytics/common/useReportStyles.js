@@ -58,28 +58,20 @@ export default makeStyles((theme) => ({
   chartSubtitle: {
     color: theme.palette.colors.neutral,
   },
-  reportsImageContainer: {
-    position: "relative",
-    "&:hover": {
-      "& $reportImageTitle": {
-        opacity: 1,
-      },
-    },
-  },
   reportImg: {
     width: "100%",
   },
-  reportImageTitle: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    background: "#00000075",
-    color: "#FFF",
-    textAlign: "center",
-    fontWeight: "900",
-    padding: "1rem",
-    opacity: 0,
-    transition: "all 300ms ease",
+  positive: {
+    background: theme.palette.colors.positive,
+  },
+  negative: {
+    background: theme.palette.colors.negative,
+  },
+  imageReportTag: {
+    borderRadius: "0.5rem",
+    color: "white",
+    padding: "0 8px",
+    fontSize: "0.99rem",
+    lineHeight: "32px",
   },
 }));
