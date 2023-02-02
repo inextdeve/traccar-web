@@ -4,22 +4,22 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-import Print from "./common/Print";
-import PageLayout from "../common/components/PageLayout";
-import useReportStyles from "./common/useReportStyles";
-import ReportsMenu from "./components/ReportsMenu";
-import { useTranslation } from "../common/components/LocalizationProvider";
-import ReportFilter from "./components/ReportFilter";
-import { analyticsActions } from "../store";
-import AnalyticsTable from "./components/AnalyticsTable";
-import BinsChart from "./components/Charts/BinsChart";
-import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
-import BinsStatusChart from "./components/Charts/BinsStatusChart";
-import ExcelExport from "./components/ExcelExport";
-import PrintingHeader from "../common/components/PrintingHeader";
-import { URL } from "../common/util/constant";
+import Print from "../common/Print";
+import PageLayout from "../../common/components/PageLayout";
+import useReportStyles from "../common/useReportStyles";
+import ReportsMenu from "../components/ReportsMenu";
+import { useTranslation } from "../../common/components/LocalizationProvider";
+import ReportFilter from "../components/ReportFilter";
+import { analyticsActions } from "../../store";
+import AnalyticsTable from "../components/AnalyticsTable";
+import BinsChart from "../components/Charts/BinsChart";
+import BinsPercentageChart from "../components/Charts/BinsPercentageChart";
+import BinsStatusChart from "../components/Charts/BinsStatusChart";
+import ExcelExport from "../components/ExcelExport";
+import PrintingHeader from "../../common/components/PrintingHeader";
+import { URL, ALTURL } from "../../common/util/constant";
 
-const Summary = () => {
+const WashingSummary = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const dispatch = useDispatch();
@@ -38,33 +38,26 @@ const Summary = () => {
     "id",
     "date",
     "numberOfBins",
-    "empted",
-    "notEmpted",
+    "cleaned",
+    "notCleaned",
     "completionRate",
   ];
   const data = useSelector((state) => state.analytics.items);
-  const keys = [
-    "id",
-    "date_from",
-    "total",
-    "empty_bin",
-    "un_empty_bin",
-    "rate",
-  ];
+  const keys = ["id", "date_from", "total", "cleaned", "not_cleaned", "rate"];
   const items = data.map((item, index) => ({
     id: index,
     ...item,
-    empty_bin: item.on,
-    un_empty_bin: item.off,
+    cleaned: item.cleaned,
+    not_cleaned: item.not_cleaned,
     date_from: moment(item.date_from).format("MMM Do YY"),
-    rate: `${countRate(item.total, item.on).toFixed(2)}%`,
+    rate: `${countRate(item.total, item.cleaned).toFixed(2)}%`,
   }));
   items.push({
     id: t("total"),
     total: countTotal(items, "total"),
     date_from: "All",
-    empty_bin: countTotal(items, "empty_bin"),
-    un_empty_bin: countTotal(items, "un_empty_bin"),
+    cleaned: countTotal(items, "cleaned"),
+    not_cleaned: countTotal(items, "not_cleaned"),
     rate: `${(countTotal(items, "rate") / items.length).toFixed(2)}%`,
   });
   // Data for charts drop Total item
@@ -72,7 +65,7 @@ const Summary = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${URL}/?token=${token}&device_daily`)
+    fetch(`${URL}/?token=${token}&cn_bins_daily`)
       .then((data) => {
         setIsLoading(false);
         return data.json();
@@ -92,7 +85,7 @@ const Summary = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter tag="device_daily" />
+            <ReportFilter tag="cn_bins_daily" altURL={ALTURL} />
             <ExcelExport excelData={items} fileName="SummarySheet" />
             <Print
               target={TableRef.current}
@@ -136,18 +129,20 @@ const Summary = () => {
                 <>
                   <Grid item xs={12} lg={5} className={classes.chart}>
                     <BinsChart
-                      key1="Empted"
-                      key2="Unempted"
+                      key1="Cleaned"
+                      key2="Uncleaned"
                       title={t("binsStatus")}
-                      subtitle={t("theProportionOfTheEmptedBinsAndTheUnempted")}
+                      subtitle={t(
+                        "theProportionOfTheCleanedBinsAndTheUncleaned",
+                      )}
                       bins={[
                         {
-                          name: "Empted",
+                          name: "Cleaned",
                           value:
                             countTotal(chartData, "rate") / chartData.length,
                         },
                         {
-                          name: "Unempted",
+                          name: "Uncleaned",
                           value:
                             100 -
                             countTotal(chartData, "rate") / chartData.length,
@@ -160,26 +155,28 @@ const Summary = () => {
                       title={t("theProportionOfEachBinsType")}
                       subtitle={t("theProportionOfEachBinType")}
                       data={chartData.map((item) => ({
-                        name: `id: ${item.id}`,
+                        name: item.bintype,
                         value: parseInt(item.total, 10),
                       }))}
                     />
                   </Grid>
                   <Grid xs={12} item className={classes.chart}>
                     <BinsStatusChart
-                      key1="empted"
-                      key2="unempted"
+                      key1="cleaned"
+                      key2="uncleaned"
                       title={t("binsStatusByType")}
                       subtitle={t(
-                        "theProportionOfEmptedAndUnemptedBinsByTypes",
+                        "theProportionOfTheCleanedBinsAndTheUncleaned",
                       )}
                       bins={chartData.map((item) => {
-                        const empted = (item.on * 100) / item.total;
+                        const cleaned = (item.cleaned * 100) / item.total;
 
                         return {
-                          name: item.id,
-                          empted: countRate(item.total, item.on).toFixed(2),
-                          unempted: 100 - empted,
+                          name: item.route_name,
+                          cleaned: countRate(item.total, item.cleaned).toFixed(
+                            2,
+                          ),
+                          uncleaned: 100 - cleaned,
                           amt: 100,
                         };
                       })}
@@ -195,4 +192,4 @@ const Summary = () => {
   );
 };
 
-export default Summary;
+export default WashingSummary;

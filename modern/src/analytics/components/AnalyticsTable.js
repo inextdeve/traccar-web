@@ -59,11 +59,11 @@ const AnalyticsTable = ({ columnsHead, items, keys, excludeTotal }) => {
                       className={
                         itemsIndex === items.length - 1 && !excludeTotal
                           ? classes.lastCell
-                          : key === "empty_bin"
-                          ? classes.emptyBin
-                          : key === "un_empty_bin"
-                          ? classes.unEmptyBin
-                          : null
+                          : key === "empty_bin" || key === "cleaned"
+                            ? classes.emptyBin
+                            : key === "un_empty_bin" || key === "not_cleaned"
+                              ? classes.unEmptyBin
+                              : null
                       }
                       align={`${
                         index === keys.length - 1 ? "center" : "inherit"

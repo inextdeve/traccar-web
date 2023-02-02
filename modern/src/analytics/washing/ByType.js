@@ -1,4 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback, useEffect, useRef, useState,
+} from "react";
 import {
   Grid,
   Typography,
@@ -37,15 +39,13 @@ const ByType = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
   const theme = useTheme();
-  const countTotal = (array, prop) =>
-    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) =>
-    dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
 
   // Map Processing
   const [mapLoading, setMapLoading] = useState(false);
@@ -55,7 +55,6 @@ const ByType = () => {
     setSelectedItem(true);
     setMapLoading(null);
     const url = `${URL}/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
-    console.log(url);
 
     const data = await fetch(url);
 
@@ -71,8 +70,8 @@ const ByType = () => {
           latitude,
           longitude,
           binType: bintype,
-        }))
-      )
+        })),
+      ),
     );
   });
 
@@ -166,7 +165,7 @@ const ByType = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={
+              button={(
                 <Button
                   variant="contained"
                   color="secondary"
@@ -174,7 +173,7 @@ const ByType = () => {
                 >
                   {t("print")}
                 </Button>
-              }
+              )}
             />
           </Box>
           <Box ref={TableRef}>
@@ -207,9 +206,11 @@ const ByType = () => {
                   <>
                     <Grid item xs={12} lg={5} className={classes.chart}>
                       <BinsChart
+                        key1="Cleaned"
+                        key2="Uncleaned"
                         title={t("binsStatus")}
                         subtitle={t(
-                          "theProportionOfTheCleanedBinsAndTheUncleaned"
+                          "theProportionOfTheCleanedBinsAndTheUncleaned",
                         )}
                         bins={[
                           {
@@ -242,7 +243,7 @@ const ByType = () => {
                         key2="uncleaned"
                         title={t("binsStatusByType")}
                         subtitle={t(
-                          "theProportionOfCleanedAndUncleanedBinsByTypes"
+                          "theProportionOfCleanedAndUncleanedBinsByTypes",
                         )}
                         bins={chartData.map((item) => {
                           const cleaned = (item.cleaned * 100) / item.total;
@@ -251,7 +252,7 @@ const ByType = () => {
                             name: item.bintype,
                             cleaned: countRate(
                               item.total,
-                              item.cleaned
+                              item.cleaned,
                             ).toFixed(2),
                             uncleaned: 100 - cleaned,
                             amt: 100,

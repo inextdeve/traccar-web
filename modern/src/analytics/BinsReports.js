@@ -31,7 +31,7 @@ import PrintingHeader from "../common/components/PrintingHeader";
 
 import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
-import { URL } from "../common/util/constant";
+import { ALTURL, URL } from "../common/util/constant";
 
 function Item(props) {
   const classes = useReportStyles();
@@ -49,11 +49,10 @@ const BinsReports = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
   const theme = useTheme();
-  const url = "https://bins.rcj.care/api";
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
-  const { from, to } = useSelector((state) => state.analytics);
+  const { to } = useSelector((state) => state.analytics);
 
   const [reportImages, setReportImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -171,7 +170,7 @@ const BinsReports = () => {
     setIsLoading(true);
 
     fetch(
-      `${url}/?token=${token}&report_bins&time_f=${`00:00`}&date_f=${`2023-01-01`}&time_t=${
+      `${ALTURL}/?token=${token}&report_bins&time_f=${`00:00`}&date_f=${`2023-01-01`}&time_t=${
         dateTo.time
       }&date_t=${dateTo.date}`
     )
@@ -270,7 +269,7 @@ const BinsReports = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter tag="report_bins" altURL={url} />
+            <ReportFilter tag="report_bins" altURL={ALTURL} />
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}

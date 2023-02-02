@@ -32,17 +32,15 @@ const ReportFilter = ({
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
 
   const deviceId = useSelector(
-    (state) => state.reports.deviceId || selectedDeviceId
+    (state) => state.reports.deviceId || selectedDeviceId,
   );
-  const deviceIds = useSelector((state) =>
-    state.reports.deviceIds.length
-      ? state.reports.deviceIds
-      : state.reports.deviceId
+  const deviceIds = useSelector((state) => (state.reports.deviceIds.length
+    ? state.reports.deviceIds
+    : state.reports.deviceId
       ? [state.reports.deviceId]
       : selectedDeviceId
-      ? [selectedDeviceId]
-      : []
-  );
+        ? [selectedDeviceId]
+        : []));
   const groupIds = useSelector((state) => state.reports.groupIds);
   const period = useSelector((state) => state.reports.period);
   const from = useSelector((state) => state.reports.from);
@@ -110,12 +108,10 @@ const ReportFilter = ({
                 dispatch(
                   multiDevice
                     ? reportsActions.updateDeviceIds(value.map(({ id }) => id))
-                    : reportsActions.updateDeviceId(value?.id)
+                    : reportsActions.updateDeviceId(value?.id),
                 );
               }}
-              isOptionEqualToValue={(option, value) => {
-                return option.id === value.id;
-              }}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
               disablePortal
               limitTags={0}
               id="combo-box-demo"
@@ -139,9 +135,7 @@ const ReportFilter = ({
             <Select
               label={t("settingsGroups")}
               value={groupIds}
-              onChange={(e) =>
-                dispatch(reportsActions.updateGroupIds(e.target.value))
-              }
+              onChange={(e) => dispatch(reportsActions.updateGroupIds(e.target.value))}
               multiple
             >
               {Object.values(groups)
@@ -161,9 +155,7 @@ const ReportFilter = ({
           <Select
             label={t("reportPeriod")}
             value={period}
-            onChange={(e) =>
-              dispatch(reportsActions.updatePeriod(e.target.value))
-            }
+            onChange={(e) => dispatch(reportsActions.updatePeriod(e.target.value))}
           >
             <MenuItem value="today">{t("reportToday")}</MenuItem>
             <MenuItem value="yesterday">{t("reportYesterday")}</MenuItem>
@@ -183,9 +175,7 @@ const ReportFilter = ({
             label={t("reportFrom")}
             type="datetime-local"
             value={from}
-            onChange={(e) =>
-              dispatch(reportsActions.updateFrom(e.target.value))
-            }
+            onChange={(e) => dispatch(reportsActions.updateFrom(e.target.value))}
             fullWidth
           />
         </div>

@@ -1,5 +1,5 @@
 import React, {
-  useCallback, useEffect, useRef, useState,
+  useEffect, useRef, useState, useCallback,
 } from "react";
 import {
   Grid,
@@ -13,32 +13,32 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import MapIcon from "@mui/icons-material/Map";
 import { useTheme } from "@mui/material/styles";
-import Print from "./common/Print";
-import PageLayout from "../common/components/PageLayout";
-import useReportStyles from "./common/useReportStyles";
-import ReportsMenu from "./components/ReportsMenu";
-import { useTranslation } from "../common/components/LocalizationProvider";
-import ReportFilter from "./components/ReportFilter";
-import { analyticsActions } from "../store";
-import AnalyticsTable from "./components/AnalyticsTable";
-import BinsChart from "./components/Charts/BinsChart";
-import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
-import BinsStatusChart from "./components/Charts/BinsStatusChart";
-import ExcelExport from "./components/ExcelExport";
-import PrintingHeader from "../common/components/PrintingHeader";
+import PageLayout from "../../common/components/PageLayout";
+import useReportStyles from "../common/useReportStyles";
+import ReportsMenu from "../components/ReportsMenu";
+import AnalyticsTable from "../components/AnalyticsTable";
+import { useTranslation } from "../../common/components/LocalizationProvider";
+import ReportFilter from "../components/ReportFilter";
+import { analyticsActions } from "../../store";
+import Print from "../common/Print";
+import BinsChart from "../components/Charts/BinsChart";
+import BinsPercentageChart from "../components/Charts/BinsPercentageChart";
+import BinsStatusChart from "../components/Charts/BinsStatusChart";
+import ExcelExport from "../components/ExcelExport";
+import PrintingHeader from "../../common/components/PrintingHeader";
 
 // MAP IMPORTS
-import Popup from "../common/components/Popup";
+import MapAnalytics from "../../map/MapAnalytics";
+import Popup from "../../common/components/Popup";
+import { URL, ALTURL } from "../../common/util/constant";
 
-import MapAnalytics from "../map/MapAnalytics";
-import { URL } from "../common/util/constant";
-
-const ByType = () => {
+const WashingArea = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const dispatch = useDispatch();
   const TableRef = useRef(null);
   const theme = useTheme();
+
   const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
@@ -55,8 +55,6 @@ const ByType = () => {
     setSelectedItem(true);
     setMapLoading(null);
     const url = `${URL}/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
-    console.log(url);
-
     const data = await fetch(url);
 
     setMapLoading(false);
@@ -78,31 +76,31 @@ const ByType = () => {
 
   // Table Data Processing
   const columnsHead = [
-    "binType",
+    "area",
     "numberOfBins",
-    "empted",
-    "notEmpted",
+    "cleaned",
+    "notCleaned",
     "completionRate",
     "maps",
   ];
-  const data = useSelector((state) => state.analytics.items);
   const keys = [
-    "bintype",
+    "center_name",
     "total",
-    "empty_bin",
-    "un_empty_bin",
+    "cleaned",
+    "not_cleaned",
     "rate",
     "mapButton",
   ];
+  const data = useSelector((state) => state.analytics.items);
   const items = data.map((item) => {
     const requestParams = {
-      id: item.id_type,
-      tag: "bintypeid",
+      id: item.center_id,
+      tag: "centerid",
     };
 
     return {
       ...item,
-      rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
+      rate: `${countRate(item.total, item.cleaned).toFixed(2)}%`,
       mapButton: (
         <IconButton onClick={() => mapButtonClick(requestParams)}>
           <MapIcon />
@@ -111,25 +109,25 @@ const ByType = () => {
     };
   });
   items.push({
-    bintype: t("total"),
+    center_name: t("total"),
     total: countTotal(items, "total"),
-    empty_bin: countTotal(items, "empty_bin"),
-    un_empty_bin: countTotal(items, "un_empty_bin"),
+    cleaned: countTotal(items, "cleaned"),
+    not_cleaned: countTotal(items, "not_cleaned"),
     rate: `${(countTotal(items, "rate") / items.length).toFixed(2)}%`,
   });
+
   // Data for charts drop Total item
   const chartData = items.slice(0, -1);
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${URL}/?token=${token}&binstype`)
+    fetch(`${ALTURL}/?token=${token}&cn_bins_centers`)
       .then((data) => {
         setIsLoading(false);
+
         return data.json();
       })
-      .then((data) => {
-        dispatch(analyticsActions.updateItems(data));
-      })
+      .then((data) => dispatch(analyticsActions.updateItems(data)))
       .catch(() => setIsLoading(false));
   }, []);
 
@@ -137,7 +135,6 @@ const ByType = () => {
     dispatch(analyticsActions.updatePopup(false));
     dispatch(analyticsActions.updateBinData(null));
   };
-
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
       <div className={classes.container}>
@@ -159,7 +156,7 @@ const ByType = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter tag="binstype" />
+            <ReportFilter tag="cn_bins_centers" altURL={ALTURL} />
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
@@ -174,6 +171,7 @@ const ByType = () => {
               )}
             />
           </Box>
+
           <Box ref={TableRef}>
             <PrintingHeader />
             <div className="print-mt">
@@ -204,20 +202,20 @@ const ByType = () => {
                   <>
                     <Grid item xs={12} lg={5} className={classes.chart}>
                       <BinsChart
-                        key1="Empted"
-                        key2="Unempted"
+                        key1="Cleaned"
+                        key2="Uncleaned"
                         title={t("binsStatus")}
                         subtitle={t(
-                          "theProportionOfTheEmptedBinsAndTheUnempted",
+                          "theProportionOfTheCleanedBinsAndTheUncleaned",
                         )}
                         bins={[
                           {
-                            name: "Empted",
+                            name: "Cleaned",
                             value:
                               countTotal(chartData, "rate") / chartData.length,
                           },
                           {
-                            name: "Unempted",
+                            name: "Uncleaned",
                             value:
                               100 -
                               countTotal(chartData, "rate") / chartData.length,
@@ -237,22 +235,22 @@ const ByType = () => {
                     </Grid>
                     <Grid xs={12} item className={classes.chart}>
                       <BinsStatusChart
-                        key1="empted"
-                        key2="unempted"
-                        title={t("binsStatusByType")}
+                        key1="cleaned"
+                        key2="uncleaned"
+                        title={t("binsStatusByArea")}
                         subtitle={t(
-                          "theProportionOfEmptedAndUnemptedBinsByTypes",
+                          "theProportionOfTheCleanedBinsAndTheUncleaned",
                         )}
                         bins={chartData.map((item) => {
-                          const empted = (item.empty_bin * 100) / item.total;
+                          const cleaned = (item.cleaned * 100) / item.total;
 
                           return {
-                            name: item.bintype,
-                            empted: countRate(
+                            name: item.center_name,
+                            cleaned: countRate(
                               item.total,
-                              item.empty_bin,
+                              item.cleaned,
                             ).toFixed(2),
-                            unempted: 100 - empted,
+                            uncleaned: 100 - cleaned,
                             amt: 100,
                           };
                         })}
@@ -269,4 +267,4 @@ const ByType = () => {
   );
 };
 
-export default ByType;
+export default WashingArea;

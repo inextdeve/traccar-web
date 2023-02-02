@@ -77,27 +77,23 @@ const SummaryReportPage = () => {
     switch (speed.symbol) {
       case "gt":
         setItems(
-          data.filter((item) => {
-            return (
-              speedFromKnots(item.speed, speedUnit).toFixed(2) >= speed.value
-            );
-          })
+          data.filter((item) => (
+            speedFromKnots(item.speed, speedUnit).toFixed(2) >= speed.value
+          )),
         );
         break;
       case "lt":
         setItems(
           data.filter(
-            (item) =>
-              speedFromKnots(item.speed, speedUnit).toFixed(2) <= speed.value
-          )
+            (item) => speedFromKnots(item.speed, speedUnit).toFixed(2) <= speed.value,
+          ),
         );
         break;
       case "eq":
         setItems(
           data.filter(
-            (item) =>
-              speedFromKnots(item.speed, speedUnit).toFixed(2) === speed.value
-          )
+            (item) => speedFromKnots(item.speed, speedUnit).toFixed(2) === speed.value,
+          ),
         );
         break;
       default:
@@ -113,11 +109,11 @@ const SummaryReportPage = () => {
       groupIds.forEach((groupId) => query.append("groupId", groupId));
       if (type === "export") {
         window.location.assign(
-          `/api/reports/positions/xlsx?${query.toString()}`
+          `/api/reports/positions/xlsx?${query.toString()}`,
         );
       } else if (type === "mail") {
         const response = await fetch(
-          `/api/reports/positions/mail?${query.toString()}`
+          `/api/reports/positions/mail?${query.toString()}`,
         );
         if (!response.ok) {
           throw Error(await response.text());
@@ -137,7 +133,7 @@ const SummaryReportPage = () => {
           setLoading(false);
         }
       }
-    }
+    },
   );
 
   const formatValue = (item, key) => {
@@ -190,9 +186,7 @@ const SummaryReportPage = () => {
               <Select
                 label={t("speed")}
                 value={speed.symbol}
-                onChange={(e) =>
-                  setSpeed((prev) => ({ ...prev, symbol: e.target.value }))
-                }
+                onChange={(e) => setSpeed((prev) => ({ ...prev, symbol: e.target.value }))}
               >
                 <MenuItem value="gt">{t("gt")}</MenuItem>
                 <MenuItem value="lt">{t("lt")}</MenuItem>
@@ -207,12 +201,10 @@ const SummaryReportPage = () => {
                 type="number"
                 variant="outlined"
                 value={speed.value}
-                onChange={(e) =>
-                  setSpeed((prev) => ({
-                    ...prev,
-                    value: Number(e.target.value),
-                  }))
-                }
+                onChange={(e) => setSpeed((prev) => ({
+                  ...prev,
+                  value: Number(e.target.value),
+                }))}
               />
             </FormControl>
           </div>
@@ -226,7 +218,7 @@ const SummaryReportPage = () => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell></TableCell>
+            <TableCell />
             <TableCell>{t("sharedDevice")}</TableCell>
             {columns.map((key) => (
               <TableCell key={key}>{t(columnsMap.get(key))}</TableCell>

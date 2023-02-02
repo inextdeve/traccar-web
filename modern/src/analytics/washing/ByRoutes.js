@@ -18,28 +18,28 @@ import {
 import MapIcon from "@mui/icons-material/Map";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { useTheme } from "@mui/material/styles";
-import { analyticsActions } from "../store";
+import { analyticsActions } from "../../store";
 
-import Print from "./common/Print";
-import PageLayout from "../common/components/PageLayout";
-import useReportStyles from "./common/useReportStyles";
-import ReportsMenu from "./components/ReportsMenu";
-import AnalyticsTable from "./components/AnalyticsTable";
-import { useTranslation } from "../common/components/LocalizationProvider";
-import ReportFilter from "./components/ReportFilter";
+import Print from "../common/Print";
+import PageLayout from "../../common/components/PageLayout";
+import useReportStyles from "../common/useReportStyles";
+import ReportsMenu from "../components/ReportsMenu";
+import AnalyticsTable from "../components/AnalyticsTable";
+import { useTranslation } from "../../common/components/LocalizationProvider";
+import ReportFilter from "../components/ReportFilter";
 
-import sendMessage from "../common/util/sendMessage";
-import BinsChart from "./components/Charts/BinsChart";
-import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
-import BinsStatusChart from "./components/Charts/BinsStatusChart";
-import ExcelExport from "./components/ExcelExport";
-import PrintingHeader from "../common/components/PrintingHeader";
+import sendMessage from "../../common/util/sendMessage";
+import BinsChart from "../components/Charts/BinsChart";
+import BinsPercentageChart from "../components/Charts/BinsPercentageChart";
+import BinsStatusChart from "../components/Charts/BinsStatusChart";
+import ExcelExport from "../components/ExcelExport";
+import PrintingHeader from "../../common/components/PrintingHeader";
 
-import MapAnalytics from "../map/MapAnalytics";
-import Popup from "../common/components/Popup";
-import { URL } from "../common/util/constant";
+import MapAnalytics from "../../map/MapAnalytics";
+import Popup from "../../common/components/Popup";
+import { URL, ALTURL } from "../../common/util/constant";
 
-const ByRoutes = () => {
+const WashingRoutes = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const dispatch = useDispatch();
@@ -113,8 +113,8 @@ const ByRoutes = () => {
     "trackCode",
     "numberOfBins",
     "time",
-    "empted",
-    "notEmpted",
+    "cleaned",
+    "notCleaned",
     "completionRate",
     "actions",
   ];
@@ -122,8 +122,8 @@ const ByRoutes = () => {
     "route_name",
     "total",
     "shift",
-    "empty_bin",
-    "un_empty_bin",
+    "cleaned",
+    "not_cleaned",
     "rate",
     "actions",
   ];
@@ -138,7 +138,7 @@ const ByRoutes = () => {
 
     return {
       ...item,
-      rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
+      rate: `${countRate(item.total, item.cleaned).toFixed(2)}%`,
       actions: (
         <>
           <IconButton
@@ -166,8 +166,8 @@ const ByRoutes = () => {
   items.push({
     route_name: t("total"),
     total: countTotal(items, "total"),
-    empty_bin: countTotal(items, "empty_bin"),
-    un_empty_bin: countTotal(items, "un_empty_bin"),
+    cleaned: countTotal(items, "cleaned"),
+    not_cleaned: countTotal(items, "not_cleaned"),
     rate: `${(countTotal(items, "rate") / items.length).toFixed(2)}%`,
   });
 
@@ -176,7 +176,8 @@ const ByRoutes = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${URL}/?token=${token}&bins_routes`)
+    console.log(`${ALTURL}/?token=${token}&cn_bins_routes`);
+    fetch(`${ALTURL}/?token=${token}&cn_bins_routes`)
       .then((data) => {
         setIsLoading(false);
         return data.json();
@@ -230,7 +231,7 @@ const ByRoutes = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter tag="bins_routes" />
+            <ReportFilter tag="cn_bins_routes" altURL={ALTURL} />
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
@@ -296,18 +297,20 @@ const ByRoutes = () => {
                 <>
                   <Grid item xs={12} lg={5} className={classes.chart}>
                     <BinsChart
-                      key1="Empted"
-                      key2="Unempted"
+                      key1="Cleaned"
+                      key2="Uncleaned"
                       title={t("binsStatus")}
-                      subtitle={t("theProportionOfTheEmptedBinsAndTheUnempted")}
+                      subtitle={t(
+                        "theProportionOfTheCleanedBinsAndTheUncleaned",
+                      )}
                       bins={[
                         {
-                          name: "Empted",
+                          name: "Cleaned",
                           value:
                             countTotal(chartData, "rate") / chartData.length,
                         },
                         {
-                          name: "Unempted",
+                          name: "Uncleaned",
                           value:
                             100 -
                             countTotal(chartData, "rate") / chartData.length,
@@ -317,31 +320,31 @@ const ByRoutes = () => {
                   </Grid>
                   <Grid xs={12} lg={6} item className={classes.chart}>
                     <BinsPercentageChart
-                      title={t("theProportionOfTracksCode")}
-                      subtitle={t("theProportionOfEachTrackCode")}
+                      title={t("theProportionOfEachBinsType")}
+                      subtitle={t("theProportionOfEachBinType")}
                       data={chartData.map((item) => ({
-                        name: item.route_name,
+                        name: item.bintype,
                         value: parseInt(item.total, 10),
                       }))}
                     />
                   </Grid>
                   <Grid xs={12} item className={classes.chart}>
                     <BinsStatusChart
-                      key1="empted"
-                      key2="unempted"
+                      key1="cleaned"
+                      key2="uncleaned"
                       title={t("binsStatusByTrack")}
                       subtitle={t(
-                        "theProportionOfEmptedAndUnemptedBinsByTypes",
+                        "theProportionOfTheCleanedBinsAndTheUncleaned",
                       )}
                       bins={chartData.map((item) => {
-                        const empted = (item.empty_bin * 100) / item.total;
+                        const cleaned = (item.cleaned * 100) / item.total;
 
                         return {
                           name: item.route_name,
-                          empted: countRate(item.total, item.empty_bin).toFixed(
+                          cleaned: countRate(item.total, item.cleaned).toFixed(
                             2,
                           ),
-                          unempted: 100 - empted,
+                          uncleaned: 100 - cleaned,
                           amt: 100,
                         };
                       })}
@@ -357,4 +360,4 @@ const ByRoutes = () => {
   );
 };
 
-export default ByRoutes;
+export default WashingRoutes;

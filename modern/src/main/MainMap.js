@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect } from "react";
+import moment from "moment";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { LinearProgress } from "@mui/material";
@@ -47,52 +48,66 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   const filteredBins = useSelector((state) => state.bins.filteredBins);
   const refresh = useSelector((state) => state.bins.refresh);
 
+  const { to } = useSelector((state) => state.analytics);
+  const dateTo = {
+    date: moment(to, moment.HTML5_FMT.DATETIME_LOCAL)
+      .toISOString()
+      .split("T")[0],
+    time: moment(to, moment.HTML5_FMT.DATETIME_LOCAL)
+      .toISOString()
+      .split("T")[1]
+      .split(".")[0],
+  };
+
   useEffect(() => {
-    if (authenticated) {
-      dispatch(binsActions.updateLoading(true));
-      console.log(`${URL}/?token=${token}&bins&limit=0;10000`);
-      fetch(`${URL}/?token=${token}&bins&limit=0;10000`)
-        .then((data) => data.json())
-        .then((data) => {
-          dispatch(binsActions.updateLoading(false));
-          const filterSet = {
-            route: [...new Set(data.map((item) => item.route))],
-            bintype: [...new Set(data.map((item) => item.bintype))],
-            center_name: [...new Set(data.map((item) => item.center_name))],
-          };
+    const fetchData = async () => {
+      if (authenticated) {
+        dispatch(binsActions.updateLoading(true));
 
-          dispatch(binsActions.updateFilterSet(filterSet));
+        const response = await fetch(
+          `${URL}/?token=${token}&bins&limit=0;10000`
+        );
+        const data = await response.json();
 
-          dispatch(
-            binsActions.updateBins(
-              data.map(
-                ({
-                  id_bin,
-                  status,
-                  latitude,
-                  longitude,
-                  bintype,
-                  center_name,
-                  route,
-                }) => ({
-                  id: id_bin,
-                  category: `${
-                    status === "unempty" ? "trashNegative" : "trashPositive"
-                  }`,
-                  latitude,
-                  longitude,
-                  bintype,
-                  center_name,
-                  route,
-                  status,
-                  binType: bintype,
-                })
-              )
+        dispatch(binsActions.updateLoading(false));
+        const filterSet = {
+          route: [...new Set(data.map((item) => item.route))],
+          bintype: [...new Set(data.map((item) => item.bintype))],
+          center_name: [...new Set(data.map((item) => item.center_name))],
+        };
+
+        dispatch(binsActions.updateFilterSet(filterSet));
+
+        dispatch(
+          binsActions.updateBins(
+            data.map(
+              ({
+                id_bin,
+                status,
+                latitude,
+                longitude,
+                bintype,
+                center_name,
+                route,
+              }) => ({
+                id: id_bin,
+                category: `${
+                  status === "unempty" ? "trashNegative" : "trashPositive"
+                }`,
+                latitude,
+                longitude,
+                bintype,
+                center_name,
+                route,
+                status,
+                binType: bintype,
+              })
             )
-          );
-        })
-        .catch(() => dispatch(binsActions.updateLoading(false)));
-    }
+          )
+        );
+      }
+    };
+    fetchData().catch(() => dispatch(binsActions.updateLoading(false)));
   }, [refresh]);
 
   const onMarkClick = useCallback(

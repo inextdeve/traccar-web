@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import {
+  Route, Routes, useLocation, useNavigate,
+} from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { LinearProgress } from "@mui/material";
 import MainPage from "./main/MainPage";
@@ -54,6 +56,9 @@ import DevicesPage from "./settings/DevicesPage";
 import Summary from "./analytics/Summary";
 import BinsReports from "./analytics/BinsReports";
 import WashingType from "./analytics/washing/ByType";
+import WashingRoutes from "./analytics/washing/ByRoutes";
+import WashingArea from "./analytics/washing/ByArea";
+import WashingSummary from "./analytics/washing/Summary";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -161,6 +166,9 @@ const Navigation = () => {
           <Route path="bin/summary" element={<Summary />} />
           <Route path="bin/binsreports" element={<BinsReports />} />
           <Route path="bin/washing/bytype" element={<WashingType />} />
+          <Route path="bin/washing/byroutes" element={<WashingRoutes />} />
+          <Route path="bin/washing/byarea" element={<WashingArea />} />
+          <Route path="bin/washing/summary" element={<WashingSummary />} />
         </Route>
       </Route>
     </Routes>

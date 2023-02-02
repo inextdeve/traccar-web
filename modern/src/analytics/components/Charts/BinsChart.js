@@ -33,7 +33,7 @@ const renderCustomizedLabel = ({
     </text>
   );
 };
-const BinsChart = ({ bins, title, subtitle }) => {
+const BinsChart = ({ bins, title, subtitle, key1, key2 }) => {
   data = bins;
   const classes = useReportStyles();
   const container = useRef(null);
@@ -90,7 +90,7 @@ const BinsChart = ({ bins, title, subtitle }) => {
             component="span"
             sx={{ typography: "subtitle2", fontWeight: "light" }}
           >
-            Empted
+            {key1}
           </Typography>
         </Box>
         <Box sx={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -99,7 +99,7 @@ const BinsChart = ({ bins, title, subtitle }) => {
             component="span"
             sx={{ typography: "subtitle2", fontWeight: "light" }}
           >
-            Unempted
+            {key2}
           </Typography>
         </Box>
       </div>

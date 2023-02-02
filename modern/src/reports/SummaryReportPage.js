@@ -73,7 +73,7 @@ const SummaryReportPage = () => {
         window.location.assign(`/api/reports/summary/xlsx?${query.toString()}`);
       } else if (type === "mail") {
         const response = await fetch(
-          `/api/reports/summary/mail?${query.toString()}`
+          `/api/reports/summary/mail?${query.toString()}`,
         );
         if (!response.ok) {
           throw Error(await response.text());
@@ -85,7 +85,7 @@ const SummaryReportPage = () => {
             `/api/reports/summary?${query.toString()}`,
             {
               headers: { Accept: "application/json" },
-            }
+            },
           );
           if (response.ok) {
             setItems(await response.json());
@@ -97,7 +97,7 @@ const SummaryReportPage = () => {
           setLoading(false);
         }
       }
-    }
+    },
   );
 
   const formatValue = (item, key) => {

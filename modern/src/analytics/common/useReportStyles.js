@@ -21,11 +21,11 @@ export default makeStyles((theme) => ({
     minWidth: "160px",
   },
   emptyBin: {
-    backgroundColor: theme.palette.colors.bsSuccess,
+    backgroundColor: theme.palette.colors.positive,
     color: "#fff",
   },
   unEmptyBin: {
-    backgroundColor: theme.palette.colors.bsDanger,
+    backgroundColor: theme.palette.colors.negative,
     color: "#fff",
   },
   greyRow: {

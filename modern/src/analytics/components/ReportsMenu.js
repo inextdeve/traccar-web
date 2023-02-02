@@ -105,6 +105,24 @@ const ReportsMenu = () => {
               icon={<Delete />}
               selected={location.pathname === "/analytics/bin/washing/bytype"}
             />
+            <MenuItem
+              title={t("binsByRoutes")}
+              link="/analytics/bin/washing/byroutes"
+              icon={<RouteIcon />}
+              selected={location.pathname === "/analytics/bin/washing/byroutes"}
+            />
+            <MenuItem
+              title={t("binsByArea")}
+              link="/analytics/bin/washing/byarea"
+              icon={<AreaIcon />}
+              selected={location.pathname === "/analytics/bin/washing/byarea"}
+            />
+            <MenuItem
+              title={t("reportSummary")}
+              link="/analytics/bin/washing/summary"
+              icon={<StockIcon />}
+              selected={location.pathname === "/analytics/bin/washing/summary"}
+            />
           </List>
         </Collapse>
       </List>

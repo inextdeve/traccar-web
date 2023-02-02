@@ -120,8 +120,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
     return last7days[last7days.length - 1]?.datetime || "-";
   };
 
-  const generateMessage = () => {
-    return `Hello! ${binData[0].driver}
+  const generateMessage = () => `Hello! ${binData[0].driver}
                 JCR Cleaning Project 
                 Alarm Bin Not Empty 
                 DateTime: ${moment().format("MMMM Do YYYY, h:mm:ss a")}
@@ -131,9 +130,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 Bin Type: ${popup.binType}
                 Last Time Emptied: ${lastOperation()}
                 https://www.google.com/maps/place/${binData[0].latitude},${
-      binData[0].longitude
-    }`;
-  };
+  binData[0].longitude
+}`;
 
   return (
     <div className={classes.root}>
@@ -166,7 +164,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     <StatusRow name={t("binType")} content={popup.binType} />
                     <StatusRow
                       name={t("status")}
-                      content={
+                      content={(
                         <span
                           style={{
                             color: `${
@@ -178,12 +176,12 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           {binData[0].status}
                         </span>
-                      }
+                      )}
                     />
                     <StatusRow
                       name={t("lastOperation")}
                       content={moment(lastOperation()).format(
-                        "MMM Do YY, H:mm"
+                        "MMM Do YY, H:mm",
                       )}
                     />
                     <StatusRow
@@ -200,7 +198,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     />
                     <StatusRow
                       name={t("position")}
-                      content={
+                      content={(
                         <a
                           href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
                           target="_blank"
@@ -208,7 +206,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           Google Map
                         </a>
-                      }
+                      )}
                     />
                   </TableBody>
                 </Table>
@@ -260,8 +258,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                 >
                                   {item.datetime
                                     ? moment(item.datetime).format(
-                                        "MMM Do YY, H:mm"
-                                      )
+                                      "MMM Do YY, H:mm",
+                                    )
                                     : "-"}
                                 </Typography>
                               </TableCell>
@@ -298,9 +296,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
               </IconButton>
               <IconButton
                 color="secondary"
-                onClick={() =>
-                  sendMessage(generateMessage(), binData[0].driver_phone)
-                }
+                onClick={() => sendMessage(generateMessage(), binData[0].driver_phone)}
                 disabled={binData ? !binData[0]?.driver_phone : true}
               >
                 <WhatsAppIcon />

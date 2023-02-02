@@ -140,7 +140,7 @@ const StatusCard = ({
   const positionAttributes = usePositionAttributes(t);
   const positionItems = useAttributePreference(
     "positionItems",
-    "speed,address,totalDistance,course"
+    "speed,address,totalDistance,course",
   );
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -269,9 +269,8 @@ const StatusCard = ({
                         {positionItems
                           .split(",")
                           .filter(
-                            (key) =>
-                              position.hasOwnProperty(key) ||
-                              position.attributes.hasOwnProperty(key)
+                            (key) => position.hasOwnProperty(key) ||
+                              position.attributes.hasOwnProperty(key),
                           )
                           .map((key) => (
                             <StatusRow
@@ -281,7 +280,7 @@ const StatusCard = ({
                                   ? positionAttributes[key].name
                                   : key
                               }
-                              content={
+                              content={(
                                 <PositionValue
                                   position={position}
                                   property={
@@ -291,7 +290,7 @@ const StatusCard = ({
                                     position.hasOwnProperty(key) ? null : key
                                   }
                                 />
-                              }
+                              )}
                             />
                           ))}
                       </TableBody>
@@ -313,9 +312,7 @@ const StatusCard = ({
                     <ReplayIcon />
                   </IconButton>
                   <IconButton
-                    onClick={() =>
-                      navigate(`/settings/command-send/${deviceId}`)
-                    }
+                    onClick={() => navigate(`/settings/command-send/${deviceId}`)}
                     disabled={disableActions || readonly}
                   >
                     <PublishIcon />
