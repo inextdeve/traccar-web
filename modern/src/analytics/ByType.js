@@ -235,6 +235,8 @@ const ByType = () => {
                     </Grid>
                     <Grid xs={12} item className={classes.chart}>
                       <BinsStatusChart
+                        key1="empted"
+                        key2="unempted"
                         title={t("binsStatusByType")}
                         subtitle={t(
                           "theProportionOfEmptedAndUnemptedBinsByTypes"

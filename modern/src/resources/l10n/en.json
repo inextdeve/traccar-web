@@ -616,6 +616,9 @@
   "reporterPhone": "Phone",
   "binsReports": "Bins Reports",
   "processing": "Processing",
-  "done": "Done"
-
+  "done": "Done",
+  "cleaned": "Cleaned",
+  "notCleaned": "Not Cleaned",
+  "theProportionOfCleanedAndUncleanedBinsByTypes": "The proportion of cleaned and uncleaned bins by types",
+  "theProportionOfTheCleanedBinsAndTheUncleaned": "The proportion of cleaned and uncleaned bins"
 }

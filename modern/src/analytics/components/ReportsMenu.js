@@ -41,7 +41,7 @@ const ReportsMenu = () => {
   const admin = useAdministrator();
 
   const [binOpen, setBinOpen] = React.useState(true);
-  const [washOpen, setWashOpen] = React.useState(false);
+  const [washOpen, setWashOpen] = React.useState(true);
 
   const handleClick = () => {
     setBinOpen(!binOpen);
@@ -91,6 +91,8 @@ const ReportsMenu = () => {
             />
           </List>
         </Collapse>
+      </List>
+      <List>
         <ListItemButton onClick={handleWashClick}>
           <ListItemText primary={t("washing")} />
           {washOpen ? <ExpandLess /> : <ExpandMore />}
@@ -98,7 +100,7 @@ const ReportsMenu = () => {
         <Collapse in={washOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             <MenuItem
-              title={t("washing")}
+              title={t("binsByType")}
               link="/analytics/bin/washing/bytype"
               icon={<Delete />}
               selected={location.pathname === "/analytics/bin/washing/bytype"}
@@ -106,7 +108,6 @@ const ReportsMenu = () => {
           </List>
         </Collapse>
       </List>
-      <List></List>
       {admin && (
         <>
           <Divider />

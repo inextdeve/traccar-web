@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Tab, Tabs } from "@mui/material";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
@@ -50,9 +50,9 @@ const CameraCard = ({ mdvrid }) => {
         <TabPanel value="1">
           <iframe
             title="front"
-            className={`${classes.iframe} iframeSelector`}
+            className={`${classes.iframe}`}
             allowFullScreen
-            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=3`}
+            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=2`}
           />
         </TabPanel>
         <TabPanel value="2">
@@ -60,7 +60,7 @@ const CameraCard = ({ mdvrid }) => {
             title="back"
             className={classes.iframe}
             allowFullScreen
-            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=1`}
+            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=0`}
           />
         </TabPanel>
         <TabPanel value="3">
@@ -68,7 +68,7 @@ const CameraCard = ({ mdvrid }) => {
             title="driver"
             className={classes.iframe}
             allowFullScreen
-            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=2`}
+            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=1`}
           />
         </TabPanel>
         <TabPanel className={classes.tabPanelAll} value="4">
@@ -76,7 +76,7 @@ const CameraCard = ({ mdvrid }) => {
             title="all"
             className={classes.iframe}
             allowFullScreen
-            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=3&chns=3,1,2`}
+            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=3&chns=0,1,2`}
           />
         </TabPanel>
       </TabContext>

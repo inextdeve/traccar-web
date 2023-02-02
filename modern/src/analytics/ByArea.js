@@ -233,6 +233,8 @@ const ByArea = () => {
                     </Grid>
                     <Grid xs={12} item className={classes.chart}>
                       <BinsStatusChart
+                        key1="empted"
+                        key2="unempted"
                         title={t("binsStatusByArea")}
                         subtitle={t(
                           "theProportionOfEmptedAndUnemptedBinsByArea"

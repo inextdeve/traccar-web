@@ -1,7 +1,5 @@
 import React from "react";
-import {
-  BarChart, Bar, XAxis, YAxis, ResponsiveContainer,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import { Typography } from "@mui/material";
 import useReportStyles from "../../common/useReportStyles";
 
@@ -29,15 +27,14 @@ const CustomizedLabel = ({ x, y, value }) => {
       fill="#fff"
       textAnchor="start"
     >
-      {value < 5 ? Math.ceil(value) : value.toFixed(2)}
-      %
+      {value < 5 ? Math.ceil(value) : value.toFixed(2)}%
     </text>
   );
 
   return text;
 };
 
-const BinsStatusChart = ({ bins, title, subtitle }) => {
+const BinsStatusChart = ({ bins, title, subtitle, key1, key2 }) => {
   const classes = useReportStyles();
   data = bins;
   return (
@@ -73,7 +70,7 @@ const BinsStatusChart = ({ bins, title, subtitle }) => {
 
           <Bar
             stackId="a"
-            dataKey="empted"
+            dataKey={key1}
             minPointSize={2}
             barSize={32}
             fill="#00C49F"
@@ -81,7 +78,7 @@ const BinsStatusChart = ({ bins, title, subtitle }) => {
           />
           <Bar
             stackId="a"
-            dataKey="unempted"
+            dataKey={key2}
             minPointSize={2}
             barSize={32}
             fill="#D32F2F"

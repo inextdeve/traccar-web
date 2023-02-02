@@ -29,7 +29,7 @@ import PrintingHeader from "../../common/components/PrintingHeader";
 import Popup from "../../common/components/Popup";
 
 import MapAnalytics from "../../map/MapAnalytics";
-import { URL } from "../../common/util/constant";
+import { URL, ALTURL } from "../../common/util/constant";
 
 const ByType = () => {
   const classes = useReportStyles();
@@ -80,8 +80,8 @@ const ByType = () => {
   const columnsHead = [
     "binType",
     "numberOfBins",
-    "empted",
-    "notEmpted",
+    "cleaned",
+    "notCleaned",
     "completionRate",
     "maps",
   ];
@@ -89,8 +89,8 @@ const ByType = () => {
   const keys = [
     "bintype",
     "total",
-    "empty_bin",
-    "un_empty_bin",
+    "cleaned",
+    "not_cleaned",
     "rate",
     "mapButton",
   ];
@@ -102,7 +102,7 @@ const ByType = () => {
 
     return {
       ...item,
-      rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
+      rate: `${countRate(item.total, item.cleaned).toFixed(2)}%`,
       mapButton: (
         <IconButton onClick={() => mapButtonClick(requestParams)}>
           <MapIcon />
@@ -113,8 +113,8 @@ const ByType = () => {
   items.push({
     bintype: t("total"),
     total: countTotal(items, "total"),
-    empty_bin: countTotal(items, "empty_bin"),
-    un_empty_bin: countTotal(items, "un_empty_bin"),
+    cleaned: countTotal(items, "cleaned"),
+    not_cleaned: countTotal(items, "not_cleaned"),
     rate: `${(countTotal(items, "rate") / items.length).toFixed(2)}%`,
   });
   // Data for charts drop Total item
@@ -122,7 +122,7 @@ const ByType = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${URL}/?token=${token}&binstype`)
+    fetch(`${ALTURL}/?token=${token}&cn_binstype`)
       .then((data) => {
         setIsLoading(false);
         return data.json();
@@ -139,7 +139,10 @@ const ByType = () => {
   };
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
+    <PageLayout
+      menu={<ReportsMenu />}
+      breadcrumbs={["analytics", "washing", "reportBin"]}
+    >
       <div className={classes.container}>
         <Popup
           desktopPadding={theme.dimensions.drawerWidthDesktop}
@@ -159,7 +162,7 @@ const ByType = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter tag="binstype" />
+            <ReportFilter tag="cn_binstype" altURL={ALTURL} />
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
@@ -206,16 +209,16 @@ const ByType = () => {
                       <BinsChart
                         title={t("binsStatus")}
                         subtitle={t(
-                          "theProportionOfTheEmptedBinsAndTheUnempted"
+                          "theProportionOfTheCleanedBinsAndTheUncleaned"
                         )}
                         bins={[
                           {
-                            name: "Empted",
+                            name: "Cleaned",
                             value:
                               countTotal(chartData, "rate") / chartData.length,
                           },
                           {
-                            name: "Unempted",
+                            name: "Uncleaned",
                             value:
                               100 -
                               countTotal(chartData, "rate") / chartData.length,
@@ -235,20 +238,22 @@ const ByType = () => {
                     </Grid>
                     <Grid xs={12} item className={classes.chart}>
                       <BinsStatusChart
+                        key1="cleaned"
+                        key2="uncleaned"
                         title={t("binsStatusByType")}
                         subtitle={t(
-                          "theProportionOfEmptedAndUnemptedBinsByTypes"
+                          "theProportionOfCleanedAndUncleanedBinsByTypes"
                         )}
                         bins={chartData.map((item) => {
-                          const empted = (item.empty_bin * 100) / item.total;
+                          const cleaned = (item.cleaned * 100) / item.total;
 
                           return {
                             name: item.bintype,
-                            empted: countRate(
+                            cleaned: countRate(
                               item.total,
-                              item.empty_bin
+                              item.cleaned
                             ).toFixed(2),
-                            unempted: 100 - empted,
+                            uncleaned: 100 - cleaned,
                             amt: 100,
                           };
                         })}

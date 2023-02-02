@@ -27,9 +27,11 @@ const ReportFilter = ({ tag, altURL }) => {
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
   const handleSubmit = ({ from, to }) => {
-    const url = `${altURL || URL}/?token=${token}&${tag}&date_f=${
-      from.date
-    }&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`;
+    const url = `${
+      altURL
+        ? `${altURL}/?token=${token}&${tag}&time_f=${from.time}&date_f=${from.date}&time_t=${to.time}&date_t=${to.date}`
+        : `${URL}/?token=${token}&${tag}&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`
+    }`;
 
     setIsLoading(true);
     fetch(url)
