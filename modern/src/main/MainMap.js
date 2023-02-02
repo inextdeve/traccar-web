@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import moment from "moment";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -22,7 +22,7 @@ import MapNotification from "../map/notification/MapNotification";
 import useFeatures from "../common/util/useFeatures";
 import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
 import Popup from "../common/components/Popup";
-import { URL } from "../common/util/constant";
+import { URL, ALTURL } from "../common/util/constant";
 import MyMapButton from "../map/core/Buttons";
 
 const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
@@ -60,14 +60,22 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (authenticated) {
-        dispatch(binsActions.updateLoading(true));
+    const reportedBinData = fetch(
+      `${ALTURL}/?token=${token}&report_bins&time_f=${`00:00`}&date_f=${`2023-01-01`}&time_t=${
+        dateTo.time
+      }&date_t=${dateTo.date}`
+    ).then((response) => {
+      dispatch(binsActions.updateLoading(true));
+      return response.json();
+    });
+    const allBinsData = fetch(`${URL}/?token=${token}&bins&limit=0;10000`).then(
+      (response) => response.json()
+    );
 
-        const response = await fetch(
-          `${URL}/?token=${token}&bins&limit=0;10000`
-        );
-        const data = await response.json();
+    Promise.all([reportedBinData, allBinsData])
+      .then((response) => {
+        dispatch(binsActions.updateLoading(false));
+        const [reportedBins, data] = response; // data is for all bins i don't change it for the function need to change all things
 
         dispatch(binsActions.updateLoading(false));
         const filterSet = {
@@ -89,26 +97,114 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
                 bintype,
                 center_name,
                 route,
-              }) => ({
-                id: id_bin,
-                category: `${
-                  status === "unempty" ? "trashNegative" : "trashPositive"
-                }`,
-                latitude,
-                longitude,
-                bintype,
-                center_name,
-                route,
-                status,
-                binType: bintype,
-              })
+              }) => {
+                let category = "";
+
+                let isReported = reportedBins.find((item) => {
+                  return parseInt(item.id_bin) === parseInt(id_bin);
+                });
+
+                if (isReported) {
+                  category = parseInt(isReported.status)
+                    ? "trashInfo"
+                    : "trashWarning";
+                } else {
+                  category =
+                    status === "unempty" ? "trashNegative" : "trashPositive";
+                }
+
+                return {
+                  id: id_bin,
+                  category,
+                  latitude,
+                  longitude,
+                  bintype,
+                  center_name,
+                  route,
+                  status,
+                  binType: bintype,
+                };
+              }
             )
           )
         );
-      }
-    };
-    fetchData().catch(() => dispatch(binsActions.updateLoading(false)));
+      })
+      .catch(() => dispatch(binsActions.updateLoading(false)));
   }, [refresh]);
+
+  // useEffect(() => {
+  //   if (authenticated) {
+  //     dispatch(binsActions.updateLoading(true));
+
+  //     fetch(
+  //       `${ALTURL}/?token=${token}&report_bins&time_f=${`00:00`}&date_f=${`2023-01-01`}&time_t=${
+  //         dateTo.time
+  //       }&date_t=${dateTo.date}`
+  //     )
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         setReportedBins(
+  //           data.map(({ id_bin, status }) => ({ id_bin, status }))
+  //         );
+  //         return fetch(`${URL}/?token=${token}&bins&limit=0;10000`);
+  //       })
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         dispatch(binsActions.updateLoading(false));
+  //         const filterSet = {
+  //           route: [...new Set(data.map((item) => item.route))],
+  //           bintype: [...new Set(data.map((item) => item.bintype))],
+  //           center_name: [...new Set(data.map((item) => item.center_name))],
+  //         };
+
+  //         dispatch(binsActions.updateFilterSet(filterSet));
+
+  //         dispatch(
+  //           binsActions.updateBins(
+  //             data.map(
+  //               ({
+  //                 id_bin,
+  //                 status,
+  //                 latitude,
+  //                 longitude,
+  //                 bintype,
+  //                 center_name,
+  //                 route,
+  //               }) => {
+  //                 let category = "";
+
+  //                 let isReported = reportedBins.find((item) => {
+  //                   return parseInt(item.id_bin) === parseInt(id_bin);
+  //                 });
+
+  //                 if (isReported) {
+  //                   category = parseInt(isReported.status)
+  //                     ? "trashInfo"
+  //                     : "trashWarning";
+  //                 } else {
+  //                   category =
+  //                     status === "unempty" ? "trashNegative" : "trashPositive";
+  //                 }
+
+  //                 return {
+  //                   id: id_bin,
+  //                   category,
+  //                   latitude,
+  //                   longitude,
+  //                   bintype,
+  //                   center_name,
+  //                   route,
+  //                   status,
+  //                   binType: bintype,
+  //                 };
+  //               }
+  //             )
+  //           )
+  //         );
+  //       })
+  //       .catch(() => dispatch(binsActions.updateLoading(false)));
+  //   }
+  // }, [refresh]);
 
   const onMarkClick = useCallback(
     async (bin) => {

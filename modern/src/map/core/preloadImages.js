@@ -27,6 +27,8 @@ import truckSvg from "../../resources/images/icon/truck.svg";
 import vanSvg from "../../resources/images/icon/van.svg";
 import trashPositiveSvg from "../../resources/images/icon/trashPositive.svg";
 import trashNegativeSvg from "../../resources/images/icon/trashNegative.svg";
+import trashWarningSvg from "../../resources/images/icon/trashYellow.svg";
+import trashInfoSvg from "../../resources/images/icon/trashBlue.svg";
 // import binSvg from "../../resources/images/icon/bin.svg";
 import cameraSvg from "../../resources/images/icon/camera.svg";
 
@@ -54,11 +56,14 @@ export const mapIcons = {
   van: vanSvg,
   trashPositive: trashPositiveSvg,
   trashNegative: trashNegativeSvg,
+  trashWarning: trashWarningSvg,
+  trashInfo: trashInfoSvg,
   // bin: binSvg,
   camera: cameraSvg,
 };
 
-export const mapIconKey = (category) => (mapIcons.hasOwnProperty(category) ? category : "default");
+export const mapIconKey = (category) =>
+  mapIcons.hasOwnProperty(category) ? category : "default";
 
 export const mapImages = {};
 
@@ -77,24 +82,26 @@ export default async () => {
             if (
               category === "trashPositive" ||
               category === "trashNegative" ||
-              category === "bin"
+              category === "bin" ||
+              category === "trashInfo" ||
+              category === "trashWarning"
             ) {
               mapImages[`${category}-${color}`] = prepareIcon(
                 noBackground,
                 icon,
-                "#FFFFFF00",
+                "#FFFFFF00"
               );
               return;
             }
             mapImages[`${category}-${color}`] = prepareIcon(
               background,
               icon,
-              palette.colors[color],
+              palette.colors[color]
             );
-          }),
+          })
         );
       });
       await Promise.all(results);
-    }),
+    })
   );
 };
