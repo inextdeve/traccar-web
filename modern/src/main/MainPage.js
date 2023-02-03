@@ -155,6 +155,7 @@ const MainPage = () => {
             (filter) => item.center_name === filter
           )
         : true;
+
       let status = true;
 
       if (
@@ -296,6 +297,11 @@ const MainPage = () => {
                   value="unempty"
                   control={<Radio />}
                   label={t("notEmpted")}
+                />
+                <FormControlLabel
+                  value="reported"
+                  control={<Radio />}
+                  label={t("reported")}
                 />
               </RadioGroup>
             </>

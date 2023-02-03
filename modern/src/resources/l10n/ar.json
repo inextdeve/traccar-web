@@ -620,5 +620,6 @@
   "cleaned": "تم التنظيف",
   "notCleaned": "لم تنظف",
   "theProportionOfCleanedAndUncleanedBinsByTypes": "نسبة الحاويات المنظفة و الغير منظفة حسب النوع",
-  "theProportionOfTheCleanedBinsAndTheUncleaned": "نسبة الحاويات المنظفة و الغير منظفة"
+  "theProportionOfTheCleanedBinsAndTheUncleaned": "نسبة الحاويات المنظفة و الغير منظفة",
+  "reported": "المبلغ عنها"
 }

@@ -9,7 +9,7 @@ const { reducer, actions } = createSlice({
     positions: [],
     period: "today",
     from: moment()
-      .subtract(1, "hour")
+      .subtract(1, "day")
       .locale("en")
       .format(moment.HTML5_FMT.DATETIME_LOCAL),
     to: moment().locale("en").format(moment.HTML5_FMT.DATETIME_LOCAL),
@@ -28,7 +28,7 @@ const { reducer, actions } = createSlice({
     },
     refreshPositions(state, action) {
       state.positions = state.positions.filter(
-        (position) => position.id !== action.payload,
+        (position) => position.id !== action.payload
       );
     },
     updatePeriod(state, action) {

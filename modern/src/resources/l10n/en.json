@@ -620,5 +620,6 @@
   "cleaned": "Cleaned",
   "notCleaned": "Not Cleaned",
   "theProportionOfCleanedAndUncleanedBinsByTypes": "The proportion of cleaned and uncleaned bins by types",
-  "theProportionOfTheCleanedBinsAndTheUncleaned": "The proportion of cleaned and uncleaned bins"
+  "theProportionOfTheCleanedBinsAndTheUncleaned": "The proportion of cleaned and uncleaned bins",
+  "reported": "Reported"
 }

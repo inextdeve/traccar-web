@@ -12,6 +12,7 @@ const { reducer, actions } = createSlice({
     showBins: true,
     refresh: false,
     renderConstant: 0,
+    reportedBins: [],
   },
   reducers: {
     updateBins(state, action) {
@@ -41,6 +42,9 @@ const { reducer, actions } = createSlice({
     },
     updateRenderConstant(state) {
       state.renderConstant += 1;
+    },
+    updateReportedBins(state, action) {
+      state.reportedBins = action.payload;
     },
   },
 });

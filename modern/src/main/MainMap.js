@@ -48,7 +48,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   const filteredBins = useSelector((state) => state.bins.filteredBins);
   const refresh = useSelector((state) => state.bins.refresh);
 
-  const { to } = useSelector((state) => state.analytics);
+  const { to, from } = useSelector((state) => state.analytics);
   const dateTo = {
     date: moment(to, moment.HTML5_FMT.DATETIME_LOCAL)
       .toISOString()
@@ -58,14 +58,34 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
       .split("T")[1]
       .split(".")[0],
   };
+  const dateFrom = {
+    date: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
+      .toISOString()
+      .split("T")[0],
+    time: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
+      .toISOString()
+      .split("T")[1]
+      .split(".")[0],
+  };
+
+  const reportedBins = useSelector((state) => state.bins.reportedBins);
 
   useEffect(() => {
+    const fetchData = async () => {
+      const reportedBinData = await fetch(
+        `${ALTURL}/?token=${token}&report_bins&time_f=${dateFrom.time}&date_f=${dateFrom.date}&time_t=${dateTo.time}&date_t=${dateTo.date}`
+      );
+      const data = await reportedBinData.json();
+      dispatch(binsActions.updateReportedBins(data));
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    dispatch(binsActions.updateLoading(true));
     const reportedBinData = fetch(
-      `${ALTURL}/?token=${token}&report_bins&time_f=${`00:00`}&date_f=${`2023-01-01`}&time_t=${
-        dateTo.time
-      }&date_t=${dateTo.date}`
+      `${ALTURL}/?token=${token}&report_bins&time_f=${dateFrom.time}&date_f=${dateFrom.date}&time_t=${dateTo.time}&date_t=${dateTo.date}`
     ).then((response) => {
-      dispatch(binsActions.updateLoading(true));
       return response.json();
     });
     const allBinsData = fetch(`${URL}/?token=${token}&bins&limit=0;10000`).then(
@@ -99,6 +119,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
                 route,
               }) => {
                 let category = "";
+                let report = { is: false, status: null };
 
                 let isReported = reportedBins.find((item) => {
                   return parseInt(item.id_bin) === parseInt(id_bin);
@@ -108,6 +129,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
                   category = parseInt(isReported.status)
                     ? "trashInfo"
                     : "trashWarning";
+                  report = { is: true, status: parseInt(isReported.status) };
                 } else {
                   category =
                     status === "unempty" ? "trashNegative" : "trashPositive";
@@ -123,6 +145,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
                   route,
                   status,
                   binType: bintype,
+                  report,
                 };
               }
             )
@@ -131,80 +154,6 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
       })
       .catch(() => dispatch(binsActions.updateLoading(false)));
   }, [refresh]);
-
-  // useEffect(() => {
-  //   if (authenticated) {
-  //     dispatch(binsActions.updateLoading(true));
-
-  //     fetch(
-  //       `${ALTURL}/?token=${token}&report_bins&time_f=${`00:00`}&date_f=${`2023-01-01`}&time_t=${
-  //         dateTo.time
-  //       }&date_t=${dateTo.date}`
-  //     )
-  //       .then((response) => response.json())
-  //       .then((data) => {
-  //         setReportedBins(
-  //           data.map(({ id_bin, status }) => ({ id_bin, status }))
-  //         );
-  //         return fetch(`${URL}/?token=${token}&bins&limit=0;10000`);
-  //       })
-  //       .then((response) => response.json())
-  //       .then((data) => {
-  //         dispatch(binsActions.updateLoading(false));
-  //         const filterSet = {
-  //           route: [...new Set(data.map((item) => item.route))],
-  //           bintype: [...new Set(data.map((item) => item.bintype))],
-  //           center_name: [...new Set(data.map((item) => item.center_name))],
-  //         };
-
-  //         dispatch(binsActions.updateFilterSet(filterSet));
-
-  //         dispatch(
-  //           binsActions.updateBins(
-  //             data.map(
-  //               ({
-  //                 id_bin,
-  //                 status,
-  //                 latitude,
-  //                 longitude,
-  //                 bintype,
-  //                 center_name,
-  //                 route,
-  //               }) => {
-  //                 let category = "";
-
-  //                 let isReported = reportedBins.find((item) => {
-  //                   return parseInt(item.id_bin) === parseInt(id_bin);
-  //                 });
-
-  //                 if (isReported) {
-  //                   category = parseInt(isReported.status)
-  //                     ? "trashInfo"
-  //                     : "trashWarning";
-  //                 } else {
-  //                   category =
-  //                     status === "unempty" ? "trashNegative" : "trashPositive";
-  //                 }
-
-  //                 return {
-  //                   id: id_bin,
-  //                   category,
-  //                   latitude,
-  //                   longitude,
-  //                   bintype,
-  //                   center_name,
-  //                   route,
-  //                   status,
-  //                   binType: bintype,
-  //                 };
-  //               }
-  //             )
-  //           )
-  //         );
-  //       })
-  //       .catch(() => dispatch(binsActions.updateLoading(false)));
-  //   }
-  // }, [refresh]);
 
   const onMarkClick = useCallback(
     async (bin) => {
@@ -222,6 +171,15 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
       const data = await fetch(`${URL}/?token=${token}&bin=${id}`);
 
       const binData = await data.json();
+
+      let isReported = reportedBins.find((item) => {
+        return parseInt(item.id_bin) === parseInt(id);
+      });
+
+      if (isReported) {
+        dispatch(analyticsActions.updateBinData([...binData, isReported]));
+        return;
+      }
 
       dispatch(analyticsActions.updateBinData(binData));
     },

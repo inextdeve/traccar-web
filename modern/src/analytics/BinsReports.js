@@ -52,21 +52,21 @@ const BinsReports = () => {
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
-  const { to } = useSelector((state) => state.analytics);
+  const { from, to } = useSelector((state) => state.analytics);
 
   const [reportImages, setReportImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // const dateFrom = {
-  //   date: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
-  //     .toISOString()
-  //     .split("T")[0],
-  //   time: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
-  //     .toISOString()
-  //     .split("T")[1]
-  //     .split(".")[0],
-  // };
+  const dateFrom = {
+    date: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
+      .toISOString()
+      .split("T")[0],
+    time: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
+      .toISOString()
+      .split("T")[1]
+      .split(".")[0],
+  };
   const dateTo = {
     date: moment(to, moment.HTML5_FMT.DATETIME_LOCAL)
       .toISOString()
@@ -142,7 +142,7 @@ const BinsReports = () => {
 
     return {
       ...item,
-      status: parseInt(item.status) ? t("processing") : t("done"),
+      status: parseInt(item.status) ? t("done") : t("processing"),
       actions: (
         <>
           <IconButton
@@ -170,9 +170,7 @@ const BinsReports = () => {
     setIsLoading(true);
 
     fetch(
-      `${ALTURL}/?token=${token}&report_bins&time_f=${`00:00`}&date_f=${`2023-01-01`}&time_t=${
-        dateTo.time
-      }&date_t=${dateTo.date}`
+      `${ALTURL}/?token=${token}&report_bins&time_f=${dateFrom.time}&date_f=${dateFrom.date}&time_t=${dateTo.time}&date_t=${dateTo.date}`
     )
       .then((data) => {
         setIsLoading(false);

@@ -14,12 +14,14 @@ import {
   CircularProgress,
   Box,
   TableHead,
+  Divider,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import FlagIcon from "@mui/icons-material/Flag";
 import { green, red } from "@mui/material/colors";
 import moment from "moment";
 import sendMessage from "../util/sendMessage";
@@ -109,11 +111,16 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
   const popup = useSelector((state) => state.analytics.popup);
   const binData = useSelector((state) => state.analytics.binData);
   const [showMore, setShowMore] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   const toggleDetails = () => {
+    setShowReport(false);
     setShowMore((prev) => !prev);
   };
-
+  const toggleReport = () => {
+    setShowMore(false);
+    setShowReport((prev) => !prev);
+  };
   const lastOperation = () => {
     const last7days = binData[1].last7days.filter((item) => item.datetime);
 
@@ -130,8 +137,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 Bin Type: ${popup.binType}
                 Last Time Emptied: ${lastOperation()}
                 https://www.google.com/maps/place/${binData[0].latitude},${
-  binData[0].longitude
-}`;
+    binData[0].longitude
+  }`;
 
   return (
     <div className={classes.root}>
@@ -164,7 +171,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     <StatusRow name={t("binType")} content={popup.binType} />
                     <StatusRow
                       name={t("status")}
-                      content={(
+                      content={
                         <span
                           style={{
                             color: `${
@@ -176,12 +183,12 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           {binData[0].status}
                         </span>
-                      )}
+                      }
                     />
                     <StatusRow
                       name={t("lastOperation")}
                       content={moment(lastOperation()).format(
-                        "MMM Do YY, H:mm",
+                        "MMM Do YY, H:mm"
                       )}
                     />
                     <StatusRow
@@ -198,7 +205,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     />
                     <StatusRow
                       name={t("position")}
-                      content={(
+                      content={
                         <a
                           href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
                           target="_blank"
@@ -206,10 +213,69 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           Google Map
                         </a>
-                      )}
+                      }
                     />
                   </TableBody>
                 </Table>
+                {showReport && (
+                  <Box xs={{ mt: "2rem" }}>
+                    <Divider />
+                    <Table size="small">
+                      <TableBody>
+                        <TableRow>
+                          <TableCell className={classes.cell}>
+                            <Typography variant="subtitle2">
+                              {t("reportType")}
+                            </Typography>
+                          </TableCell>
+                          <TableCell className={classes.cell}>
+                            <Typography variant="body2">
+                              {binData[2].type}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className={classes.cell}>
+                            <Typography variant="subtitle2">
+                              {t("status")}
+                            </Typography>
+                          </TableCell>
+                          <TableCell className={classes.cell}>
+                            <Typography variant="body2">
+                              {parseInt(binData[2].status)
+                                ? t("done")
+                                : t("processing")}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className={classes.cell}>
+                            <Typography variant="subtitle2">
+                              {t("reporterName")}
+                            </Typography>
+                          </TableCell>
+                          <TableCell className={classes.cell}>
+                            <Typography variant="body2">
+                              {binData[2].username}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className={classes.cell}>
+                            <Typography variant="subtitle2">
+                              {t("reporterPhone")}
+                            </Typography>
+                          </TableCell>
+                          <TableCell className={classes.cell}>
+                            <Typography variant="body2">
+                              {binData[2].phone}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </Box>
+                )}
                 {showMore && (
                   <Box xs={{ mt: "2rem" }}>
                     <Table size="small">
@@ -258,8 +324,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                 >
                                   {item.datetime
                                     ? moment(item.datetime).format(
-                                      "MMM Do YY, H:mm",
-                                    )
+                                        "MMM Do YY, H:mm"
+                                      )
                                     : "-"}
                                 </Typography>
                               </TableCell>
@@ -294,13 +360,22 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
               <IconButton color="secondary" onClick={toggleDetails}>
                 {showMore ? <RemoveCircleOutlineIcon /> : <ControlPointIcon />}
               </IconButton>
-              <IconButton
-                color="secondary"
-                onClick={() => sendMessage(generateMessage(), binData[0].driver_phone)}
-                disabled={binData ? !binData[0]?.driver_phone : true}
-              >
-                <WhatsAppIcon />
-              </IconButton>
+              <Box>
+                {binData && binData[2] ? (
+                  <IconButton color="warning" onClick={toggleReport}>
+                    <FlagIcon />
+                  </IconButton>
+                ) : null}
+                <IconButton
+                  color="secondary"
+                  onClick={() =>
+                    sendMessage(generateMessage(), binData[0].driver_phone)
+                  }
+                  disabled={binData ? !binData[0]?.driver_phone : true}
+                >
+                  <WhatsAppIcon />
+                </IconButton>
+              </Box>
             </CardActions>
           </Card>
         </Draggable>
