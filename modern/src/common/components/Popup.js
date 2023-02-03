@@ -16,6 +16,7 @@ import {
   TableHead,
   Divider,
 } from "@mui/material";
+import ImageIcon from "@mui/icons-material/Image";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
@@ -26,6 +27,8 @@ import { green, red } from "@mui/material/colors";
 import moment from "moment";
 import sendMessage from "../util/sendMessage";
 import { useTranslation } from "./LocalizationProvider";
+import Carousel from "react-material-ui-carousel";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -103,7 +106,13 @@ const StatusRow = ({ name, content }) => {
     </TableRow>
   );
 };
-
+function Item(props) {
+  return (
+    <div>
+      <img width="100%" src={props.item} alt="report-image" />
+    </div>
+  );
+}
 const Popup = ({ onClose, desktopPadding = 0 }) => {
   const classes = useStyles({ desktopPadding });
   const t = useTranslation();
@@ -112,6 +121,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
   const binData = useSelector((state) => state.analytics.binData);
   const [showMore, setShowMore] = useState(false);
   const [showReport, setShowReport] = useState(false);
+  const [showImages, setShowImages] = useState(false);
 
   const toggleDetails = () => {
     setShowReport(false);
@@ -219,61 +229,113 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 </Table>
                 {showReport && (
                   <Box xs={{ mt: "2rem" }}>
-                    <Divider />
-                    <Table size="small">
-                      <TableBody>
-                        <TableRow>
-                          <TableCell className={classes.cell}>
-                            <Typography variant="subtitle2">
-                              {t("reportType")}
-                            </Typography>
-                          </TableCell>
-                          <TableCell className={classes.cell}>
-                            <Typography variant="body2">
-                              {binData[2].type}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className={classes.cell}>
-                            <Typography variant="subtitle2">
-                              {t("status")}
-                            </Typography>
-                          </TableCell>
-                          <TableCell className={classes.cell}>
-                            <Typography variant="body2">
-                              {parseInt(binData[2].status)
-                                ? t("done")
-                                : t("processing")}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className={classes.cell}>
-                            <Typography variant="subtitle2">
-                              {t("reporterName")}
-                            </Typography>
-                          </TableCell>
-                          <TableCell className={classes.cell}>
-                            <Typography variant="body2">
-                              {binData[2].username}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className={classes.cell}>
-                            <Typography variant="subtitle2">
-                              {t("reporterPhone")}
-                            </Typography>
-                          </TableCell>
-                          <TableCell className={classes.cell}>
-                            <Typography variant="body2">
-                              {binData[2].phone}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
+                    {showImages ? (
+                      <Box>
+                        <IconButton onClick={() => setShowImages(false)}>
+                          <ArrowBack />
+                        </IconButton>
+                        <Carousel
+                          indicators={false}
+                          navButtonsAlwaysVisible
+                          autoPlay={false}
+                          height={300}
+                          // onChange={(e) => setSelectedImage(e)} For After keyword
+                        >
+                          {[binData[2].img, binData[2].imgafter].map(
+                            (item, i) => {
+                              if (!item)
+                                return (
+                                  <Item
+                                    key={i}
+                                    title={i === 0 ? "Report Image" : "After"}
+                                    item="https://panthertech.fiu.edu/scs/extensions/SC/Manor/3.3.0/img/no_image_available.jpeg"
+                                  />
+                                );
+                              return (
+                                <Item
+                                  key={i}
+                                  title={i === 0 ? "Report Image" : "After"}
+                                  item={item}
+                                />
+                              );
+                            }
+                          )}
+                        </Carousel>
+                      </Box>
+                    ) : (
+                      <>
+                        <Divider />
+                        <Table size="small">
+                          <TableBody>
+                            <TableRow>
+                              <TableCell className={classes.cell}>
+                                <Typography variant="subtitle2">
+                                  {t("reportType")}
+                                </Typography>
+                              </TableCell>
+                              <TableCell className={classes.cell}>
+                                <Typography variant="body2">
+                                  {binData[2].type}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className={classes.cell}>
+                                <Typography variant="subtitle2">
+                                  {t("status")}
+                                </Typography>
+                              </TableCell>
+                              <TableCell className={classes.cell}>
+                                <Typography variant="body2">
+                                  {parseInt(binData[2].status)
+                                    ? t("done")
+                                    : t("processing")}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className={classes.cell}>
+                                <Typography variant="subtitle2">
+                                  {t("reporterName")}
+                                </Typography>
+                              </TableCell>
+                              <TableCell className={classes.cell}>
+                                <Typography variant="body2">
+                                  {binData[2].username}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className={classes.cell}>
+                                <Typography variant="subtitle2">
+                                  {t("reporterPhone")}
+                                </Typography>
+                              </TableCell>
+                              <TableCell className={classes.cell}>
+                                <Typography variant="body2">
+                                  {binData[2].phone}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className={classes.cell}>
+                                <Typography variant="subtitle2">
+                                  {t("images")}
+                                </Typography>
+                              </TableCell>
+                              <TableCell className={classes.cell}>
+                                <IconButton
+                                  color="solidBlue"
+                                  onClick={() => setShowImages(true)}
+                                >
+                                  <ImageIcon />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+                      </>
+                    )}
                   </Box>
                 )}
                 {showMore && (
@@ -362,7 +424,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
               </IconButton>
               <Box>
                 {binData && binData[2] ? (
-                  <IconButton color="warning" onClick={toggleReport}>
+                  <IconButton color="negative" onClick={toggleReport}>
                     <FlagIcon />
                   </IconButton>
                 ) : null}

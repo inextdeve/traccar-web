@@ -134,6 +134,7 @@ const MainPage = () => {
   const loading = useSelector((state) => state.bins.loading);
   const filterSet = useSelector((state) => state.bins.filterSet);
   const binsPositions = useSelector((state) => state.bins.bins);
+  const reportedBins = useSelector((state) => state.bins.reportedBins);
 
   const [selectedItems, setSelectedItems] = useState({
     route: [],
@@ -143,7 +144,7 @@ const MainPage = () => {
 
   const handleFilter = () => {
     const filteredBins = binsPositions.filter((item) => {
-      // Conditions Check
+      // Conditions Check               ^ Filter
       const route = selectedItems.route.length
         ? selectedItems.route.some((filter) => item.route === filter)
         : true;
@@ -163,6 +164,10 @@ const MainPage = () => {
         selectedItems.status === "unempty"
       ) {
         status = item.status === selectedItems.status;
+      } else if (selectedItems.status === "reported") {
+        status = reportedBins.some((reported) => {
+          return parseInt(reported.id_bin) === parseInt(item.id);
+        });
       }
 
       return route && bintype && center_name && status;

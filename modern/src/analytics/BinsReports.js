@@ -176,7 +176,8 @@ const BinsReports = () => {
         setIsLoading(false);
         return data.json();
       })
-      .then((data) => {
+      .then((response) => {
+        const data = response?.reverse();
         setTableData(data);
         dispatch(analyticsActions.updateItems(data));
       })

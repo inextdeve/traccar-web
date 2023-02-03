@@ -72,31 +72,15 @@ const SummaryReportPage = () => {
   });
 
   const filterItems = (data) => {
-    console.log(data);
     switch (speed.symbol) {
       case "gt":
-        setItems(
-          data.filter(
-            (item) =>
-              speedFromKnots(item.speed, speedUnit).toFixed(2) >= speed.value
-          )
-        );
+        setItems(data.filter((item) => item.speed * 1.852 >= speed.value));
         break;
       case "lt":
-        setItems(
-          data.filter(
-            (item) =>
-              speedFromKnots(item.speed, speedUnit).toFixed(2) <= speed.value
-          )
-        );
+        setItems(data.filter((item) => item.speed * 1.852 <= speed.value));
         break;
       case "eq":
-        setItems(
-          data.filter(
-            (item) =>
-              speedFromKnots(item.speed, speedUnit).toFixed(2) === speed.value
-          )
-        );
+        setItems(data.filter((item) => item.speed * 1.852 === speed.value));
         break;
       default:
         setItems(data);

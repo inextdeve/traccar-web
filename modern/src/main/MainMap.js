@@ -96,7 +96,6 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
       .then((response) => {
         dispatch(binsActions.updateLoading(false));
         const [reportedBins, data] = response; // data is for all bins i don't change it for the function need to change all things
-
         dispatch(binsActions.updateLoading(false));
         const filterSet = {
           route: [...new Set(data.map((item) => item.route))],
@@ -129,7 +128,10 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
                   category = parseInt(isReported.status)
                     ? "trashInfo"
                     : "trashWarning";
-                  report = { is: true, status: parseInt(isReported.status) };
+                  report = {
+                    is: true,
+                    status: parseInt(isReported.status),
+                  };
                 } else {
                   category =
                     status === "unempty" ? "trashNegative" : "trashPositive";

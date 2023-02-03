@@ -46,8 +46,8 @@ export default {
   solidGrey: {
     main: colors.grey,
   },
-  warning: {
-    main: colors.warning,
+  negative: {
+    main: colors.negative,
     contrastText: colors.white,
   },
   colors,
