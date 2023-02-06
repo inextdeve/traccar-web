@@ -17,7 +17,7 @@ import { useAttributePreference } from "../common/util/preferences";
 import CameraList from "./CameraList";
 import CameraPopup from "../common/components/CameraPopup";
 import MainFilter from "../common/components/MainFilter";
-import KIPCharts from "../common/components/KPICharts";
+import KIPCharts from "../common/components/KPICharts_";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,6 +66,8 @@ const MainPage = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const theme = useTheme();
+
+  const showKPI = useSelector((state) => state.analytics.showKPI);
 
   const desktop = useMediaQuery(theme.breakpoints.up("md"));
 
@@ -131,7 +133,7 @@ const MainPage = () => {
         );
       })}
       {showCameraList && <CameraList />}
-      <KIPCharts />
+      {showKPI && <KIPCharts />}
       <MainFilter />
       {desktop && (
         <MainMap

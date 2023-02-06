@@ -1,37 +1,89 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Draggable from "react-draggable";
 import {
-  Dialog,
-  DialogContent,
-  DialogActions,
-  Button,
-  Grid,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
+  Card,
   Box,
+  Typography,
+  IconButton,
+  Grid,
+  CardContent,
+  LinearProgress,
 } from "@mui/material";
+import { green } from "@mui/material/colors";
+import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
-import Slide from "@mui/material/Slide";
-import { useDispatch, useSelector } from "react-redux";
 import { analyticsActions } from "../../store";
 import BarChart from "./BarChart";
-import { useTranslation } from "./LocalizationProvider";
-import { maxWidth } from "@mui/system";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+const useStyles = makeStyles((theme) => ({
+  card: {
+    maxWidth: "1000px",
+  },
+  media: {
+    height: theme.dimensions.popupImageHeight,
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "flex-start",
+  },
+  mediaButton: {
+    color: theme.palette.colors.white,
+    mixBlendMode: "difference",
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: theme.spacing(1, 1, 1, 2),
+  },
+  content: {
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+  },
+  negative: {
+    color: theme.palette.colors.negative,
+  },
+  icon: {
+    width: "25px",
+    height: "25px",
+    filter: "brightness(0) invert(1)",
+  },
+  table: {
+    "& .MuiTableCell-sizeSmall": {
+      paddingLeft: 0,
+      paddingRight: 0,
+    },
+  },
+  cell: {
+    borderBottom: "none",
+  },
+  actions: {
+    justifyContent: "space-between",
+  },
+  root: ({ desktopPadding }) => ({
+    resize: "both",
+    position: "fixed",
+    zIndex: 5,
+    left: `20%`,
+    [theme.breakpoints.up("md")]: {
+      left: `calc(30% + ${desktopPadding} / 2)`,
+      top: `10%`,
+    },
+    [theme.breakpoints.down("md")]: {
+      left: "30%",
+      top: `10%`,
+    },
+    transform: "translateX(-50%)",
+  }),
+}));
 
-const KIPCharts = () => {
+const PopupModel = () => {
+  const classes = useStyles();
+
   const dispatch = useDispatch();
 
-  const t = useTranslation();
-
   const token = useSelector((state) => state.session.user.attributes.apitoken);
-
-  const open = useSelector((state) => state.analytics.showKPI);
 
   const { from, to } = useSelector((state) => {
     const date = state.analytics.fromToDay;
@@ -48,7 +100,7 @@ const KIPCharts = () => {
     };
   });
 
-  const handleClose = () => {
+  const onClose = () => {
     dispatch(analyticsActions.updateShowKPI(false));
   };
 
@@ -104,20 +156,30 @@ const KIPCharts = () => {
   }, []);
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-      fullScreen
-      TransitionComponent={Transition}
-    >
-      
-      <DialogContent sx={{ minWidth: "400px" }}>
-        <Grid container spacing={2} sx={{ maxWidth: "1300px", mx: "auto" }}>
-          {kpi.length
-            ? kpi.map((item) => (
-                <Grid item xs={6}>
+    <Draggable handle={`.${classes.media}, .${classes.header}`}>
+      <Card elevation={3} className={`${classes.card} ${classes.root}`}>
+        <Box
+          className={classes.header}
+          sx={{
+            backgroundColor: `${green[500]}`,
+            color: "white",
+          }}
+        >
+          <Typography variant="body2">KPI</Typography>
+          <IconButton size="small" onClick={onClose} onTouchStart={onClose}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Box>
+
+        <CardContent className={classes.content}>
+          <Grid
+            container
+            spacing={2}
+            sx={{ maxWidth: "1300px", mx: "auto", flexWrap: "wrap" }}
+          >
+            {kpi.length ? (
+              kpi.map((item) => (
+                <Grid item xs={12} md={6} sx={{ minWidth: "300px" }}>
                   <Typography variant="h5">{item.name} Status</Typography>
                   <Box
                     sx={{
@@ -173,16 +235,18 @@ const KIPCharts = () => {
                       />
                     </Box>
                   </Box>
-                  <Box sx={{ mt: 4, maxWidth: "550px" }}>
+                  <Box sx={{ mt: 4, minWidth: "300px" }}>
                     <BarChart data={[item]} key1="done" key2="undone" />
                   </Box>
                 </Grid>
               ))
-            : "No Data Available Right Now"}
-        </Grid>
-      </DialogContent>
-    </Dialog>
+            ) : (
+              <LinearProgress />
+            )}
+          </Grid>
+        </CardContent>
+      </Card>
+    </Draggable>
   );
 };
-
-export default KIPCharts;
+export default PopupModel;

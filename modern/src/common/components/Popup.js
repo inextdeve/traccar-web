@@ -25,10 +25,11 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import FlagIcon from "@mui/icons-material/Flag";
 import { green, red } from "@mui/material/colors";
 import moment from "moment";
-import Carousel from "react-material-ui-carousel";
-import ArrowBack from "@mui/icons-material/ArrowBack";
 import sendMessage from "../util/sendMessage";
 import { useTranslation } from "./LocalizationProvider";
+import Carousel from "react-material-ui-carousel";
+import ArrowBack from "@mui/icons-material/ArrowBack";
+import LaunchIcon from "@mui/icons-material/Launch";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -74,6 +75,38 @@ const useStyles = makeStyles((theme) => ({
   actions: {
     justifyContent: "space-between",
   },
+  imageReportTag: {
+    borderRadius: "0.5rem",
+    color: "white",
+    padding: "0 8px",
+    fontSize: "0.99rem",
+    lineHeight: "32px",
+  },
+  tagNegative: {
+    background: theme.palette.colors.negative,
+  },
+  tagPositive: {
+    background: theme.palette.colors.positive,
+  },
+  repImgContainer: {
+    position: "relative",
+  },
+  launchLink: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    width: "100%",
+    backgroundColor: "#00000099",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    opacity: 0,
+    color: "#FFF",
+    "&:hover": {
+      opacity: 1,
+    },
+  },
   root: ({ desktopPadding }) => ({
     position: "fixed",
     zIndex: 5,
@@ -106,11 +139,24 @@ const StatusRow = ({ name, content }) => {
     </TableRow>
   );
 };
-const Item = (props) => (
-  <div>
-    <img width="100%" src={props.item} alt="report-image" />
-  </div>
-);
+function Item(props) {
+  const classes = useStyles();
+  return (
+    <div className={classes.repImgContainer}>
+      {props.launchLink && (
+        <a href={props.item} target="_blank" className={classes.launchLink}>
+          <LaunchIcon />
+        </a>
+      )}
+      <img
+        style={{ objectFit: "contain", maxHeight: "300px" }}
+        width="100%"
+        src={props.item}
+        alt="report-image"
+      />
+    </div>
+  );
+}
 const Popup = ({ onClose, desktopPadding = 0 }) => {
   const classes = useStyles({ desktopPadding });
   const t = useTranslation();
@@ -120,6 +166,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
   const [showMore, setShowMore] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [showImages, setShowImages] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const toggleDetails = () => {
     setShowReport(false);
@@ -145,8 +192,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 Bin Type: ${popup.binType}
                 Last Time Emptied: ${lastOperation()}
                 https://www.google.com/maps/place/${binData[0].latitude},${
-  binData[0].longitude
-}`;
+    binData[0].longitude
+  }`;
 
   return (
     <div className={classes.root}>
@@ -179,7 +226,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     <StatusRow name={t("binType")} content={popup.binType} />
                     <StatusRow
                       name={t("status")}
-                      content={(
+                      content={
                         <span
                           style={{
                             color: `${
@@ -191,12 +238,12 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           {binData[0].status}
                         </span>
-                      )}
+                      }
                     />
                     <StatusRow
                       name={t("lastOperation")}
                       content={moment(lastOperation()).format(
-                        "MMM Do YY, H:mm",
+                        "MMM Do YY, H:mm"
                       )}
                     />
                     <StatusRow
@@ -213,7 +260,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     />
                     <StatusRow
                       name={t("position")}
-                      content={(
+                      content={
                         <a
                           href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
                           target="_blank"
@@ -221,7 +268,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           Google Map
                         </a>
-                      )}
+                      }
                     />
                   </TableBody>
                 </Table>
@@ -229,35 +276,58 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                   <Box xs={{ mt: "2rem" }}>
                     {showImages ? (
                       <Box>
-                        <IconButton onClick={() => setShowImages(false)}>
-                          <ArrowBack />
-                        </IconButton>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            my: 1,
+                          }}
+                        >
+                          <IconButton onClick={() => setShowImages(false)}>
+                            <ArrowBack />
+                          </IconButton>
+                          {selectedImage ? (
+                            <span
+                              className={`${classes.tagPositive} ${classes.imageReportTag}`}
+                            >
+                              After
+                            </span>
+                          ) : (
+                            <span
+                              className={`${classes.tagNegative} ${classes.imageReportTag}`}
+                            >
+                              Before
+                            </span>
+                          )}
+                        </Box>
                         <Carousel
                           indicators={false}
                           navButtonsAlwaysVisible
                           autoPlay={false}
                           height={300}
-                          // onChange={(e) => setSelectedImage(e)} For After keyword
+                          onChange={(e) => setSelectedImage(e)}
                         >
                           {[binData[2].img, binData[2].imgafter].map(
                             (item, i) => {
-                              if (!item) {
+                              if (!item)
                                 return (
                                   <Item
                                     key={i}
                                     title={i === 0 ? "Report Image" : "After"}
                                     item="https://panthertech.fiu.edu/scs/extensions/SC/Manor/3.3.0/img/no_image_available.jpeg"
+                                    launchLink={false}
                                   />
                                 );
-                              }
                               return (
                                 <Item
                                   key={i}
                                   title={i === 0 ? "Report Image" : "After"}
                                   item={item}
+                                  launchLink={true}
                                 />
                               );
-                            },
+                            }
                           )}
                         </Carousel>
                       </Box>
@@ -275,6 +345,18 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                               <TableCell className={classes.cell}>
                                 <Typography variant="body2">
                                   {binData[2].type}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className={classes.cell}>
+                                <Typography variant="subtitle2">
+                                  {t("sharedDescription")}
+                                </Typography>
+                              </TableCell>
+                              <TableCell className={classes.cell}>
+                                <Typography variant="body2">
+                                  {binData[2].description}
                                 </Typography>
                               </TableCell>
                             </TableRow>
@@ -385,8 +467,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                 >
                                   {item.datetime
                                     ? moment(item.datetime).format(
-                                      "MMM Do YY, H:mm",
-                                    )
+                                        "MMM Do YY, H:mm"
+                                      )
                                     : "-"}
                                 </Typography>
                               </TableCell>
@@ -429,7 +511,9 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 ) : null}
                 <IconButton
                   color="secondary"
-                  onClick={() => sendMessage(generateMessage(), binData[0].driver_phone)}
+                  onClick={() =>
+                    sendMessage(generateMessage(), binData[0].driver_phone)
+                  }
                   disabled={binData ? !binData[0]?.driver_phone : true}
                 >
                   <WhatsAppIcon />

@@ -50,5 +50,9 @@ export default {
     main: colors.negative,
     contrastText: colors.white,
   },
+  positive: {
+    main: colors.positive,
+    contrastText: colors.white,
+  },
   colors,
 };
