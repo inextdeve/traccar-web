@@ -33,15 +33,15 @@ import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
 import { ALTURL, URL } from "../common/util/constant";
 
-function Item(props) {
+const Item = (props) => {
   const classes = useReportStyles();
 
   return (
     <div>
-      <img className={classes.reportImg} src={props.item} alt="report-image" />
+      <img className={classes.reportImg} src={props.item} alt="report" />
     </div>
   );
-}
+};
 
 const BinsReports = () => {
   const classes = useReportStyles();
@@ -139,7 +139,6 @@ const BinsReports = () => {
       id: item.id_bin,
       tag: "bin",
     };
-
     return {
       ...item,
       status: parseInt(item.status) ? t("done") : t("processing"),
@@ -225,7 +224,7 @@ const BinsReports = () => {
             onChange={(e) => setSelectedImage(e)}
           >
             {reportImages.map((item, i) => {
-              if (!item)
+              if (!item) {
                 return (
                   <Item
                     key={i}
@@ -233,6 +232,7 @@ const BinsReports = () => {
                     item="https://panthertech.fiu.edu/scs/extensions/SC/Manor/3.3.0/img/no_image_available.jpeg"
                   />
                 );
+              }
               return (
                 <Item
                   key={i}

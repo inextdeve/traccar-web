@@ -621,5 +621,11 @@
   "notCleaned": "لم تنظف",
   "theProportionOfCleanedAndUncleanedBinsByTypes": "نسبة الحاويات المنظفة و الغير منظفة حسب النوع",
   "theProportionOfTheCleanedBinsAndTheUncleaned": "نسبة الحاويات المنظفة و الغير منظفة",
-  "reported": "المبلغ عنها"
+  "reported": "المبلغ عنها",
+  "generalStatus": "الحالة العامة",
+  "theProportionOfCompletedTasks": "نسب المهام المنجزة",
+  "sweeping": "الكنس الآلي",
+  "plan": "الخطة",
+  "equipment": "المعدات",
+  "images": "الصور"
 }

@@ -73,29 +73,36 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   useEffect(() => {
     const fetchData = async () => {
       const reportedBinData = await fetch(
-        `${ALTURL}/?token=${token}&report_bins&time_f=${dateFrom.time}&date_f=${dateFrom.date}&time_t=${dateTo.time}&date_t=${dateTo.date}`
+        `${ALTURL}/?token=${token}&report_bins&date_f=${dateFrom.date}&date_t=${dateTo.date}`
       );
+
       const data = await reportedBinData.json();
-      dispatch(binsActions.updateReportedBins(data));
+
+      dispatch(binsActions.updateReportedBins(data || []));
     };
     fetchData();
-  }, []);
+  }, [refresh]);
 
   useEffect(() => {
     dispatch(binsActions.updateLoading(true));
     const reportedBinData = fetch(
-      `${ALTURL}/?token=${token}&report_bins&time_f=${dateFrom.time}&date_f=${dateFrom.date}&time_t=${dateTo.time}&date_t=${dateTo.date}`
+      `${ALTURL}/?token=${token}&report_bins&date_f=${dateFrom.date}&date_t=${dateTo.date}`
     ).then((response) => {
       return response.json();
     });
-    const allBinsData = fetch(`${URL}/?token=${token}&bins&limit=0;10000`).then(
-      (response) => response.json()
-    );
+
+    const allBinsData = fetch(
+      `${URL}/?token=${token}&bins&limit=0;10000&time_f=${dateFrom.time}&date_f=${dateFrom.date}&time_t=${dateTo.time}&date_t=${dateTo.date}`
+    ).then((response) => response.json());
 
     Promise.all([reportedBinData, allBinsData])
       .then((response) => {
         dispatch(binsActions.updateLoading(false));
-        const [reportedBins, data] = response; // data is for all bins i don't change it for the function need to change all things
+        let [reportedBins, data] = response; // data is for all bins i don't change it for the function need to change all things
+        if (reportedBins === null) {
+          reportedBins = [];
+        }
+
         dispatch(binsActions.updateLoading(false));
         const filterSet = {
           route: [...new Set(data.map((item) => item.route))],

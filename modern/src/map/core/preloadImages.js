@@ -62,8 +62,7 @@ export const mapIcons = {
   camera: cameraSvg,
 };
 
-export const mapIconKey = (category) =>
-  mapIcons.hasOwnProperty(category) ? category : "default";
+export const mapIconKey = (category) => (mapIcons.hasOwnProperty(category) ? category : "default");
 
 export const mapImages = {};
 
@@ -89,19 +88,19 @@ export default async () => {
               mapImages[`${category}-${color}`] = prepareIcon(
                 noBackground,
                 icon,
-                "#FFFFFF00"
+                "#FFFFFF00",
               );
               return;
             }
             mapImages[`${category}-${color}`] = prepareIcon(
               background,
               icon,
-              palette.colors[color]
+              palette.colors[color],
             );
-          })
+          }),
         );
       });
       await Promise.all(results);
-    })
+    }),
   );
 };

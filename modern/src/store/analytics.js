@@ -15,6 +15,14 @@ const { reducer, actions } = createSlice({
     to: moment().locale("en").format(moment.HTML5_FMT.DATETIME_LOCAL),
     popup: false,
     binData: null,
+    showKPI: false,
+    fromToDay: {
+      from: moment()
+        .subtract(1, "day")
+        .locale("en")
+        .format(moment.HTML5_FMT.DATETIME_LOCAL),
+      to: moment().locale("en").format(moment.HTML5_FMT.DATETIME_LOCAL),
+    },
   },
   reducers: {
     updateLoading(state, action) {
@@ -45,6 +53,9 @@ const { reducer, actions } = createSlice({
     },
     updateBinData(state, action) {
       state.binData = action.payload;
+    },
+    updateShowKPI(state, action) {
+      state.showKPI = action.payload;
     },
   },
 });

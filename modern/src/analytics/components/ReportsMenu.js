@@ -12,6 +12,8 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 
 import Delete from "@mui/icons-material/Delete";
 import ReportIcon from "@mui/icons-material/Report";
+import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
+import ConstructionIcon from "@mui/icons-material/Construction";
 
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { Link, useLocation } from "react-router-dom";
@@ -42,12 +44,16 @@ const ReportsMenu = () => {
 
   const [binOpen, setBinOpen] = React.useState(true);
   const [washOpen, setWashOpen] = React.useState(true);
+  const [sweepOpen, setSweepOpen] = React.useState(true);
 
   const handleClick = () => {
     setBinOpen(!binOpen);
   };
   const handleWashClick = () => {
     setWashOpen(!washOpen);
+  };
+  const handleSweepClick = () => {
+    setSweepOpen(!washOpen);
   };
 
   return (
@@ -122,6 +128,34 @@ const ReportsMenu = () => {
               link="/analytics/bin/washing/summary"
               icon={<StockIcon />}
               selected={location.pathname === "/analytics/bin/washing/summary"}
+            />
+          </List>
+        </Collapse>
+      </List>
+      <List>
+        <ListItemButton onClick={handleSweepClick}>
+          <ListItemText primary={t("sweeping")} />
+          {sweepOpen ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={sweepOpen} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <MenuItem
+              title={t("reportRoute")}
+              link="/analytics/bin"
+              icon={<RouteIcon />}
+              selected={location.pathname === "/analytics/bin"}
+            />
+            <MenuItem
+              title={t("plan")}
+              link="/analytics/bin"
+              icon={<AppRegistrationIcon />}
+              selected={location.pathname === "/analytics/bin"}
+            />
+            <MenuItem
+              title={t("equipment")}
+              link="/analytics/bin"
+              icon={<ConstructionIcon />}
+              selected={location.pathname === "/analytics/bin"}
             />
           </List>
         </Collapse>

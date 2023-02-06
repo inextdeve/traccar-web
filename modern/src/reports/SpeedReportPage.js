@@ -34,7 +34,6 @@ import ColumnSelect from "./components/ColumnSelect";
 import { useCatch } from "../reactHelper";
 import useReportStyles from "./common/useReportStyles";
 import TableShimmer from "../common/components/TableShimmer";
-import { speedFromKnots } from "../common/util/converter";
 import MapPositions from "../map/MapPositions";
 import MapView from "../map/core/MapView";
 import MapCamera from "../map/MapCamera";
@@ -68,7 +67,7 @@ const SummaryReportPage = () => {
 
   const [speed, setSpeed] = useState({
     symbol: "gt",
-    value: 0,
+    value: 80,
   });
 
   const filterItems = (data) => {
@@ -107,11 +106,25 @@ const SummaryReportPage = () => {
       } else {
         setLoading(true);
         try {
-          const response = await fetch(`/api/positions?${query.toString()}`, {
-            headers: { Accept: "application/json" },
-          });
+          const response = await fetch(
+            `/api/reports/events?${query.toString()}&type=deviceOverspeed`,
+            {
+              headers: { Accept: "application/json" },
+            }
+          );
           if (response.ok) {
-            filterItems(await response.json());
+            const data = await response.json();
+
+            if (data.length) {
+              filterItems(
+                data.map((device) => {
+                  return {
+                    ...device,
+                    speed: device.attributes.speed,
+                  };
+                })
+              );
+            }
           } else {
             throw Error(await response.text());
           }
@@ -189,12 +202,13 @@ const SummaryReportPage = () => {
                 type="number"
                 variant="outlined"
                 value={speed.value}
-                onChange={(e) =>
+                onChange={(e) => {
+                  if (e.target.value < 80) return;
                   setSpeed((prev) => ({
                     ...prev,
                     value: Number(e.target.value),
-                  }))
-                }
+                  }));
+                }}
               />
             </FormControl>
           </div>
@@ -222,7 +236,7 @@ const SummaryReportPage = () => {
                 key={`${item.deviceId}_${Date.parse(item.startTime)}_${index}`}
               >
                 <TableCell className={classes.columnAction} padding="none">
-                  {selectedItem === item ? (
+                  {selectedItem?.id === item?.id ? (
                     <IconButton
                       size="small"
                       onClick={() => setSelectedItem(null)}
@@ -232,7 +246,14 @@ const SummaryReportPage = () => {
                   ) : (
                     <IconButton
                       size="small"
-                      onClick={() => setSelectedItem(item)}
+                      onClick={async () => {
+                        const response = await fetch(
+                          `/api/positions?id=${item.id}`
+                        );
+                        const data = await response.json();
+                        console.log(selectedItem);
+                        setSelectedItem(data[0]);
+                      }}
                     >
                       <LocationSearchingIcon fontSize="small" />
                     </IconButton>

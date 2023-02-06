@@ -25,10 +25,10 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import FlagIcon from "@mui/icons-material/Flag";
 import { green, red } from "@mui/material/colors";
 import moment from "moment";
-import sendMessage from "../util/sendMessage";
-import { useTranslation } from "./LocalizationProvider";
 import Carousel from "react-material-ui-carousel";
 import ArrowBack from "@mui/icons-material/ArrowBack";
+import sendMessage from "../util/sendMessage";
+import { useTranslation } from "./LocalizationProvider";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -106,13 +106,11 @@ const StatusRow = ({ name, content }) => {
     </TableRow>
   );
 };
-function Item(props) {
-  return (
-    <div>
-      <img width="100%" src={props.item} alt="report-image" />
-    </div>
-  );
-}
+const Item = (props) => (
+  <div>
+    <img width="100%" src={props.item} alt="report-image" />
+  </div>
+);
 const Popup = ({ onClose, desktopPadding = 0 }) => {
   const classes = useStyles({ desktopPadding });
   const t = useTranslation();
@@ -147,8 +145,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 Bin Type: ${popup.binType}
                 Last Time Emptied: ${lastOperation()}
                 https://www.google.com/maps/place/${binData[0].latitude},${
-    binData[0].longitude
-  }`;
+  binData[0].longitude
+}`;
 
   return (
     <div className={classes.root}>
@@ -181,7 +179,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     <StatusRow name={t("binType")} content={popup.binType} />
                     <StatusRow
                       name={t("status")}
-                      content={
+                      content={(
                         <span
                           style={{
                             color: `${
@@ -193,12 +191,12 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           {binData[0].status}
                         </span>
-                      }
+                      )}
                     />
                     <StatusRow
                       name={t("lastOperation")}
                       content={moment(lastOperation()).format(
-                        "MMM Do YY, H:mm"
+                        "MMM Do YY, H:mm",
                       )}
                     />
                     <StatusRow
@@ -215,7 +213,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     />
                     <StatusRow
                       name={t("position")}
-                      content={
+                      content={(
                         <a
                           href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
                           target="_blank"
@@ -223,7 +221,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           Google Map
                         </a>
-                      }
+                      )}
                     />
                   </TableBody>
                 </Table>
@@ -243,7 +241,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           {[binData[2].img, binData[2].imgafter].map(
                             (item, i) => {
-                              if (!item)
+                              if (!item) {
                                 return (
                                   <Item
                                     key={i}
@@ -251,6 +249,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                     item="https://panthertech.fiu.edu/scs/extensions/SC/Manor/3.3.0/img/no_image_available.jpeg"
                                   />
                                 );
+                              }
                               return (
                                 <Item
                                   key={i}
@@ -258,7 +257,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                   item={item}
                                 />
                               );
-                            }
+                            },
                           )}
                         </Carousel>
                       </Box>
@@ -386,8 +385,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                 >
                                   {item.datetime
                                     ? moment(item.datetime).format(
-                                        "MMM Do YY, H:mm"
-                                      )
+                                      "MMM Do YY, H:mm",
+                                    )
                                     : "-"}
                                 </Typography>
                               </TableCell>
@@ -430,9 +429,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 ) : null}
                 <IconButton
                   color="secondary"
-                  onClick={() =>
-                    sendMessage(generateMessage(), binData[0].driver_phone)
-                  }
+                  onClick={() => sendMessage(generateMessage(), binData[0].driver_phone)}
                   disabled={binData ? !binData[0]?.driver_phone : true}
                 >
                   <WhatsAppIcon />
