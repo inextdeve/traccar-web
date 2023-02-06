@@ -92,7 +92,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
     });
 
     const allBinsData = fetch(
-      `${URL}/?token=${token}&bins&limit=0;10000&time_f=${dateFrom.time}&date_f=${dateFrom.date}&time_t=${dateTo.time}&date_t=${dateTo.date}`
+      `${URL}/?token=${token}&bins&limit=0;10000&date_f=${dateFrom.date}&date_t=${dateTo.date}`
     ).then((response) => response.json());
 
     Promise.all([reportedBinData, allBinsData])

@@ -3,6 +3,7 @@ import { Box, Tab, Tabs } from "@mui/material";
 import TabContext from "@mui/lab/TabContext";
 import TabPanel from "@mui/lab/TabPanel";
 import { makeStyles } from "@mui/styles";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles(() => {
   const appbarHeight = 64;
@@ -21,6 +22,10 @@ const useStyles = makeStyles(() => {
 
 const CameraCard = ({ mdvrid }) => {
   const classes = useStyles();
+
+  const streamURL = useSelector(
+    (state) => state.session.server.attributes["streaming server"]
+  );
 
   const [value, setValue] = React.useState("1");
 
@@ -52,7 +57,7 @@ const CameraCard = ({ mdvrid }) => {
             title="front"
             className={`${classes.iframe}`}
             allowFullScreen
-            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=2`}
+            src={`${streamURL}/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=2`}
           />
         </TabPanel>
         <TabPanel value="2">
@@ -60,7 +65,7 @@ const CameraCard = ({ mdvrid }) => {
             title="back"
             className={classes.iframe}
             allowFullScreen
-            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=0`}
+            src={`${streamURL}/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=0`}
           />
         </TabPanel>
         <TabPanel value="3">
@@ -68,7 +73,7 @@ const CameraCard = ({ mdvrid }) => {
             title="driver"
             className={classes.iframe}
             allowFullScreen
-            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=1`}
+            src={`${streamURL}/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=1&chns=1`}
           />
         </TabPanel>
         <TabPanel className={classes.tabPanelAll} value="4">
@@ -76,7 +81,7 @@ const CameraCard = ({ mdvrid }) => {
             title="all"
             className={classes.iframe}
             allowFullScreen
-            src={`http://stream.rcj.care/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=3&chns=0,1,2`}
+            src={`${streamURL}/808gps/open/player/video.html?lang=en&vehiIdno=${mdvrid}&account=admin=admin&password=Hqasem13579!&channel=3&chns=0,1,2`}
           />
         </TabPanel>
       </TabContext>
