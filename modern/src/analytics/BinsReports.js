@@ -169,7 +169,7 @@ const BinsReports = () => {
     setIsLoading(true);
 
     fetch(
-      `${ALTURL}/?token=${token}&report_bins&time_f=${dateFrom.time}&date_f=${dateFrom.date}&time_t=${dateTo.time}&date_t=${dateTo.date}`
+      `${ALTURL}/?token=${token}&report_bins&date_f=${dateFrom.date}&date_t=${dateTo.date}`
     )
       .then((data) => {
         setIsLoading(false);

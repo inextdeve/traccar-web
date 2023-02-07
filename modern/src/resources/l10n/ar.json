@@ -627,5 +627,6 @@
   "sweeping": "الكنس الآلي",
   "plan": "الخطة",
   "equipment": "المعدات",
-  "images": "الصور"
+  "images": "الصور",
+  "reportEventTime": "وقت الحدث"
 }

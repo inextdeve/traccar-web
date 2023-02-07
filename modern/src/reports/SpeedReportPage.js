@@ -40,7 +40,7 @@ import MapCamera from "../map/MapCamera";
 import MapGeofence from "../map/MapGeofence";
 
 const columnsArray = [
-  ["deviceTime", "reportDeviceTime"],
+  ["eventTime", "reportEventTime"],
   ["speed", "reportSpeed"],
   ["engineHours", "reportEngineHours"],
 ];
@@ -57,7 +57,7 @@ const SummaryReportPage = () => {
   const hours12 = usePreference("twelveHourFormat");
 
   const [columns, setColumns] = usePersistedState("summaryColumns", [
-    "deviceTime",
+    "eventTime",
     "speed",
     "engineHours",
   ]);
@@ -114,7 +114,6 @@ const SummaryReportPage = () => {
           );
           if (response.ok) {
             const data = await response.json();
-
             if (data.length) {
               filterItems(
                 data.map((device) => {
@@ -139,7 +138,7 @@ const SummaryReportPage = () => {
     switch (key) {
       case "deviceId":
         return devices[item[key]].name;
-      case "deviceTime":
+      case "eventTime":
         return formatTime(item[key], "minutes", hours12);
       case "speed":
       case "maxSpeed":

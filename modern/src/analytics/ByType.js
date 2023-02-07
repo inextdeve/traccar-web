@@ -115,7 +115,10 @@ const ByType = () => {
     total: countTotal(items, "total"),
     empty_bin: countTotal(items, "empty_bin"),
     un_empty_bin: countTotal(items, "un_empty_bin"),
-    rate: `${(countTotal(items, "rate") / items.length).toFixed(2)}%`,
+    rate: `${countRate(
+      countTotal(items, "total"),
+      countTotal(items, "empty_bin")
+    ).toFixed(2)}%`,
   });
   // Data for charts drop Total item
   const chartData = items.slice(0, -1);

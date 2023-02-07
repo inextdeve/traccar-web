@@ -17,7 +17,7 @@ import { useAttributePreference } from "../common/util/preferences";
 import CameraList from "./CameraList";
 import CameraPopup from "../common/components/CameraPopup";
 import MainFilter from "../common/components/MainFilter";
-import KIPCharts from "../common/components/KPICharts_";
+import KIPCharts from "../common/components/KPICharts";
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
-
-import BarChart from "../BarChart";
-import HorizontalBarChart from "../HorizontalBarChart";
+import PieChart from "../PieChart";
 
 const WashingChart = () => {
   const chartData = useSelector((state) => state.analytics.chartData);
@@ -82,7 +80,12 @@ const WashingChart = () => {
             </Box>
           </Box>
           <Box sx={{ mt: 4, minWidth: "300px" }}>
-            <HorizontalBarChart data={[item]} key1="done" key2="undone" />
+            <PieChart
+              data={[
+                { name: "Washed", value: item.done },
+                { name: "Unwashed", value: item.undone },
+              ]}
+            />
           </Box>
         </>
       ) : (

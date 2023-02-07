@@ -627,5 +627,6 @@
   "sweeping": "Sweeping",
   "plan": "Plan",
   "equipment": "Equipment",
-  "images": "Images"
+  "images": "Images",
+  "reportEventTime": "Event Time"
 }
