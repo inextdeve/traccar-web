@@ -3,7 +3,8 @@ import { useSelector } from "react-redux";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 
-import BarChart from "../BarChart";
+import AltPieChart from "../AltPieChart";
+import { parse } from "wellknown";
 
 const VehicleChart = () => {
   const chartData = useSelector((state) => state.analytics.chartData);
@@ -13,12 +14,10 @@ const VehicleChart = () => {
   useEffect(() => {
     if (chartData !== null) {
       setItem({
-        name: "Vehicle",
-        done: chartData.devices.on,
-        undone: chartData.devices.off,
-        amt: chartData.devices.on + 1999,
-        total: chartData.devices.totla,
-        rate: chartData.devices.rate,
+        name: "Sweeping",
+        done: parseInt(chartData.sweeping.rate),
+        undone: 100 - parseInt(chartData.sweeping.rate),
+        rate: parseInt(chartData.sweeping.rate),
       });
     }
   }, [chartData]);
@@ -81,7 +80,12 @@ const VehicleChart = () => {
             </Box>
           </Box>
           <Box sx={{ mt: 4, minWidth: "300px" }}>
-            <BarChart data={[item]} key1="done" key2="undone" />
+            <AltPieChart
+              data={[
+                { name: "Sweeped", value: item.done },
+                { name: "Not Sweeped", value: item.undone },
+              ]}
+            />
           </Box>
         </>
       ) : (

@@ -23,6 +23,7 @@ const { reducer, actions } = createSlice({
         .format(moment.HTML5_FMT.DATETIME_LOCAL),
       to: moment().locale("en").format(moment.HTML5_FMT.DATETIME_LOCAL),
     },
+    chartData: null,
   },
   reducers: {
     updateLoading(state, action) {
@@ -56,6 +57,9 @@ const { reducer, actions } = createSlice({
     },
     updateShowKPI(state, action) {
       state.showKPI = action.payload;
+    },
+    updateChartData(state, action) {
+      state.chartData = action.payload;
     },
   },
 });

@@ -1,9 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Cell, PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
-import { Typography } from "@mui/material";
-import useReportStyles from "../../common/useReportStyles";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = ["#00C49F", "#FFBB28", "#FF8042", "#0088FE"];
 
 const renderActiveShape = (props) => {
   const RADIAN = Math.PI / 180;
@@ -80,13 +78,12 @@ const renderActiveShape = (props) => {
   );
 };
 
-const BinsPercentageChart = ({ data, title, subtitle }) => {
+const CustomPieChart = ({ data }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
     (_, index) => setActiveIndex(index),
     [setActiveIndex]
   );
-  const classes = useReportStyles();
 
   const [CX, setCX] = useState(200);
 
@@ -99,46 +96,34 @@ const BinsPercentageChart = ({ data, title, subtitle }) => {
   }, []);
 
   return (
-    <>
-      <Typography variant="h6" component="h6" sx={{ fontWeight: "regular" }}>
-        {title}
-      </Typography>
-      <Typography
-        className={classes.chartSubtitle}
-        sx={{ typography: "subtitle2", fontWeight: "light" }}
-      >
-        {subtitle}
-      </Typography>
-      <ResponsiveContainer
-        ref={container}
-        width="100%"
-        height={150 * 2 + 30}
-        debounce={50}
-        className={classes.chartContainer}
-      >
-        <PieChart>
-          <Pie
-            activeIndex={activeIndex}
-            activeShape={renderActiveShape}
-            data={data}
-            cx={CX}
-            cy={150}
-            innerRadius={90}
-            outerRadius={100}
-            fill="#8884d8"
-            dataKey="value"
-            onMouseEnter={onPieEnter}
-          >
-            {data.map((entry, index) => (
-              <Cell
-                key={`cell-${entry.name}`}
-                fill={COLORS[index % COLORS.length]}
-              />
-            ))}
-          </Pie>
-        </PieChart>
-      </ResponsiveContainer>
-    </>
+    <ResponsiveContainer
+      ref={container}
+      width="100%"
+      height={150 * 2 + 30}
+      debounce={50}
+    >
+      <PieChart>
+        <Pie
+          activeIndex={activeIndex}
+          activeShape={renderActiveShape}
+          data={data}
+          cx={CX}
+          cy={150}
+          innerRadius={90}
+          outerRadius={100}
+          fill="#8884d8"
+          dataKey="value"
+          onMouseEnter={onPieEnter}
+        >
+          {data.map((entry, index) => (
+            <Cell
+              key={`cell-${entry.name}`}
+              fill={COLORS[index % COLORS.length]}
+            />
+          ))}
+        </Pie>
+      </PieChart>
+    </ResponsiveContainer>
   );
 };
-export default BinsPercentageChart;
+export default CustomPieChart;

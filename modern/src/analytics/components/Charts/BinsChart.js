@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Typography, Box } from "@mui/material";
-import {
-  PieChart, Pie, Cell, ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import useReportStyles from "../../common/useReportStyles";
 import Rect from "../../common/Rect";
 

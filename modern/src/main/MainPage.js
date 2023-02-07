@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import DeviceList from "./DeviceList";
 import BottomMenu from "../common/components/BottomMenu";
 import StatusCard from "../common/components/StatusCard";
-import { devicesActions } from "../store";
+import { analyticsActions, devicesActions } from "../store";
 import usePersistedState from "../common/util/usePersistedState";
 import EventsDrawer from "./EventsDrawer";
 import useFilter from "./useFilter";
@@ -67,6 +67,23 @@ const MainPage = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
 
+  const { from, to } = useSelector((state) => {
+    const date = state.analytics.fromToDay;
+
+    return {
+      from: {
+        date: date.from.split("T")[0],
+        time: date.from.split("T")[1],
+      },
+      to: {
+        date: date.to.split("T")[0],
+        time: date.to.split("T")[1],
+      },
+    };
+  });
+
+  const token = useSelector((state) => state.session.user.attributes.apitoken);
+
   const showKPI = useSelector((state) => state.analytics.showKPI);
 
   const desktop = useMediaQuery(theme.breakpoints.up("md"));
@@ -118,6 +135,14 @@ const MainPage = () => {
   const closeCameraPopup = (item) => {
     dispatch(devicesActions.removeCamera(item.id));
   };
+
+  useEffect(() => {
+    fetch(
+      `https://bins.rcj.care/api/?token=${token}&statistics&time_f=${from.time}&date_f=${from.date}&time_t=${to.time}&date_t=${to.date}`
+    )
+      .then((response) => response.json())
+      .then((data) => dispatch(analyticsActions.updateChartData(data[0])));
+  }, []);
 
   return (
     <div className={classes.root}>

@@ -4,8 +4,9 @@ import { Box, Typography, CircularProgress } from "@mui/material";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 
 import BarChart from "../BarChart";
+import HorizontalBarChart from "../HorizontalBarChart";
 
-const VehicleChart = () => {
+const WashingChart = () => {
   const chartData = useSelector((state) => state.analytics.chartData);
 
   const [item, setItem] = useState(null);
@@ -13,12 +14,12 @@ const VehicleChart = () => {
   useEffect(() => {
     if (chartData !== null) {
       setItem({
-        name: "Vehicle",
-        done: chartData.devices.on,
-        undone: chartData.devices.off,
-        amt: chartData.devices.on + 1999,
-        total: chartData.devices.totla,
-        rate: chartData.devices.rate,
+        name: "Washing",
+        done: chartData.bins_clean.cleaned,
+        undone: chartData.bins_clean.not_cleaned,
+        amt: chartData.bins_clean.cleaned + chartData.bins_clean.not_cleaned,
+        total: chartData.bins_clean.totla,
+        rate: chartData.bins_clean.rate,
       });
     }
   }, [chartData]);
@@ -81,7 +82,7 @@ const VehicleChart = () => {
             </Box>
           </Box>
           <Box sx={{ mt: 4, minWidth: "300px" }}>
-            <BarChart data={[item]} key1="done" key2="undone" />
+            <HorizontalBarChart data={[item]} key1="done" key2="undone" />
           </Box>
         </>
       ) : (
@@ -90,4 +91,4 @@ const VehicleChart = () => {
     </>
   );
 };
-export default VehicleChart;
+export default WashingChart;
