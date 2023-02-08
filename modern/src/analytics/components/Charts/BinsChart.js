@@ -3,6 +3,7 @@ import { Typography, Box } from "@mui/material";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import useReportStyles from "../../common/useReportStyles";
 import Rect from "../../common/Rect";
+import onSizeChange from "../../../common/util/onSizeChange";
 
 const COLORS = ["#00C49F", "#D32F2F"];
 let data;
@@ -40,6 +41,9 @@ const BinsChart = ({ bins, title, subtitle, key1, key2 }) => {
     const containerWidth = container.current.current.offsetWidth;
     const cx = parseInt(containerWidth, 10) / 2;
     setCX(cx);
+    onSizeChange(container.current.current, (width) => {
+      setCX(width / 2);
+    });
   }, []);
   return (
     <>
@@ -67,7 +71,7 @@ const BinsChart = ({ bins, title, subtitle, key1, key2 }) => {
               cy={150}
               labelLine={false}
               label={renderCustomizedLabel}
-              outerRadius={140}
+              outerRadius={CX - 20 < 140 ? CX - 20 : 140}
               fill="#8884d8"
               dataKey="value"
             >

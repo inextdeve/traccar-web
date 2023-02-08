@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Typography, Box } from "@mui/material";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import onSizeChange from "../util/onSizeChange";
+
 const COLORS = ["#00C49F", "#D32F2F"];
-let data;
 const RADIAN = Math.PI / 180;
+
 const renderCustomizedLabel = ({
   cx,
   cy,
@@ -32,17 +33,21 @@ const renderCustomizedLabel = ({
 const AltPieChart = ({ data }) => {
   const container = useRef(null);
   const [CX, setCX] = useState(80);
+
   useEffect(() => {
     const containerWidth = container.current.current.offsetWidth;
     const cx = parseInt(containerWidth, 10) / 2;
     setCX(cx);
+    onSizeChange(container.current.current, (width) => {
+      setCX(width / 2);
+    });
   }, []);
 
   return (
     <ResponsiveContainer
       ref={container}
       width="100%"
-      height={150 * 2 + 20}
+      height={150 * 2 + 20} //300
       debounce={50}
     >
       <PieChart>
@@ -52,7 +57,7 @@ const AltPieChart = ({ data }) => {
           cy={150}
           labelLine={false}
           label={renderCustomizedLabel}
-          outerRadius={140}
+          outerRadius={CX - 20 < 140 ? CX - 20 : 140}
           fill="#8884d8"
           dataKey="value"
         >

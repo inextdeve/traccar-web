@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Cell, PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
+import onSizeChange from "../util/onSizeChange";
 
 const COLORS = ["#00C49F", "#FFBB28", "#FF8042", "#0088FE"];
 
@@ -78,7 +79,7 @@ const renderActiveShape = (props) => {
   );
 };
 
-const CustomPieChart = ({ data }) => {
+const CustomPieChart = ({ data, height = 100 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
     (_, index) => setActiveIndex(index),
@@ -92,14 +93,17 @@ const CustomPieChart = ({ data }) => {
   useEffect(() => {
     const containerWidth = container.current.current.offsetWidth;
     const cx = parseInt(containerWidth, 10) / 2;
-    setCX(cx, 10);
+    setCX(cx);
+    onSizeChange(container.current.current, (width) => {
+      setCX(width / 2);
+    });
   }, []);
 
   return (
     <ResponsiveContainer
       ref={container}
       width="100%"
-      height={150 * 2 + 30}
+      height={height * 2 + 30}
       debounce={50}
     >
       <PieChart>
@@ -108,9 +112,9 @@ const CustomPieChart = ({ data }) => {
           activeShape={renderActiveShape}
           data={data}
           cx={CX}
-          cy={150}
-          innerRadius={90}
-          outerRadius={100}
+          cy={height + 15}
+          outerRadius={height - 35}
+          innerRadius={height - 40}
           fill="#8884d8"
           dataKey="value"
           onMouseEnter={onPieEnter}
