@@ -30,7 +30,7 @@ const renderCustomizedLabel = ({
   );
 };
 
-const AltPieChart = ({ data }) => {
+const AltPieChart = ({ data, height = 100 }) => {
   const container = useRef(null);
   const [CX, setCX] = useState(80);
 
@@ -47,17 +47,17 @@ const AltPieChart = ({ data }) => {
     <ResponsiveContainer
       ref={container}
       width="100%"
-      height={150 * 2 + 20} //300
+      height={height * 2 + 20} //300
       debounce={50}
     >
       <PieChart>
         <Pie
           data={data}
           cx={CX}
-          cy={150}
+          cy={height}
           labelLine={false}
           label={renderCustomizedLabel}
-          outerRadius={CX - 20 < 140 ? CX - 20 : 140}
+          outerRadius={height - 10}
           fill="#8884d8"
           dataKey="value"
         >

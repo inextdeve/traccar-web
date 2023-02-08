@@ -79,7 +79,7 @@ const WashingChart = () => {
               />
             </Box>
           </Box>
-          <Box sx={{ mt: 4, minWidth: "300px" }}>
+          <Box>
             <PieChart
               data={[
                 { name: "Washed", value: item.done },

@@ -79,7 +79,7 @@ const VehicleChart = () => {
               />
             </Box>
           </Box>
-          <Box sx={{ mt: 4, minWidth: "300px" }}>
+          <Box>
             <PieChart
               data={[
                 { name: "Empted", value: item.done },

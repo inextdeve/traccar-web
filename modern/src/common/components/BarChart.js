@@ -9,9 +9,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-const SimpleBarChart = ({ data, key1, key2 }) => {
+const SimpleBarChart = ({ data, key1, key2, height = 200 }) => {
   return (
-    <ResponsiveContainer width="100%" height={280} debounce={50}>
+    <ResponsiveContainer width="100%" height={height} debounce={50}>
       <BarChart
         data={data}
         margin={{

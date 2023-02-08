@@ -80,7 +80,7 @@ const VehicleChart = () => {
               />
             </Box>
           </Box>
-          <Box sx={{ mt: 4, minWidth: "300px" }}>
+          <Box>
             <BarChart data={[item]} key1="done" key2="undone" />
           </Box>
         </>

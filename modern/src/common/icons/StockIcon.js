@@ -5,7 +5,7 @@ const StockIcon = () => (
     data-name="Layer 1"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 122.88 104.01"
-    className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+    className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root css-vubbuv"
     // MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-vubbuv : For Prod
     focusable={false}
     aria-hidden

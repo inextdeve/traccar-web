@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
-
 import AltPieChart from "../AltPieChart";
-import { parse } from "wellknown";
 
 const VehicleChart = () => {
   const chartData = useSelector((state) => state.analytics.chartData);
@@ -79,7 +77,7 @@ const VehicleChart = () => {
               />
             </Box>
           </Box>
-          <Box sx={{ mt: 4, minWidth: "300px" }}>
+          <Box>
             <AltPieChart
               data={[
                 { name: "Sweeped", value: item.done },

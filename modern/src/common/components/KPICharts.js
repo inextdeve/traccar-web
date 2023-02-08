@@ -5,7 +5,6 @@ import { Card, Box, Typography, IconButton, CardContent } from "@mui/material";
 import { green } from "@mui/material/colors";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
-import ReplayIcon from "@mui/icons-material/Replay";
 import { analyticsActions } from "../../store";
 import VehicleChart from "./Charts/VehicleChart";
 import BinsChart from "./Charts/BinsChart";
@@ -14,6 +13,7 @@ import SweepingChart from "./Charts/SweepingChart";
 
 const useStyles = makeStyles((theme) => ({
   card: {
+    maxWidth: "1050px",
     overflowY: "scroll",
     maxHeight: "90vh",
   },
@@ -95,9 +95,6 @@ const PopupModel = () => {
         >
           <Typography variant="body2">KPI</Typography>
           <IconButton size="small" onClick={onClose} onTouchStart={onClose}>
-            <ReplayIcon fontSize="small" />
-          </IconButton>
-          <IconButton size="small" onClick={onClose} onTouchStart={onClose}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
@@ -105,23 +102,25 @@ const PopupModel = () => {
         <CardContent className={classes.content}>
           <Box
             sx={{
+              maxWidth: "1300px",
               mx: "auto",
-              display: "grid",
-              gridTemplateColumns: " repeat(2 ,1fr)",
-              gridGap: "1rem",
+              flexWrap: "wrap",
+              display: "flex",
+              gap: "1.5rem",
               justifyContent: "space-around",
+              alignItems: "stretch",
             }}
           >
-            <Box>
+            <Box sx={{ minWidth: "300px", width: "100%", maxWidth: "450px" }}>
               <VehicleChart />
             </Box>
-            <Box>
+            <Box sx={{ minWidth: "300px", width: "100%", maxWidth: "450px" }}>
               <BinsChart />
             </Box>
-            <Box>
+            <Box sx={{ minWidth: "300px", width: "100%", maxWidth: "450px" }}>
               <WashingChart />
             </Box>
-            <Box>
+            <Box sx={{ minWidth: "300px", width: "100%", maxWidth: "450px" }}>
               <SweepingChart />
             </Box>
           </Box>
