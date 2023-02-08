@@ -165,9 +165,10 @@ const BinsReports = () => {
     };
   });
 
+  useEffect(() => setTableData(data), [data]);
+
   useEffect(() => {
     setIsLoading(true);
-
     fetch(
       `${ALTURL}/?token=${token}&report_bins&date_f=${dateFrom.date}&date_t=${dateTo.date}`
     )
@@ -177,7 +178,7 @@ const BinsReports = () => {
       })
       .then((response) => {
         const data = response?.reverse();
-        setTableData(data);
+
         dispatch(analyticsActions.updateItems(data));
       })
       .catch(() => setIsLoading(false));
