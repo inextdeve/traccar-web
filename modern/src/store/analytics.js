@@ -37,7 +37,7 @@ const { reducer, actions } = createSlice({
     },
     refreshPositions(state, action) {
       state.positions = state.positions.filter(
-        (position) => position.id !== action.payload
+        (position) => position.id !== action.payload,
       );
     },
     updatePeriod(state, action) {

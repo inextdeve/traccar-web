@@ -15,14 +15,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import Slide from "@mui/material/Slide";
 import { useDispatch, useSelector } from "react-redux";
+import { maxWidth } from "@mui/system";
 import { analyticsActions } from "../../store";
 import BarChart from "./BarChart";
 import { useTranslation } from "./LocalizationProvider";
-import { maxWidth } from "@mui/system";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
 const KIPCharts = () => {
   const dispatch = useDispatch();
@@ -97,7 +95,7 @@ const KIPCharts = () => {
 
   useEffect(() => {
     fetch(
-      `https://bins.rcj.care/api/?token=${token}&statistics&time_f=${from.time}&date_f=${from.date}&time_t=${to.time}&date_t=${to.date}`
+      `https://bins.rcj.care/api/?token=${token}&statistics&time_f=${from.time}&date_f=${from.date}&time_t=${to.time}&date_t=${to.date}`,
     )
       .then((response) => response.json())
       .then((data) => setChartData(data[0]));
@@ -112,72 +110,76 @@ const KIPCharts = () => {
       fullScreen
       TransitionComponent={Transition}
     >
-      
+
       <DialogContent sx={{ minWidth: "400px" }}>
         <Grid container spacing={2} sx={{ maxWidth: "1300px", mx: "auto" }}>
           {kpi.length
             ? kpi.map((item) => (
-                <Grid item xs={6}>
-                  <Typography variant="h5">{item.name} Status</Typography>
+              <Grid item xs={6}>
+                <Typography variant="h5">
+                  {item.name}
+                  {" "}
+                  Status
+                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: "1rem",
+                    my: 1,
+                    flexWrap: "wrap",
+                  }}
+                >
                   <Box
                     sx={{
                       display: "flex",
-                      gap: "1rem",
-                      my: 1,
-                      flexWrap: "wrap",
+                      alignItems: "center",
+                      gap: "4px",
                     }}
                   >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                      }}
-                    >
-                      <Typography variant="subtitle2">Total: </Typography>
-                      <Typography variant="body2">{item.total}</Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                      }}
-                    >
-                      <Typography variant="subtitle2">Completed: </Typography>
-                      <Typography variant="body2">{item.done}</Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                      }}
-                    >
-                      <Typography variant="subtitle2">Uncompleted: </Typography>
-                      <Typography variant="body2">{item.undone}</Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                      }}
-                    >
-                      <Typography variant="subtitle2">Rate: </Typography>
-                      <Typography variant="body2">{item.rate}</Typography>
-                      <ShowChartIcon
-                        color={`${
-                          parseInt(item.rate) < 50 ? "negative" : "positive"
-                        }`}
-                      />
-                    </Box>
+                    <Typography variant="subtitle2">Total: </Typography>
+                    <Typography variant="body2">{item.total}</Typography>
                   </Box>
-                  <Box sx={{ mt: 4, maxWidth: "550px" }}>
-                    <BarChart data={[item]} key1="done" key2="undone" />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                    }}
+                  >
+                    <Typography variant="subtitle2">Completed: </Typography>
+                    <Typography variant="body2">{item.done}</Typography>
                   </Box>
-                </Grid>
-              ))
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                    }}
+                  >
+                    <Typography variant="subtitle2">Uncompleted: </Typography>
+                    <Typography variant="body2">{item.undone}</Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                    }}
+                  >
+                    <Typography variant="subtitle2">Rate: </Typography>
+                    <Typography variant="body2">{item.rate}</Typography>
+                    <ShowChartIcon
+                      color={`${
+                        parseInt(item.rate) < 50 ? "negative" : "positive"
+                      }`}
+                    />
+                  </Box>
+                </Box>
+                <Box sx={{ mt: 4, maxWidth: "550px" }}>
+                  <BarChart data={[item]} key1="done" key2="undone" />
+                </Box>
+              </Grid>
+            ))
             : "No Data Available Right Now"}
         </Grid>
       </DialogContent>

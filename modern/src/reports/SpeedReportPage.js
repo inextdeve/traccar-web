@@ -94,11 +94,11 @@ const SummaryReportPage = () => {
       groupIds.forEach((groupId) => query.append("groupId", groupId));
       if (type === "export") {
         window.location.assign(
-          `/api/reports/positions/xlsx?${query.toString()}`
+          `/api/reports/positions/xlsx?${query.toString()}`,
         );
       } else if (type === "mail") {
         const response = await fetch(
-          `/api/reports/positions/mail?${query.toString()}`
+          `/api/reports/positions/mail?${query.toString()}`,
         );
         if (!response.ok) {
           throw Error(await response.text());
@@ -110,18 +110,16 @@ const SummaryReportPage = () => {
             `/api/reports/events?${query.toString()}&type=deviceOverspeed`,
             {
               headers: { Accept: "application/json" },
-            }
+            },
           );
           if (response.ok) {
             const data = await response.json();
             if (data.length) {
               filterItems(
-                data.map((device) => {
-                  return {
-                    ...device,
-                    speed: device.attributes.speed,
-                  };
-                })
+                data.map((device) => ({
+                  ...device,
+                  speed: device.attributes.speed,
+                })),
               );
             }
           } else {
@@ -131,7 +129,7 @@ const SummaryReportPage = () => {
           setLoading(false);
         }
       }
-    }
+    },
   );
 
   const formatValue = (item, key) => {
@@ -184,9 +182,7 @@ const SummaryReportPage = () => {
               <Select
                 label={t("speed")}
                 value={speed.symbol}
-                onChange={(e) =>
-                  setSpeed((prev) => ({ ...prev, symbol: e.target.value }))
-                }
+                onChange={(e) => setSpeed((prev) => ({ ...prev, symbol: e.target.value }))}
               >
                 <MenuItem value="gt">{t("gt")}</MenuItem>
                 <MenuItem value="lt">{t("lt")}</MenuItem>
@@ -247,7 +243,7 @@ const SummaryReportPage = () => {
                       size="small"
                       onClick={async () => {
                         const response = await fetch(
-                          `/api/positions?id=${item.id}`
+                          `/api/positions?id=${item.id}`,
                         );
                         const data = await response.json();
                         console.log(selectedItem);

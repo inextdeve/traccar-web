@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from "react";
 import {
   Grid,
   Typography,
@@ -37,15 +39,13 @@ const ByArea = () => {
   const TableRef = useRef(null);
   const theme = useTheme();
 
-  const countTotal = (array, prop) =>
-    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) =>
-    dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
 
   // Map Processing
   const [mapLoading, setMapLoading] = useState(false);
@@ -69,8 +69,8 @@ const ByArea = () => {
           latitude,
           longitude,
           binType: bintype,
-        }))
-      )
+        })),
+      ),
     );
   });
 
@@ -115,7 +115,7 @@ const ByArea = () => {
     un_empty_bin: countTotal(items, "un_empty_bin"),
     rate: `${countRate(
       countTotal(items, "total"),
-      countTotal(items, "empty_bin")
+      countTotal(items, "empty_bin"),
     ).toFixed(2)}%`,
   });
 
@@ -163,7 +163,7 @@ const ByArea = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={
+              button={(
                 <Button
                   variant="contained"
                   color="secondary"
@@ -171,7 +171,7 @@ const ByArea = () => {
                 >
                   {t("print")}
                 </Button>
-              }
+              )}
             />
           </Box>
 
@@ -209,7 +209,7 @@ const ByArea = () => {
                         key2="Unempted"
                         title={t("binsStatus")}
                         subtitle={t(
-                          "theProportionOfTheEmptedBinsAndTheUnempted"
+                          "theProportionOfTheEmptedBinsAndTheUnempted",
                         )}
                         bins={[
                           {
@@ -242,7 +242,7 @@ const ByArea = () => {
                         key2="unempted"
                         title={t("binsStatusByArea")}
                         subtitle={t(
-                          "theProportionOfEmptedAndUnemptedBinsByArea"
+                          "theProportionOfEmptedAndUnemptedBinsByArea",
                         )}
                         bins={chartData.map((item) => {
                           const empted = (item.empty_bin * 100) / item.total;
@@ -251,7 +251,7 @@ const ByArea = () => {
                             name: item.center_name,
                             empted: countRate(
                               item.total,
-                              item.empty_bin
+                              item.empty_bin,
                             ).toFixed(2),
                             unempted: 100 - empted,
                             amt: 100,

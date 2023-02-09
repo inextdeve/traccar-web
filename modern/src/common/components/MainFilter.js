@@ -1,8 +1,5 @@
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useTranslation } from "./LocalizationProvider";
-import { binsActions } from "../../store";
-
 import {
   Box,
   Dialog,
@@ -22,6 +19,8 @@ import {
   TextField,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import { useTranslation } from "./LocalizationProvider";
+import { binsActions } from "../../store";
 
 const useStyles = makeStyles(() => ({
   formControl: {
@@ -65,8 +64,8 @@ const MainFilter = () => {
         : true;
       const center_name = selectedItems.center_name.length
         ? selectedItems.center_name.some(
-            (filter) => item.center_name === filter
-          )
+          (filter) => item.center_name === filter,
+        )
         : true;
 
       let status = true;
@@ -77,9 +76,7 @@ const MainFilter = () => {
       ) {
         status = item.status === selectedItems.status;
       } else if (selectedItems.status === "reported") {
-        status = reportedBins.some((reported) => {
-          return parseInt(reported.id_bin) === parseInt(item.id);
-        });
+        status = reportedBins.some((reported) => parseInt(reported.id_bin) === parseInt(item.id));
       }
 
       return route && bintype && center_name && status;
@@ -141,9 +138,7 @@ const MainFilter = () => {
                   label={t("reportFrom")}
                   type="datetime-local"
                   value={from}
-                  onChange={(e) =>
-                    dispatch(analyticsActions.updateFrom(e.target.value))
-                  }
+                  onChange={(e) => dispatch(analyticsActions.updateFrom(e.target.value))}
                   fullWidth
                 />
               </div>
@@ -154,9 +149,7 @@ const MainFilter = () => {
                   label={t("reportTo")}
                   type="datetime-local"
                   value={to}
-                  onChange={(e) =>
-                    dispatch(analyticsActions.updateTo(e.target.value))
-                  }
+                  onChange={(e) => dispatch(analyticsActions.updateTo(e.target.value))}
                   fullWidth
                 />
               </div>

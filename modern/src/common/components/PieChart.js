@@ -1,5 +1,9 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
-import { Cell, PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
+import React, {
+  useState, useCallback, useRef, useEffect,
+} from "react";
+import {
+  Cell, PieChart, Pie, Sector, ResponsiveContainer,
+} from "recharts";
 import onSizeChange from "../util/onSizeChange";
 
 const COLORS = ["#00C49F", "#FFBB28", "#FF8042", "#0088FE"];
@@ -83,7 +87,7 @@ const CustomPieChart = ({ data, height = 100 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
     (_, index) => setActiveIndex(index),
-    [setActiveIndex]
+    [setActiveIndex],
   );
 
   const [CX, setCX] = useState(200);

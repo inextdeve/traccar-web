@@ -55,7 +55,6 @@ const ByType = () => {
     setSelectedItem(true);
     setMapLoading(null);
     const url = `${URL}/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
-    console.log(url);
 
     const data = await fetch(url);
 
@@ -117,7 +116,7 @@ const ByType = () => {
     un_empty_bin: countTotal(items, "un_empty_bin"),
     rate: `${countRate(
       countTotal(items, "total"),
-      countTotal(items, "empty_bin")
+      countTotal(items, "empty_bin"),
     ).toFixed(2)}%`,
   });
   // Data for charts drop Total item

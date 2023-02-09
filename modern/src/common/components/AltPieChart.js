@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import {
+  PieChart, Pie, Cell, ResponsiveContainer,
+} from "recharts";
 import onSizeChange from "../util/onSizeChange";
 
 const COLORS = ["#00C49F", "#D32F2F"];
@@ -47,7 +49,7 @@ const AltPieChart = ({ data, height = 100 }) => {
     <ResponsiveContainer
       ref={container}
       width="100%"
-      height={height * 2 + 20} //300
+      height={height * 2 + 20} // 300
       debounce={50}
     >
       <PieChart>

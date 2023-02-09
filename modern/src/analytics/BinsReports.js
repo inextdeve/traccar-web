@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from "react";
 import Carousel from "react-material-ui-carousel";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
@@ -77,8 +79,7 @@ const BinsReports = () => {
       .split(".")[0],
   };
 
-  const setIsLoading = (state) =>
-    dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
   const [mapLoading, setMapLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(false);
 
@@ -102,9 +103,9 @@ const BinsReports = () => {
             latitude,
             longitude,
             binType: bintype,
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
   });
 
@@ -170,7 +171,7 @@ const BinsReports = () => {
   useEffect(() => {
     setIsLoading(true);
     fetch(
-      `${ALTURL}/?token=${token}&report_bins&date_f=${dateFrom.date}&date_t=${dateTo.date}`
+      `${ALTURL}/?token=${token}&report_bins&date_f=${dateFrom.date}&date_t=${dateTo.date}`,
     )
       .then((data) => {
         setIsLoading(false);
@@ -205,7 +206,8 @@ const BinsReports = () => {
           id="alert-dialog-title"
           sx={{ display: "flex", justifyContent: "space-between" }}
         >
-          <span>Report Images</span>{" "}
+          <span>Report Images</span>
+          {" "}
           {selectedImage ? (
             <span className={`${classes.positive} ${classes.imageReportTag}`}>
               After
@@ -273,7 +275,7 @@ const BinsReports = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={
+              button={(
                 <Button
                   variant="contained"
                   color="secondary"
@@ -281,7 +283,7 @@ const BinsReports = () => {
                 >
                   {t("print")}
                 </Button>
-              }
+              )}
             />
           </Box>
           <Box ref={TableRef}>

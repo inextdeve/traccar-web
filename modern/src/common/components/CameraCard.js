@@ -24,7 +24,7 @@ const CameraCard = ({ mdvrid }) => {
   const classes = useStyles();
 
   const streamURL = useSelector(
-    (state) => state.session.server.attributes["streaming server"]
+    (state) => state.session.server.attributes["streaming server"],
   );
 
   const [value, setValue] = React.useState("1");

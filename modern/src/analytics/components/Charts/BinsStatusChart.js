@@ -35,7 +35,6 @@ const CustomizedLabel = ({ x, y, value }) => {
 };
 
 const BinsStatusChart = ({ bins, title, subtitle, key1, key2 }) => {
-  console.log(bins);
   const classes = useReportStyles();
   data = bins;
   return (

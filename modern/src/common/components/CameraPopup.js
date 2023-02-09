@@ -1,14 +1,12 @@
 import React from "react";
 import Draggable from "react-draggable";
-import {
-  Card, Box, Typography, IconButton, CardContent,
-} from "@mui/material";
+import { Card, Box, Typography, IconButton, CardContent } from "@mui/material";
 import { green } from "@mui/material/colors";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import CameraCard from "./CameraCard";
 
-const CameraPopup = ({ camera, onClose, index }) => {
+const CameraPopup = ({ camera, onClose }) => {
   const useStyles = makeStyles((theme) => ({
     card: {
       width: theme.dimensions.popupMaxWidth,
@@ -60,14 +58,11 @@ const CameraPopup = ({ camera, onClose, index }) => {
       left: `${camera.left}%`,
       [theme.breakpoints.up("md")]: {
         left: `calc(30% + ${desktopPadding} / 2)`,
-        // top: theme.spacing(3 + index * 6),
         top: `${camera.top}%`,
       },
       [theme.breakpoints.down("md")]: {
         left: "30%",
-        // top: `calc(${theme.spacing(3 + index * 6)} + ${
-        //   theme.dimensions.bottomBarHeight
-        // }px)`,
+
         top: `${camera.top}%`,
       },
       transform: "translateX(-50%)",

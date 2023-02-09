@@ -1,16 +1,16 @@
 const onSizeChange = (element, callback = () => {}) => {
-  const resize_ob = new ResizeObserver(function (entries) {
+  const resizeInstance = new ResizeObserver((entries) => {
     // since we are observing only a single element, so we access the first element in entries array
-    let rect = entries[0].contentRect;
+    const rect = entries[0].contentRect;
 
     // current width & height
-    let width = rect.width;
-    let height = rect.height;
+    const { width } = rect;
+    const { height } = rect;
 
     callback(width, height);
   });
 
-  resize_ob.observe(element);
+  resizeInstance.observe(element);
 };
 
 export default onSizeChange;

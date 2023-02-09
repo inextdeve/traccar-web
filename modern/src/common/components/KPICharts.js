@@ -1,7 +1,9 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import Draggable from "react-draggable";
-import { Card, Box, Typography, IconButton, CardContent } from "@mui/material";
+import {
+  Card, Box, Typography, IconButton, CardContent,
+} from "@mui/material";
 import { green } from "@mui/material/colors";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
@@ -61,14 +63,14 @@ const useStyles = makeStyles((theme) => ({
     resize: "both",
     position: "fixed",
     zIndex: 5,
-    left: `20%`,
+    left: "20%",
     [theme.breakpoints.up("md")]: {
       left: `calc(30% + ${desktopPadding} / 2)`,
-      top: `3%`,
+      top: "3%",
     },
     [theme.breakpoints.down("md")]: {
       left: "30%",
-      top: `3%`,
+      top: "3%",
     },
     transform: "translateX(-50%)",
   }),

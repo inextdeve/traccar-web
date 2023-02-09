@@ -1,5 +1,9 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
-import { Cell, PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
+import React, {
+  useState, useCallback, useRef, useEffect,
+} from "react";
+import {
+  Cell, PieChart, Pie, Sector, ResponsiveContainer,
+} from "recharts";
 import { Typography } from "@mui/material";
 import useReportStyles from "../../common/useReportStyles";
 
@@ -84,7 +88,7 @@ const BinsPercentageChart = ({ data, title, subtitle }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
     (_, index) => setActiveIndex(index),
-    [setActiveIndex]
+    [setActiveIndex],
   );
   const classes = useReportStyles();
 

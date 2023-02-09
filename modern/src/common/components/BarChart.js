@@ -9,27 +9,26 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-const SimpleBarChart = ({ data, key1, key2, height = 200 }) => {
-  return (
-    <ResponsiveContainer width="100%" height={height} debounce={50}>
-      <BarChart
-        data={data}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey={key1} fill="#4caf50" />
-        <Bar dataKey={key2} fill="#f44336" />
-      </BarChart>
-    </ResponsiveContainer>
-  );
-};
+
+const SimpleBarChart = ({ data, key1, key2, height = 200 }) => (
+  <ResponsiveContainer width="100%" height={height} debounce={50}>
+    <BarChart
+      data={data}
+      margin={{
+        top: 5,
+        right: 30,
+        left: 20,
+        bottom: 5,
+      }}
+    >
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey={key1} fill="#4caf50" />
+      <Bar dataKey={key2} fill="#f44336" />
+    </BarChart>
+  </ResponsiveContainer>
+);
 export default SimpleBarChart;
