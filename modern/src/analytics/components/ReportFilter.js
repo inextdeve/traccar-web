@@ -14,32 +14,33 @@ import useReportStyles from "../common/useReportStyles";
 import { analyticsActions } from "../../store";
 import { URL } from "../../common/util/constant";
 
-const ReportFilter = ({ tag, altURL }) => {
+const ReportFilter = ({ tag, altURL, handleSubmit }) => {
   const t = useTranslation();
   const classes = useReportStyles();
   const [period, setPeriod] = useState("");
 
   const dispatch = useDispatch();
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
   const from = useSelector((state) => state.analytics.from);
   const to = useSelector((state) => state.analytics.to);
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
-  const handleSubmit = ({ from, to }) => {
-    const url = `${
-      altURL
-        ? `${altURL}/?token=${token}&${tag}&time_f=${from.time}&date_f=${from.date}&time_t=${to.time}&date_t=${to.date}`
-        : `${URL}/?token=${token}&${tag}&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`
-    }`;
+  // const handleSubmit = ({ from, to }) => {
+  //   const url = `${
+  //     altURL
+  //       ? `${altURL}/?token=${token}&${tag}&time_f=${from.time}&date_f=${from.date}&time_t=${to.time}&date_t=${to.date}`
+  //       : `${URL}/?token=${token}&${tag}&date_f=${from.date}&time_f=${from.time}&date_t=${to.date}&time_t=${to.time}`
+  //   }`;
 
-    setIsLoading(true);
-    fetch(url)
-      .then((data) => data.json())
-      .then((data) => {
-        dispatch(analyticsActions.updateItems(data));
-        setIsLoading(false);
-      });
-  };
+  //   setIsLoading(true);
+  //   fetch(url)
+  //     .then((data) => data.json())
+  //     .then((data) => {
+  //       dispatch(analyticsActions.updateItems(data));
+  //       setIsLoading(false);
+  //     });
+  // };
 
   const handleClick = () => {
     let selectedFrom;
@@ -76,18 +77,8 @@ const ReportFilter = ({ tag, altURL }) => {
     }
 
     handleSubmit({
-      from: {
-        date: selectedFrom.toISOString().split("T")[0],
-        time: selectedFrom
-          .toISOString()
-          .split("T")[1]
-          .split(".")[0]
-          .slice(0, 5),
-      },
-      to: {
-        date: selectedTo.toISOString().split("T")[0],
-        time: selectedTo.toISOString().split("T")[1].split(".")[0].slice(0, 5),
-      },
+      from: selectedFrom.toISOString(),
+      to: selectedTo.toISOString(),
     });
   };
 
@@ -115,7 +106,9 @@ const ReportFilter = ({ tag, altURL }) => {
             label={t("reportFrom")}
             type="datetime-local"
             value={from}
-            onChange={(e) => dispatch(analyticsActions.updateFrom(e.target.value))}
+            onChange={(e) =>
+              dispatch(analyticsActions.updateFrom(e.target.value))
+            }
             fullWidth
           />
         </div>
@@ -126,7 +119,9 @@ const ReportFilter = ({ tag, altURL }) => {
             label={t("reportTo")}
             type="datetime-local"
             value={to}
-            onChange={(e) => dispatch(analyticsActions.updateTo(e.target.value))}
+            onChange={(e) =>
+              dispatch(analyticsActions.updateTo(e.target.value))
+            }
             fullWidth
           />
         </div>

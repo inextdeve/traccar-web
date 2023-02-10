@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Box, Button, Tab, Tabs,
-} from "@mui/material";
+import { Box, Button, Tab, Tabs } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import Print from "../common/Print";
@@ -14,6 +12,7 @@ import AnalyticsTable from "../components/AnalyticsTable";
 import ExcelExport from "../components/ExcelExport";
 import PrintingHeader from "../../common/components/PrintingHeader";
 import { analyticsActions } from "../../store";
+import { useCatch } from "../../reactHelper";
 
 const ByDetails = () => {
   const classes = useReportStyles();
@@ -21,19 +20,25 @@ const ByDetails = () => {
   const TableRef = useRef(null);
   const dispatch = useDispatch();
 
-  const [tableData, setTableData] = useState([]);
+  const from = useSelector((state) => state.reports.from);
+  const to = useSelector((state) => state.reports.to);
 
-  const equipments = useSelector((state) => state.analytics.equipments.map((item) => ({
-    ...item,
-    htmlStatus:
-          item.status === "offline" ? (
-            <span style={{ color: "#f44336" }}>
-              {moment(item.lastUpdate).fromNow()}
-            </span>
-          ) : (
-            <span style={{ color: "#4caf50" }}>Online</span>
-          ),
-  })));
+  const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const equipments = useSelector((state) =>
+    state.devices.equipments.map((item) => ({
+      ...item,
+      htmlStatus:
+        item.status === "offline" ? (
+          <span style={{ color: "#f44336" }}>
+            {moment(item.lastUpdate).fromNow()}
+          </span>
+        ) : (
+          <span style={{ color: "#4caf50" }}>Online</span>
+        ),
+    }))
+  );
 
   // Table Data Processing
   const columnsHead = ["sharedName", "binType", "service", "positionStatus"];
@@ -56,25 +61,52 @@ const ByDetails = () => {
     setValue(newValue);
   };
 
+  const handleSubmit = useCatch(async ({ from, to }) => {
+    const query = new URLSearchParams({ from, to });
+
+    [...new Set(equipments.map((item) => item.groupId))].forEach((id) =>
+      query.append("groupId", id)
+    );
+    console.log(equipments.filter((item) => item.geofenceId));
+    console.log(`/api/reports/events?${query.toString()}&type=geofenceExit`);
+
+    try {
+      const response = await fetch(
+        `/api/reports/events?${query.toString()}&type=geofenceExit`,
+        {
+          headers: { Accept: "application/json" },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.filter((item) => (item.geofenceId = 2)));
+        // const equipmentsData = data.map((item) => ({
+        //   ...item,
+        //   htmlStatus:
+        //     item.status === "offline" ? (
+        //       <span style={{ color: "#f44336" }}>
+        //         {moment(item.lastUpdate).fromNow()}
+        //       </span>
+        //     ) : (
+        //       <span style={{ color: "#4caf50" }}>Online</span>
+        //     ),
+        // }));
+        // setTableData(equipmentsData);
+        // dispatch(analyticsActions.updateEquipments(data));
+      } else {
+        throw Error(await response.text());
+      }
+    } finally {
+      setLoading(false);
+    }
+  });
+
   useEffect(() => {
-    fetch("/api/devices")
-      .then((reponse) => reponse.json())
-      .then((data) => {
-        const equipmentsData = data.map((item) => ({
-          ...item,
-          htmlStatus:
-              item.status === "offline" ? (
-                <span style={{ color: "#f44336" }}>
-                  {moment(item.lastUpdate).fromNow()}
-                </span>
-              ) : (
-                <span style={{ color: "#4caf50" }}>Online</span>
-              ),
-        }));
-        setTableData(equipmentsData);
-        dispatch(analyticsActions.updateEquipments(data));
-      });
-  }, []);
+    handleSubmit({
+      from: moment(from, moment.HTML5_FMT.DATETIME_LOCAL).toISOString(),
+      to: moment(to, moment.HTML5_FMT.DATETIME_LOCAL).toISOString(),
+    });
+  }, [equipments]);
 
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
@@ -87,11 +119,11 @@ const ByDetails = () => {
               margin: "1rem 0",
             }}
           >
-            {/* <ReportFilter tag="binstype" /> */}
+            <ReportFilter tag="binstype" handleSubmit={handleSubmit} />
             <ExcelExport excelData={equipments} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -99,7 +131,7 @@ const ByDetails = () => {
                 >
                   {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box
