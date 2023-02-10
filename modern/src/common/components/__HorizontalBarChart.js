@@ -1,5 +1,7 @@
 import React from "react";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import {
+  BarChart, Bar, XAxis, YAxis, ResponsiveContainer,
+} from "recharts";
 
 let arr = [];
 let i = 0;
@@ -25,7 +27,8 @@ const CustomizedLabel = ({ x, y, value }) => {
       fill="#fff"
       textAnchor="start"
     >
-      {value < 5 ? Math.ceil(value) : value.toFixed(2)}%
+      {value < 5 ? Math.ceil(value) : value.toFixed(2)}
+      %
     </text>
   );
 

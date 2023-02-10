@@ -9,15 +9,21 @@ const { reducer, actions } = createSlice({
     selectedId: null,
     showCamera: false,
     showCameraList: false,
+    equipments: [],
   },
   reducers: {
     refresh(state, action) {
+      state.equipments = action.payload;
       const getRandom = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
       state.items = {};
       action.payload.forEach((item) => (state.items[item.id] = item));
       state.cameraList = action.payload
         .filter((item) => item.attributes.mdvr)
-        .map((item) => ({ ...item, top: getRandom(8, 60), left: getRandom(30, 40) }));
+        .map((item) => ({
+          ...item,
+          top: getRandom(8, 60),
+          left: getRandom(30, 40),
+        }));
     },
     update(state, action) {
       action.payload.forEach((item) => (state.items[item.id] = item));

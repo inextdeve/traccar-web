@@ -14,6 +14,7 @@ import Delete from "@mui/icons-material/Delete";
 import ReportIcon from "@mui/icons-material/Report";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import ConstructionIcon from "@mui/icons-material/Construction";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { Link, useLocation } from "react-router-dom";
@@ -45,15 +46,19 @@ const ReportsMenu = () => {
   const [binOpen, setBinOpen] = React.useState(true);
   const [washOpen, setWashOpen] = React.useState(true);
   const [sweepOpen, setSweepOpen] = React.useState(true);
+  const [equipmentsOpen, setEquipmentsOpen] = React.useState(true);
 
   const handleClick = () => {
-    setBinOpen(!binOpen);
+    setBinOpen((prev) => !prev);
   };
   const handleWashClick = () => {
-    setWashOpen(!washOpen);
+    setWashOpen((prev) => !prev);
   };
   const handleSweepClick = () => {
-    setSweepOpen(!washOpen);
+    setSweepOpen((prev) => !prev);
+  };
+  const handleEQClick = () => {
+    setEquipmentsOpen((prev) => !prev);
   };
 
   return (
@@ -156,6 +161,28 @@ const ReportsMenu = () => {
               link="/analytics/bin"
               icon={<ConstructionIcon />}
               selected={location.pathname === "/analytics/bin"}
+            />
+          </List>
+        </Collapse>
+      </List>
+      <List>
+        <ListItemButton onClick={handleEQClick}>
+          <ListItemText primary={t("equipments")} />
+          {equipmentsOpen ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={equipmentsOpen} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <MenuItem
+              title={t("binsByType")}
+              link="/analytics/equipments"
+              icon={<ConstructionIcon />}
+              selected={location.pathname === "/analytics/equipments"}
+            />
+            <MenuItem
+              title={t("sharedShowDetails")}
+              link="/analytics/equipments/details"
+              icon={<MoreHorizIcon />}
+              selected={location.pathname === "/analytics/equipments/details"}
             />
           </List>
         </Collapse>

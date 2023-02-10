@@ -24,6 +24,7 @@ const { reducer, actions } = createSlice({
       to: moment().locale("en").format(moment.HTML5_FMT.DATETIME_LOCAL),
     },
     chartData: null,
+    equipments: [],
   },
   reducers: {
     updateLoading(state, action) {
@@ -60,6 +61,9 @@ const { reducer, actions } = createSlice({
     },
     updateChartData(state, action) {
       state.chartData = action.payload;
+    },
+    updateEquipments(state, action) {
+      state.equipments = action.payload;
     },
   },
 });

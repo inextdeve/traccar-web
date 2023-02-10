@@ -59,6 +59,8 @@ import WashingType from "./analytics/washing/ByType";
 import WashingRoutes from "./analytics/washing/ByRoutes";
 import WashingArea from "./analytics/washing/ByArea";
 import WashingSummary from "./analytics/washing/Summary";
+import EquipmentsByType from "./analytics/equipments/ByType";
+import EquipmentsByDetails from "./analytics/equipments/ByDetails";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -169,6 +171,8 @@ const Navigation = () => {
           <Route path="bin/washing/byroutes" element={<WashingRoutes />} />
           <Route path="bin/washing/byarea" element={<WashingArea />} />
           <Route path="bin/washing/summary" element={<WashingSummary />} />
+          <Route path="equipments" element={<EquipmentsByType />} />
+          <Route path="equipments/details" element={<EquipmentsByDetails />} />
         </Route>
       </Route>
     </Routes>

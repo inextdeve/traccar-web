@@ -1,79 +1,76 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Box, Button } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Print from "../common/Print";
 import PageLayout from "../../common/components/PageLayout";
 import useReportStyles from "../common/useReportStyles";
 import ReportsMenu from "../components/ReportsMenu";
 import { useTranslation } from "../../common/components/LocalizationProvider";
 import ReportFilter from "../components/ReportFilter";
+import { analyticsActions } from "../../store";
 import AnalyticsTable from "../components/AnalyticsTable";
 import ExcelExport from "../components/ExcelExport";
 import PrintingHeader from "../../common/components/PrintingHeader";
 
+import { URL } from "../../common/util/constant";
+
 const ByType = () => {
   const classes = useReportStyles();
   const t = useTranslation();
+  const dispatch = useDispatch();
   const TableRef = useRef(null);
   const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
-  const equipments = useSelector((state) => {
-    const data = {};
-    const dataArray = [];
-
-    state.devices.equipments.forEach((item) => {
-      const type = item.model;
-      if (!type) return;
-
-      if (data[type]) {
-        data[type].push(item);
-        return;
-      }
-
-      data[type] = [item];
-    });
-
-    for (const equipmentModel in data) {
-      const formatData = {
-        type: equipmentModel,
-        online: data[equipmentModel].filter((item) => item.status === "online")
-          .length,
-        offline: data[equipmentModel].filter(
-          (item) => item.status === "offline",
-        ).length,
-        total: data[equipmentModel].length,
-      };
-      formatData.rate =
-        `${Math.round((formatData.online * 100) / formatData.total)}%`;
-
-      dataArray.push(formatData);
-    }
-
-    return dataArray;
-  });
+  const token = useSelector((state) => state.session.user.attributes.apitoken);
+  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
 
   // Table Data Processing
   const columnsHead = [
     "binType",
-    "total",
-    "deviceStatusOnline",
-    "deviceStatusOffline",
-    "rate",
+    "numberOfBins",
+    "empted",
+    "notEmpted",
+    "completionRate",
+    "maps",
   ];
-  const keys = ["type", "total", "online", "offline", "rate"];
-
-  equipments.push({
-    type: t("total"),
-    total: countTotal(equipments, "total"),
-    online: countTotal(equipments, "online"),
-    offline: countTotal(equipments, "offline"),
+  const data = useSelector((state) => state.analytics.items);
+  const keys = [
+    "bintype",
+    "total",
+    "empty_bin",
+    "un_empty_bin",
+    "rate",
+    "mapButton",
+  ];
+  const items = data.map((item) => ({
+    ...item,
+    rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
+  }));
+  items.push({
+    bintype: t("total"),
+    total: countTotal(items, "total"),
+    empty_bin: countTotal(items, "empty_bin"),
+    un_empty_bin: countTotal(items, "un_empty_bin"),
     rate: `${countRate(
-      countTotal(equipments, "total"),
-      countTotal(equipments, "online"),
+      countTotal(items, "total"),
+      countTotal(items, "empty_bin"),
     ).toFixed(2)}%`,
   });
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetch(`${URL}/?token=${token}&binstype`)
+      .then((data) => {
+        setIsLoading(false);
+        return data.json();
+      })
+      .then((data) => {
+        dispatch(analyticsActions.updateItems(data));
+      })
+      .catch(() => setIsLoading(false));
+  }, []);
 
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
@@ -86,8 +83,8 @@ const ByType = () => {
               margin: "1rem 0",
             }}
           >
-            {/* <ReportFilter tag="binstype" /> */}
-            <ExcelExport excelData={equipments} fileName="ReportSheet" />
+            <ReportFilter tag="binstype" />
+            <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
               button={(
@@ -106,7 +103,7 @@ const ByType = () => {
             <div className="print-mt">
               <AnalyticsTable
                 columnsHead={columnsHead}
-                items={equipments}
+                items={items}
                 keys={keys}
               />
             </div>

@@ -626,7 +626,9 @@
   "theProportionOfCompletedTasks": "The proportion of completed tasks",
   "sweeping": "Sweeping",
   "plan": "Plan",
-  "equipment": "Equipment",
+  "equipments": "Equipment",
   "images": "Images",
-  "reportEventTime": "Event Time"
+  "reportEventTime": "Event Time",
+  "rate": "Rate",
+  "service": "Service"
 }

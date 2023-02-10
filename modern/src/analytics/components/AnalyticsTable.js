@@ -59,9 +59,13 @@ const AnalyticsTable = ({ columnsHead, items, keys, excludeTotal }) => {
                       className={
                         itemsIndex === items.length - 1 && !excludeTotal
                           ? classes.lastCell
-                          : key === "empty_bin" || key === "cleaned"
+                          : key === "empty_bin" ||
+                            key === "cleaned" ||
+                            key === "online"
                             ? classes.emptyBin
-                            : key === "un_empty_bin" || key === "not_cleaned"
+                            : key === "un_empty_bin" ||
+                            key === "not_cleaned" ||
+                            key === "offline"
                               ? classes.unEmptyBin
                               : null
                       }

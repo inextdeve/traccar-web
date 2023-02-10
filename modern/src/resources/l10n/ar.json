@@ -626,7 +626,9 @@
   "theProportionOfCompletedTasks": "نسب المهام المنجزة",
   "sweeping": "الكنس الآلي",
   "plan": "الخطة",
-  "equipment": "المعدات",
+  "equipments": "المعدات",
   "images": "الصور",
-  "reportEventTime": "وقت الحدث"
+  "reportEventTime": "وقت الحدث",
+  "rate": "معدل",
+  "service": "الخدمة"
 }
