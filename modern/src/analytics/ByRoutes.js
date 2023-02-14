@@ -38,6 +38,7 @@ import PrintingHeader from "../common/components/PrintingHeader";
 import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
 import { URL } from "../common/util/constant";
+import { formatDate } from "../common/util/formatter";
 
 const ByRoutes = () => {
   const classes = useReportStyles();
@@ -191,6 +192,31 @@ const ByRoutes = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
+  const handleSubmit = ({ from: dateFrom, to: dateTo }) => {
+    const from = formatDate(dateFrom);
+    const to = formatDate(dateTo);
+
+    const query = new URLSearchParams({
+      token,
+      date_f: from.date,
+      time_f: from.time,
+      date_t: to.date,
+      time_t: to.time,
+    });
+
+    const url = `${URL}/?${query.toString()}&bins_routes`;
+
+    setIsLoading(true);
+    fetch(url)
+      .then((data) => data.json())
+      .then((data) => {
+        setTableData(data);
+        dispatch(analyticsActions.updateItems(data));
+        setIsLoading(false);
+      })
+      .catch(() => setIsLoading(false));
+  };
+
   const filterRoutes = (filter) => {
     if (filter === 1) {
       setTableData(data.filter((item) => item.shift === "morning"));
@@ -233,7 +259,7 @@ const ByRoutes = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter tag="bins_routes" />
+            <ReportFilter handleSubmit={handleSubmit} />
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}

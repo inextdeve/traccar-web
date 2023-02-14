@@ -18,6 +18,7 @@ import BinsStatusChart from "../components/Charts/BinsStatusChart";
 import ExcelExport from "../components/ExcelExport";
 import PrintingHeader from "../../common/components/PrintingHeader";
 import { URL, ALTURL } from "../../common/util/constant";
+import { formatDate } from "../../common/util/formatter";
 
 const WashingSummary = () => {
   const classes = useReportStyles();
@@ -73,6 +74,28 @@ const WashingSummary = () => {
       .then((data) => dispatch(analyticsActions.updateItems(data)))
       .catch(() => setIsLoading(false));
   }, []);
+  const handleSubmit = ({ from: dateFrom, to: dateTo }) => {
+    const from = formatDate(dateFrom);
+    const to = formatDate(dateTo);
+
+    const query = new URLSearchParams({
+      token,
+      date_f: from.date,
+      time_f: from.time,
+      date_t: to.date,
+      time_t: to.time,
+    });
+
+    const url = `${ALTURL}/?${query.toString()}&cn_bins_daily`;
+
+    setIsLoading(true);
+    fetch(url)
+      .then((data) => data.json())
+      .then((data) => {
+        dispatch(analyticsActions.updateItems(data));
+        setIsLoading(false);
+      });
+  };
 
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "summary"]}>
@@ -85,7 +108,7 @@ const WashingSummary = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter tag="cn_bins_daily" altURL={ALTURL} />
+            <ReportFilter handleSubmit={handleSubmit} />
             <ExcelExport excelData={items} fileName="SummarySheet" />
             <Print
               target={TableRef.current}

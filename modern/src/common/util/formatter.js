@@ -28,7 +28,9 @@ export const formatTime = (value, format, hours12) => {
       case "minutes":
         return m.format(hours12 ? "YYYY-MM-DD hh:mm A" : "YYYY-MM-DD HH:mm");
       default:
-        return m.format(hours12 ? "YYYY-MM-DD hh:mm:ss A" : "YYYY-MM-DD HH:mm:ss");
+        return m.format(
+          hours12 ? "YYYY-MM-DD hh:mm:ss A" : "YYYY-MM-DD HH:mm:ss",
+        );
     }
   }
   return "";
@@ -38,7 +40,16 @@ export const formatStatus = (value, t) => t(prefixString("deviceStatus", value))
 export const formatAlarm = (value, t) => (value ? t(prefixString("alarm", value)) : "");
 
 export const formatCourse = (value) => {
-  const courseValues = ["\u2191", "\u2197", "\u2192", "\u2198", "\u2193", "\u2199", "\u2190", "\u2196"];
+  const courseValues = [
+    "\u2191",
+    "\u2197",
+    "\u2192",
+    "\u2198",
+    "\u2193",
+    "\u2199",
+    "\u2190",
+    "\u2196",
+  ];
   let normalizedValue = (value + 45 / 2) % 360;
   if (normalizedValue < 0) {
     normalizedValue += 360;
@@ -46,9 +57,15 @@ export const formatCourse = (value) => {
   return courseValues[Math.floor(normalizedValue / 45)];
 };
 
-export const formatDistance = (value, unit, t) => `${distanceFromMeters(value, unit).toFixed(2)} ${distanceUnitString(unit, t)}`;
+export const formatDistance = (value, unit, t) => `${distanceFromMeters(value, unit).toFixed(2)} ${distanceUnitString(
+  unit,
+  t,
+)}`;
 
-export const formatAltitude = (value, unit, t) => `${altitudeFromMeters(value, unit).toFixed(2)} ${altitudeUnitString(unit, t)}`;
+export const formatAltitude = (value, unit, t) => `${altitudeFromMeters(value, unit).toFixed(2)} ${altitudeUnitString(
+  unit,
+  t,
+)}`;
 
 export const formatSpeed = (value, unit, t) => `${speedFromKnots(value, unit).toFixed(2)} ${speedUnitString(unit, t)}`;
 
@@ -59,7 +76,9 @@ export const formatHours = (value) => moment.duration(value).humanize();
 export const formatNumericHours = (value, t) => {
   const hours = Math.floor(value / 3600000);
   const minutes = Math.floor((value % 3600000) / 60000);
-  return `${hours} ${t("sharedHourAbbreviation")} ${minutes} ${t("sharedMinuteAbbreviation")}`;
+  return `${hours} ${t("sharedHourAbbreviation")} ${minutes} ${t(
+    "sharedMinuteAbbreviation",
+  )}`;
 };
 
 export const formatCoordinate = (key, value, unit) => {
@@ -130,4 +149,12 @@ export const formatNotificationTitle = (t, notification, includeId) => {
     title += ` [${notification.id}]`;
   }
   return title;
+};
+
+export const formatDate = (date) => {
+  const DATE = {
+    time: moment(date).format("HH:mm"),
+    date: moment(date).format("Y-MM-DD"),
+  };
+  return DATE;
 };

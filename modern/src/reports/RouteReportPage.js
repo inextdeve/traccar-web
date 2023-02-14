@@ -51,7 +51,7 @@ const RouteReportPage = () => {
     (positionId) => {
       setSelectedItem(items.find((it) => it.id === positionId));
     },
-    [items, setSelectedItem]
+    [items, setSelectedItem],
   );
 
   const handleSubmit = useCatch(async ({ deviceIds, from, to, type }) => {
@@ -61,7 +61,7 @@ const RouteReportPage = () => {
       window.location.assign(`/api/reports/route/xlsx?${query.toString()}`);
     } else if (type === "mail") {
       const response = await fetch(
-        `/api/reports/route/mail?${query.toString()}`
+        `/api/reports/route/mail?${query.toString()}`,
       );
       if (!response.ok) {
         throw Error(await response.text());
@@ -95,7 +95,7 @@ const RouteReportPage = () => {
               <MapGeofence />
               {[...new Set(items.map((it) => it.deviceId))].map((deviceId) => {
                 const positions = items.filter(
-                  (position) => position.deviceId === deviceId
+                  (position) => position.deviceId === deviceId,
                 );
                 return (
                   <Fragment key={deviceId}>

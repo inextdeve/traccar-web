@@ -34,6 +34,7 @@ import PrintingHeader from "../common/components/PrintingHeader";
 import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
 import { ALTURL, URL } from "../common/util/constant";
+import { formatDate } from "../common/util/formatter";
 
 const Item = (props) => {
   const classes = useReportStyles();
@@ -185,6 +186,27 @@ const BinsReports = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
+  const handleSubmit = ({ from: dateFrom, to: dateTo }) => {
+    const from = formatDate(dateFrom);
+    const to = formatDate(dateTo);
+
+    const query = new URLSearchParams({
+      token,
+      date_f: from.date,
+      date_t: to.date,
+    });
+
+    const url = `${ALTURL}/?${query.toString()}&report_bins`;
+
+    setIsLoading(true);
+    fetch(url)
+      .then((data) => data.json())
+      .then((data) => {
+        dispatch(analyticsActions.updateItems(data));
+        setIsLoading(false);
+      });
+  };
+
   const onClose = () => {
     dispatch(analyticsActions.updatePopup(false));
     dispatch(analyticsActions.updateBinData(null));
@@ -271,7 +293,7 @@ const BinsReports = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter tag="report_bins" altURL={ALTURL} />
+            <ReportFilter handleSubmit={handleSubmit} />
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}

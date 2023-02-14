@@ -18,6 +18,7 @@ import BinsStatusChart from "./components/Charts/BinsStatusChart";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
 import { URL } from "../common/util/constant";
+import { formatDate } from "../common/util/formatter";
 
 const Summary = () => {
   const classes = useReportStyles();
@@ -84,6 +85,29 @@ const Summary = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
+  const handleSubmit = ({ from: dateFrom, to: dateTo }) => {
+    const from = formatDate(dateFrom);
+    const to = formatDate(dateTo);
+
+    const query = new URLSearchParams({
+      token,
+      date_f: from.date,
+      time_f: from.time,
+      date_t: to.date,
+      time_t: to.time,
+    });
+
+    const url = `${URL}/?${query.toString()}&device_daily`;
+
+    setIsLoading(true);
+    fetch(url)
+      .then((data) => data.json())
+      .then((data) => {
+        dispatch(analyticsActions.updateItems(data));
+        setIsLoading(false);
+      });
+  };
+
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "summary"]}>
       <div className={classes.container}>
@@ -95,7 +119,7 @@ const Summary = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter tag="device_daily" />
+            <ReportFilter handleSubmit={handleSubmit} />
             <ExcelExport excelData={items} fileName="SummarySheet" />
             <Print
               target={TableRef.current}

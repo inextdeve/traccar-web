@@ -630,5 +630,9 @@
   "images": "الصور",
   "reportEventTime": "وقت الحدث",
   "rate": "معدل",
-  "service": "الخدمة"
+  "service": "الخدمة",
+  "exitTime": "وقت الخروج",
+  "weeklyReport": "التقرير الأسبوعي",
+  "byService": "حسب الخدمة",
+  "exited": "الخارجة"
 }

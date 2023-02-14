@@ -3,11 +3,15 @@ import { createSlice } from "@reduxjs/toolkit";
 const { reducer, actions } = createSlice({
   name: "groups",
   initialState: {
-    items: {},
+    items: {
+      0: {
+        name: "General",
+      },
+    },
   },
   reducers: {
     update(state, action) {
-      action.payload.forEach((item) => state.items[item.id] = item);
+      action.payload.forEach((item) => (state.items[item.id] = item));
     },
   },
 });

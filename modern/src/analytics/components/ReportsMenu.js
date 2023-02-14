@@ -1,4 +1,6 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
 import {
   Divider,
   List,
@@ -15,9 +17,11 @@ import ReportIcon from "@mui/icons-material/Report";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import ConstructionIcon from "@mui/icons-material/Construction";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-
+import DateRangeIcon from "@mui/icons-material/DateRange";
+import DeviceHubIcon from "@mui/icons-material/DeviceHub";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import { Link, useLocation } from "react-router-dom";
+
+import { analyticsActions } from "../../store";
 import RouteIcon from "../../common/icons/RouteIcon";
 import { useTranslation } from "../../common/components/LocalizationProvider";
 import { useAdministrator } from "../../common/util/permissions";
@@ -40,25 +44,28 @@ const MenuItem = ({ title, link, icon, selected }) => (
 const ReportsMenu = () => {
   const t = useTranslation();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const admin = useAdministrator();
 
-  const [binOpen, setBinOpen] = React.useState(true);
-  const [washOpen, setWashOpen] = React.useState(true);
-  const [sweepOpen, setSweepOpen] = React.useState(true);
-  const [equipmentsOpen, setEquipmentsOpen] = React.useState(true);
+  const binOpen = useSelector((state) => state.analytics.menu.bins);
+  const washOpen = useSelector((state) => state.analytics.menu.washing);
+  const sweepOpen = useSelector((state) => state.analytics.menu.sweeping);
+  const equipmentsOpen = useSelector(
+    (state) => state.analytics.menu.equipments,
+  );
 
   const handleClick = () => {
-    setBinOpen((prev) => !prev);
+    dispatch(analyticsActions.updateMenu("bins"));
   };
   const handleWashClick = () => {
-    setWashOpen((prev) => !prev);
+    dispatch(analyticsActions.updateMenu("washing"));
   };
   const handleSweepClick = () => {
-    setSweepOpen((prev) => !prev);
+    dispatch(analyticsActions.updateMenu("sweeping"));
   };
   const handleEQClick = () => {
-    setEquipmentsOpen((prev) => !prev);
+    dispatch(analyticsActions.updateMenu("equipments"));
   };
 
   return (
@@ -177,6 +184,18 @@ const ReportsMenu = () => {
               link="/analytics/equipments"
               icon={<ConstructionIcon />}
               selected={location.pathname === "/analytics/equipments"}
+            />
+            <MenuItem
+              title={t("byService")}
+              link="/analytics/equipments/service"
+              icon={<DeviceHubIcon />}
+              selected={location.pathname === "/analytics/equipments/service"}
+            />
+            <MenuItem
+              title={t("weeklyReport")}
+              link="/analytics/equipments/week"
+              icon={<DateRangeIcon />}
+              selected={location.pathname === "/analytics/equipments/week"}
             />
             <MenuItem
               title={t("sharedShowDetails")}

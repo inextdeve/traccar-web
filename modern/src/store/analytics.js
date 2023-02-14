@@ -25,6 +25,13 @@ const { reducer, actions } = createSlice({
     },
     chartData: null,
     equipments: [],
+    events: [],
+    menu: {
+      bins: true,
+      washing: false,
+      sweeping: false,
+      equipments: false,
+    },
   },
   reducers: {
     updateLoading(state, action) {
@@ -64,6 +71,15 @@ const { reducer, actions } = createSlice({
     },
     updateEquipments(state, action) {
       state.equipments = action.payload;
+    },
+    updateEvents(state, action) {
+      state.events = action.payload;
+    },
+    updateMenu(state, action) {
+      state.menu = {
+        ...state.menu,
+        [action.payload]: !state.menu[action.payload],
+      };
     },
   },
 });

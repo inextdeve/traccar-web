@@ -630,5 +630,9 @@
   "images": "Images",
   "reportEventTime": "Event Time",
   "rate": "Rate",
-  "service": "Service"
+  "service": "Service",
+  "exitTime": "Exit Time",
+  "weeklyReport": "Weekly Report",
+  "byService": "By Service",
+  "exited": "Exited"
 }

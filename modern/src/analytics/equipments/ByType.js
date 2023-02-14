@@ -1,6 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { Box, Button } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import moment from "moment";
 import Print from "../common/Print";
 import PageLayout from "../../common/components/PageLayout";
 import useReportStyles from "../common/useReportStyles";
@@ -10,68 +11,129 @@ import ReportFilter from "../components/ReportFilter";
 import AnalyticsTable from "../components/AnalyticsTable";
 import ExcelExport from "../components/ExcelExport";
 import PrintingHeader from "../../common/components/PrintingHeader";
+import { useCatch } from "../../reactHelper";
+import { analyticsActions } from "../../store";
 
 const ByType = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const TableRef = useRef(null);
+  const dispatch = useDispatch();
+
+  const from = useSelector((state) => state.reports.from);
+  const to = useSelector((state) => state.reports.to);
+
+  const events = useSelector((state) => [...state.analytics.events]);
+  const equipments = useSelector((state) => state.devices.equipments);
+
   const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
-
-  const equipments = useSelector((state) => {
-    const data = {};
-    const dataArray = [];
-
-    state.devices.equipments.forEach((item) => {
-      const type = item.model;
-      if (!type) return;
-
-      if (data[type]) {
-        data[type].push(item);
-        return;
-      }
-
-      data[type] = [item];
-    });
-
-    for (const equipmentModel in data) {
-      const formatData = {
-        type: equipmentModel,
-        online: data[equipmentModel].filter((item) => item.status === "online")
-          .length,
-        offline: data[equipmentModel].filter(
-          (item) => item.status === "offline",
-        ).length,
-        total: data[equipmentModel].length,
-      };
-      formatData.rate =
-        `${Math.round((formatData.online * 100) / formatData.total)}%`;
-
-      dataArray.push(formatData);
-    }
-
-    return dataArray;
-  });
 
   // Table Data Processing
   const columnsHead = [
     "binType",
     "total",
+    "exited",
     "deviceStatusOnline",
     "deviceStatusOffline",
     "rate",
   ];
-  const keys = ["type", "total", "online", "offline", "rate"];
+  const keys = ["type", "total", "totalExited", "online", "offline", "rate"];
 
-  equipments.push({
+  const handleSubmit = useCatch(async ({ from, to }) => {
+    dispatch(analyticsActions.updateLoading(true));
+    const query = new URLSearchParams({ from, to });
+
+    [...new Set(equipments.map((item) => item.groupId))].forEach((id) => query.append("groupId", id));
+
+    try {
+      const response = await fetch(
+        `/api/reports/events?${query.toString()}&type=geofenceExit`,
+        {
+          headers: { Accept: "application/json" },
+        },
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const events = data.filter((item) => (item.geofenceId = 2));
+
+        const eventsObj = {};
+
+        events.forEach((item) => {
+          if (eventsObj[item.deviceId]) {
+            eventsObj[item.deviceId].push(item);
+          } else {
+            eventsObj[item.deviceId] = [item];
+          }
+        });
+
+        const eventsList = [];
+        const groupedByType = {};
+
+        Object.keys(eventsObj)
+          .map((key) => ({
+            // Get just devices with registred events
+            ...equipments[key],
+            eventTime: eventsObj[key][0].eventTime,
+          }))
+          .forEach((item) => {
+            let type = item.model;
+            if (!type) type = "No Type Registred";
+
+            if (groupedByType[type]) {
+              groupedByType[type].push(item);
+              return;
+            }
+
+            groupedByType[type] = [item];
+          });
+
+        for (const equipmentModel in groupedByType) {
+          const formatData = {
+            type: equipmentModel,
+            online: groupedByType[equipmentModel].filter(
+              (item) => item.status === "online",
+            ).length,
+            offline: groupedByType[equipmentModel].filter(
+              (item) => item.status === "offline",
+            ).length,
+            totalExited: groupedByType[equipmentModel].length,
+            total: equipments.filter((item) => item.model === equipmentModel)
+              .length,
+          };
+          formatData.rate = `${(
+            (formatData.totalExited * 100) /
+            formatData.total
+          ).toFixed(2)}%`;
+
+          eventsList.push(formatData);
+        }
+        dispatch(analyticsActions.updateEvents(eventsList));
+      } else {
+        throw Error(await response.text());
+      }
+    } finally {
+      dispatch(analyticsActions.updateLoading(false));
+    }
+  });
+
+  useEffect(() => {
+    handleSubmit({
+      from: moment(from, moment.HTML5_FMT.DATETIME_LOCAL).toISOString(),
+      to: moment(to, moment.HTML5_FMT.DATETIME_LOCAL).toISOString(),
+    });
+  }, []);
+
+  events.push({
     type: t("total"),
-    total: countTotal(equipments, "total"),
-    online: countTotal(equipments, "online"),
-    offline: countTotal(equipments, "offline"),
+    total: countTotal(events, "total"),
+    totalExited: countTotal(events, "totalExited"),
+    online: countTotal(events, "online"),
+    offline: countTotal(events, "offline"),
     rate: `${countRate(
-      countTotal(equipments, "total"),
-      countTotal(equipments, "online"),
+      countTotal(events, "total"),
+      countTotal(events, "totalExited"),
     ).toFixed(2)}%`,
   });
 
@@ -86,7 +148,7 @@ const ByType = () => {
               margin: "1rem 0",
             }}
           >
-            {/* <ReportFilter tag="binstype" /> */}
+            <ReportFilter tag="binstype" handleSubmit={handleSubmit} />
             <ExcelExport excelData={equipments} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
@@ -106,7 +168,7 @@ const ByType = () => {
             <div className="print-mt">
               <AnalyticsTable
                 columnsHead={columnsHead}
-                items={equipments}
+                items={events}
                 keys={keys}
               />
             </div>

@@ -31,6 +31,7 @@ import PrintingHeader from "../../common/components/PrintingHeader";
 import MapAnalytics from "../../map/MapAnalytics";
 import Popup from "../../common/components/Popup";
 import { URL, ALTURL } from "../../common/util/constant";
+import { formatDate } from "../../common/util/formatter";
 
 const WashingArea = () => {
   const classes = useReportStyles();
@@ -131,6 +132,29 @@ const WashingArea = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
+  const handleSubmit = ({ from: dateFrom, to: dateTo }) => {
+    const from = formatDate(dateFrom);
+    const to = formatDate(dateTo);
+
+    const query = new URLSearchParams({
+      token,
+      date_f: from.date,
+      time_f: from.time,
+      date_t: to.date,
+      time_t: to.time,
+    });
+
+    const url = `${ALTURL}/?${query.toString()}&cn_bins_centers`;
+
+    setIsLoading(true);
+    fetch(url)
+      .then((data) => data.json())
+      .then((data) => {
+        dispatch(analyticsActions.updateItems(data));
+        setIsLoading(false);
+      });
+  };
+
   const onClose = () => {
     dispatch(analyticsActions.updatePopup(false));
     dispatch(analyticsActions.updateBinData(null));
@@ -156,7 +180,7 @@ const WashingArea = () => {
               margin: "1rem 0",
             }}
           >
-            <ReportFilter tag="cn_bins_centers" altURL={ALTURL} />
+            <ReportFilter handleSubmit={handleSubmit} />
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}

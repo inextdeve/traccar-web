@@ -61,6 +61,8 @@ import WashingArea from "./analytics/washing/ByArea";
 import WashingSummary from "./analytics/washing/Summary";
 import EquipmentsByType from "./analytics/equipments/ByType";
 import EquipmentsByDetails from "./analytics/equipments/ByDetails";
+import EquipmentsByWeek from "./analytics/equipments/ByWeek";
+import EquipmentsByService from "./analytics/equipments/ByService";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -173,6 +175,8 @@ const Navigation = () => {
           <Route path="bin/washing/summary" element={<WashingSummary />} />
           <Route path="equipments" element={<EquipmentsByType />} />
           <Route path="equipments/details" element={<EquipmentsByDetails />} />
+          <Route path="equipments/week" element={<EquipmentsByWeek />} />
+          <Route path="equipments/service" element={<EquipmentsByService />} />
         </Route>
       </Route>
     </Routes>
