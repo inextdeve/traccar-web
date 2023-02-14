@@ -1,7 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import {
-  Box, Button, Stack, Chip,
-} from "@mui/material";
+import { Box, Button, Stack, Chip } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import Print from "../common/Print";
@@ -15,20 +13,23 @@ import ExcelExport from "../components/ExcelExport";
 import PrintingHeader from "../../common/components/PrintingHeader";
 import { useCatch } from "../../reactHelper";
 import { analyticsActions } from "../../store";
-
+import { formatPHPDate } from "../../common/util/formatter";
+import { ALTURL } from "../../common/util/constant";
 const ByWeek = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const TableRef = useRef(null);
   const dispatch = useDispatch();
 
-  const from = useSelector((state) => state.reports.from);
-  const to = useSelector((state) => state.reports.to);
+  const token = useSelector((state) => state.session.user.attributes.apitoken);
+
+  const { from, to } = useSelector((state) => state.analytics);
 
   const events = useSelector((state) => [...state.analytics.events]);
   const equipments = useSelector((state) => state.devices.equipments);
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
@@ -41,85 +42,54 @@ const ByWeek = () => {
     "deviceStatusOffline",
     "rate",
   ];
-  const keys = ["date", "total", "totalExited", "online", "offline", "rate"];
+  const keys = ["date", "total", "totalExited", "on", "off", "rate"];
 
-  const handleSubmit = useCatch(async () => {
+  const handleSubmit = useCatch(async ({ from, to }) => {
     dispatch(analyticsActions.updateLoading(true));
 
-    const fetchList = [];
+    const date_f = formatPHPDate(from).date;
+    const date_t = formatPHPDate(to).date;
+    const time_t = "23:59";
+    const time_f = "00:00";
 
-    for (let i = 0; i < 7; i++) {
-      const from = moment().subtract(i, "day").startOf("day").toISOString();
-      const to = moment().subtract(i, "day").endOf("day").toISOString();
-      const query = new URLSearchParams({ from, to });
-      [...new Set(equipments.map((item) => item.groupId))].forEach((id) => query.append("groupId", id));
-      const url = `/api/reports/events?${query.toString()}&type=geofenceExit`;
-      fetchList.push(fetch(url).then((response) => response.json()));
-    }
+    const query = new URLSearchParams({ date_f, time_f, date_t, time_t });
 
-    Promise.all(fetchList)
+    const url = `${ALTURL}/?token=${token}&device_daily&${query.toString()}`;
+    console.log(url);
+
+    fetch(url)
+      .then((response) => {
+        return response.json();
+      })
       .then((data) => {
-        const mappedEquipments = [];
-        data.forEach((list) => {
-          mappedEquipments.push(
-            list.map((item) => ({
-              ...equipments[item.deviceId],
-            })),
-          );
-        });
-        const summary = mappedEquipments.map((item, index) => {
-          const summaryObj = {
-            totalExited: item.length,
-            total: equipments.length,
-            online: 0,
-            offline: 0,
-            date: (
-              <Stack direction="row" spacing={1}>
-                <Chip
-                  label={
-                    moment()
-                      .subtract(index, "day")
-                      .startOf("day")
-                      .toISOString()
-                      .split("T")[0]
-                  }
-                  color="positive"
-                />
-                <Chip
-                  label={
-                    moment()
-                      .subtract(index, "day")
-                      .endOf("day")
-                      .toISOString()
-                      .split("T")[0]
-                  }
-                  color="positive"
-                />
-              </Stack>
-            ),
-
-            rate: `${(
-              (item.length * 100) /
-              Object.keys(equipments).length
-            ).toFixed(2)}%`,
-          };
-
-          item.forEach((equipment) => {
-            if (equipment.status === "online") {
-              summaryObj.online += 1;
-            } else {
-              summaryObj.offline += 1;
-            }
-          });
-          return summaryObj;
-        });
+        const summary = data.map((item) => ({
+          ...item,
+          totalExited: item.on,
+          date: (
+            <Stack direction="row" spacing={1}>
+              <Chip
+                label={moment(item.date_from).toISOString().split("T")[0]}
+                color="positive"
+              />
+              <Chip
+                label={
+                  moment(item.date_to)
+                    .add(1, "days")
+                    .toISOString()
+                    .split("T")[0]
+                }
+                color="positive"
+              />
+            </Stack>
+          ),
+        }));
         dispatch(analyticsActions.updateEvents(summary));
       })
       .finally(() => dispatch(analyticsActions.updateLoading(false)));
   });
 
   useEffect(() => {
-    handleSubmit();
+    handleSubmit({ from, to });
   }, []);
 
   // events.push({
@@ -144,11 +114,11 @@ const ByWeek = () => {
               margin: "1rem 0",
             }}
           >
-            {/* <ReportFilter tag="binstype" handleSubmit={handleSubmit} /> */}
+            <ReportFilter handleSubmit={handleSubmit} />
             <ExcelExport excelData={equipments} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -156,7 +126,7 @@ const ByWeek = () => {
                 >
                   {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box ref={TableRef}>
