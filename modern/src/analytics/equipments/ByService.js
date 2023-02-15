@@ -56,59 +56,68 @@ const ByService = () => {
       );
       if (response.ok) {
         const data = await response.json();
-        const events = data.filter((item) => (item.geofenceId = 2));
-        const eventsObj = {};
+        const events = data
+          .filter((item) => (item.geofenceId = 2))
+          .map((event) => ({
+            ...equipments[event.deviceId],
+            exitedTime: event.eventTime,
+          }));
+
+        // Collect events in an object using deviceId for preventing repetition
+        const eventsByDeviceId = {};
 
         events.forEach((item) => {
-          if (eventsObj[item.deviceId]) {
-            eventsObj[item.deviceId].push(item);
+          if (eventsByDeviceId[item.id]) {
+            eventsByDeviceId[item.id].push(item);
           } else {
-            eventsObj[item.deviceId] = [item];
+            eventsByDeviceId[item.id] = [item];
           }
         });
 
+        // Get just the last event for each device and push it in an array
+        const eventsListById = [];
+
+        Object.keys(eventsByDeviceId).forEach((key) => {
+          eventsListById.push(eventsByDeviceId[key][0]);
+        });
+
+        // Collect all devices by group each group key has it's devices
+
+        const equipmentsByGroup = {};
+
+        equipments.forEach((device) => {
+          const equipment = { ...device };
+
+          if (equipmentsByGroup[equipment.groupId]) {
+            equipmentsByGroup[equipment.groupId].push(equipment);
+          } else {
+            equipmentsByGroup[equipment.groupId] = [equipment];
+          }
+        });
+
+        // Make event object containig all informations
         const eventsList = [];
-        const groupedByGroups = {};
-        Object.keys(eventsObj)
-          .map((key) => {
-            console.log(key, equipments[key]);
-            return {
-              // Get just devices with registred events
-              ...equipments[key],
-              eventTime: eventsObj[key][0].eventTime,
-            };
-          })
-          .forEach((item) => {
-            const group = item.groupId;
-
-            if (groupedByGroups[group]) {
-              groupedByGroups[group].push(item);
-              return;
-            }
-
-            groupedByGroups[group] = [item];
-          });
-        console.log(groupedByGroups);
-
-        for (const groupId in groupedByGroups) {
-          const formatData = {
-            group: groups[groupId] ? groups[groupId].name : "General",
-            online: groupedByGroups[groupId].filter(
+        Object.keys(equipmentsByGroup).forEach((group) => {
+          const groupOBJ = {
+            group: groups[group].name,
+            total: equipmentsByGroup[group].length, // Get the total device of this model
+            online: equipmentsByGroup[group].filter(
               (item) => item.status === "online",
             ).length,
-            offline: groupedByGroups[groupId].filter(
+            offline: equipmentsByGroup[group].filter(
               (item) => item.status === "offline",
             ).length,
-            totalExited: groupedByGroups[groupId].length,
-            total: equipments.filter((item) => item.groupId == groupId).length,
+            totalExited: eventsListById.filter(
+              (item) => item.groupId === parseInt(group),
+            ).length, // Get the total devices that has an event and below to the same model
           };
-          formatData.rate = `${(
-            (formatData.totalExited * 100) /
-            formatData.total
+          groupOBJ.rate = `${(
+            (groupOBJ.totalExited * 100) /
+            groupOBJ.total
           ).toFixed(2)}%`;
 
-          eventsList.push(formatData);
-        }
+          eventsList.push(groupOBJ);
+        });
         dispatch(analyticsActions.updateEvents(eventsList));
       } else {
         throw Error(await response.text());

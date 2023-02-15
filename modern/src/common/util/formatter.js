@@ -11,11 +11,9 @@ import {
 } from "./converter";
 import { prefixString } from "./stringUtils";
 
-export const formatBoolean = (value, t) =>
-  value ? t("sharedYes") : t("sharedNo");
+export const formatBoolean = (value, t) => (value ? t("sharedYes") : t("sharedNo"));
 
-export const formatNumber = (value, precision = 1) =>
-  Number(value.toFixed(precision));
+export const formatNumber = (value, precision = 1) => Number(value.toFixed(precision));
 
 export const formatPercentage = (value) => `${value}%`;
 
@@ -31,17 +29,15 @@ export const formatTime = (value, format, hours12) => {
         return m.format(hours12 ? "YYYY-MM-DD hh:mm A" : "YYYY-MM-DD HH:mm");
       default:
         return m.format(
-          hours12 ? "YYYY-MM-DD hh:mm:ss A" : "YYYY-MM-DD HH:mm:ss"
+          hours12 ? "YYYY-MM-DD hh:mm:ss A" : "YYYY-MM-DD HH:mm:ss",
         );
     }
   }
   return "";
 };
 
-export const formatStatus = (value, t) =>
-  t(prefixString("deviceStatus", value));
-export const formatAlarm = (value, t) =>
-  value ? t(prefixString("alarm", value)) : "";
+export const formatStatus = (value, t) => t(prefixString("deviceStatus", value));
+export const formatAlarm = (value, t) => (value ? t(prefixString("alarm", value)) : "");
 
 export const formatCourse = (value) => {
   const courseValues = [
@@ -61,23 +57,19 @@ export const formatCourse = (value) => {
   return courseValues[Math.floor(normalizedValue / 45)];
 };
 
-export const formatDistance = (value, unit, t) =>
-  `${distanceFromMeters(value, unit).toFixed(2)} ${distanceUnitString(
-    unit,
-    t
-  )}`;
+export const formatDistance = (value, unit, t) => `${distanceFromMeters(value, unit).toFixed(2)} ${distanceUnitString(
+  unit,
+  t,
+)}`;
 
-export const formatAltitude = (value, unit, t) =>
-  `${altitudeFromMeters(value, unit).toFixed(2)} ${altitudeUnitString(
-    unit,
-    t
-  )}`;
+export const formatAltitude = (value, unit, t) => `${altitudeFromMeters(value, unit).toFixed(2)} ${altitudeUnitString(
+  unit,
+  t,
+)}`;
 
-export const formatSpeed = (value, unit, t) =>
-  `${speedFromKnots(value, unit).toFixed(2)} ${speedUnitString(unit, t)}`;
+export const formatSpeed = (value, unit, t) => `${speedFromKnots(value, unit).toFixed(2)} ${speedUnitString(unit, t)}`;
 
-export const formatVolume = (value, unit, t) =>
-  `${volumeFromLiters(value, unit).toFixed(2)} ${volumeUnitString(unit, t)}`;
+export const formatVolume = (value, unit, t) => `${volumeFromLiters(value, unit).toFixed(2)} ${volumeUnitString(unit, t)}`;
 
 export const formatHours = (value) => moment.duration(value).humanize();
 
@@ -85,7 +77,7 @@ export const formatNumericHours = (value, t) => {
   const hours = Math.floor(value / 3600000);
   const minutes = Math.floor((value % 3600000) / 60000);
   return `${hours} ${t("sharedHourAbbreviation")} ${minutes} ${t(
-    "sharedMinuteAbbreviation"
+    "sharedMinuteAbbreviation",
   )}`;
 };
 

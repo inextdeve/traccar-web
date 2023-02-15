@@ -26,8 +26,7 @@ const ByType = () => {
   const events = useSelector((state) => [...state.analytics.events]);
   const equipments = useSelector((state) => state.devices.equipments);
 
-  const countTotal = (array, prop) =>
-    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
@@ -46,27 +45,51 @@ const ByType = () => {
     dispatch(analyticsActions.updateLoading(true));
     const query = new URLSearchParams({ from, to });
 
-    [...new Set(equipments.map((item) => item.groupId))].forEach((id) =>
-      query.append("groupId", id)
-    );
+    [...new Set(equipments.map((item) => item.groupId))].forEach((id) => query.append("groupId", id));
 
     try {
       const response = await fetch(
         `/api/reports/events?${query.toString()}&type=geofenceExit`,
         {
           headers: { Accept: "application/json" },
-        }
+        },
       );
       if (response.ok) {
         const data = await response.json();
-        const events = data.filter((item) => (item.geofenceId = 2));
+        // Mapping every event to its device
+        const events = data
+          .filter((item) => (item.geofenceId = 2))
+          .map((event) => ({
+            ...equipments[event.deviceId],
+            exitedTime: event.eventTime,
+          }));
+
+        // Collect events in an object using deviceId for preventing repetition
+        const eventsByDeviceId = {};
+
+        events.forEach((item) => {
+          if (eventsByDeviceId[item.id]) {
+            eventsByDeviceId[item.id].push(item);
+          } else {
+            eventsByDeviceId[item.id] = [item];
+          }
+        });
+
+        // Get just the last event for each device and push it in an array
+        const eventsListById = [];
+
+        Object.keys(eventsByDeviceId).forEach((key) => {
+          eventsListById.push(eventsByDeviceId[key][0]);
+        });
+
+        // Collect all devices by model each model key has it's devices
 
         const equipmentsByModel = {};
 
         equipments.forEach((device) => {
-          let equipment = { ...device };
+          const equipment = { ...device };
 
-          //If model is null replace it by General
+          // If model is null replace it by General
           if (!equipment.model) {
             equipment.model = "General";
           }
@@ -78,19 +101,31 @@ const ByType = () => {
           }
         });
 
+        // Make event object containig all informations
+        const eventsList = [];
+
         Object.keys(equipmentsByModel).forEach((model) => {
-          equipmentsByModel[model] = equipmentsByModel[model].map((device) => {
-            const event = events.filter(
-              (event) => event.deviceId === device.deviceId
-            )[0];
-            if (!event) return device;
-            return { ...device, eventTime: event.eventTime };
-          });
+          const modelOBJ = {
+            type: model,
+            total: equipmentsByModel[model].length, // Get the total device of this model
+            online: equipmentsByModel[model].filter(
+              (item) => item.status === "online",
+            ).length,
+            offline: equipmentsByModel[model].filter(
+              (item) => item.status === "offline",
+            ).length,
+            totalExited: eventsListById.filter((item) => item.model === model)
+              .length, // Get the total devices that has an event and below to the same model
+          };
+          modelOBJ.rate = `${(
+            (modelOBJ.totalExited * 100) /
+            modelOBJ.total
+          ).toFixed(2)}%`;
+
+          eventsList.push(modelOBJ);
         });
 
-        console.log(equipmentsByModel);
-
-        // dispatch(analyticsActions.updateEvents(eventsList));
+        dispatch(analyticsActions.updateEvents(eventsList));
       } else {
         throw Error(await response.text());
       }
@@ -114,7 +149,7 @@ const ByType = () => {
     offline: countTotal(events, "offline"),
     rate: `${countRate(
       countTotal(events, "total"),
-      countTotal(events, "totalExited")
+      countTotal(events, "totalExited"),
     ).toFixed(2)}%`,
   });
 
@@ -133,7 +168,7 @@ const ByType = () => {
             <ExcelExport excelData={equipments} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={
+              button={(
                 <Button
                   variant="contained"
                   color="secondary"
@@ -141,7 +176,7 @@ const ByType = () => {
                 >
                   {t("print")}
                 </Button>
-              }
+              )}
             />
           </Box>
           <Box ref={TableRef}>
