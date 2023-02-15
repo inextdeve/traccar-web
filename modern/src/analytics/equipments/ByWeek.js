@@ -1,7 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import {
-  Box, Button, Stack, Chip,
-} from "@mui/material";
+import { Box, Button, Stack, Chip } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import Print from "../common/Print";
@@ -31,7 +29,8 @@ const ByWeek = () => {
   const events = useSelector((state) => [...state.analytics.events]);
   const equipments = useSelector((state) => state.devices.equipments);
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
@@ -57,7 +56,6 @@ const ByWeek = () => {
     const query = new URLSearchParams({ date_f, time_f, date_t, time_t });
 
     const url = `${ALTURL}/?token=${token}&device_daily&${query.toString()}`;
-    console.log(url);
 
     fetch(url)
       .then((response) => response.json())
@@ -69,11 +67,11 @@ const ByWeek = () => {
             <Stack direction="row" spacing={1}>
               <Chip
                 label={`${
-                  moment(item.date_from).toISOString().split("T")[0]
+                  moment(item.date_from).format().split("T")[0]
                 } - ${moment(item.date_from)
-                  .toISOString()
+                  .format()
                   .split("T")[1]
-                  .split(".")[0]
+                  .split("+")[0]
                   .split(":")
                   .slice(0, 2)
                   .join(":")}`}
@@ -81,11 +79,11 @@ const ByWeek = () => {
               />
               <Chip
                 label={`${
-                  moment(item.date_to).toISOString().split("T")[0]
+                  moment(item.date_to).format().split("T")[0]
                 } - ${moment(item.date_to)
-                  .toISOString()
+                  .format()
                   .split("T")[1]
-                  .split(".")[0]
+                  .split("+")[0]
                   .split(":")
                   .slice(0, 2)
                   .join(":")}`}
@@ -129,7 +127,7 @@ const ByWeek = () => {
             <ExcelExport excelData={equipments} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -137,7 +135,7 @@ const ByWeek = () => {
                 >
                   {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box ref={TableRef}>

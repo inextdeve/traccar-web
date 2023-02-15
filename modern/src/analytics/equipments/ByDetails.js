@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Box, Button, Tab, Tabs,
-} from "@mui/material";
+import { Box, Button, Tab, Tabs } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import Print from "../common/Print";
@@ -62,14 +60,16 @@ const ByDetails = () => {
     dispatch(analyticsActions.updateLoading(true));
     const query = new URLSearchParams({ from, to });
 
-    [...new Set(equipments.map((item) => item.groupId))].forEach((id) => query.append("groupId", id));
+    [...new Set(equipments.map((item) => item.groupId))].forEach((id) =>
+      query.append("groupId", id)
+    );
 
     try {
       const response = await fetch(
         `/api/reports/events?${query.toString()}&type=geofenceExit`,
         {
           headers: { Accept: "application/json" },
-        },
+        }
       );
       if (response.ok) {
         const data = await response.json();
@@ -94,6 +94,7 @@ const ByDetails = () => {
           ...item,
           group: groups[item.groupId] ? groups[item.groupId].name : "General",
           eventTime: moment(item.eventTime).format("lll"),
+          eventStandardTime: item.eventTime, //For sorting by time in the future
           htmlStatus:
             item.status === "offline" ? (
               <span style={{ color: "#f44336" }}>
@@ -103,7 +104,17 @@ const ByDetails = () => {
               <span style={{ color: "#4caf50" }}>Online</span>
             ),
         }));
-        setTableData(eventListWStatus);
+        setTableData(
+          eventListWStatus.sort((a, b) => {
+            if (a.name < b.name) {
+              return 1;
+            }
+            if (a.name > b.name) {
+              return -1;
+            }
+            return 0;
+          })
+        );
         dispatch(analyticsActions.updateEvents(eventListWStatus));
       } else {
         throw Error(await response.text());
@@ -135,7 +146,7 @@ const ByDetails = () => {
             <ExcelExport excelData={equipments} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -143,7 +154,7 @@ const ByDetails = () => {
                 >
                   {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box
