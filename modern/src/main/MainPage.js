@@ -142,6 +142,17 @@ const MainPage = () => {
     )
       .then((response) => response.json())
       .then((data) => dispatch(analyticsActions.updateChartData(data[0])));
+    const interval = setInterval(() => {
+      fetch(
+        `https://bins.rcj.care/api/?token=${token}&statistics&time_f=${from.time}&date_f=${from.date}&time_t=${to.time}&date_t=${to.date}`
+      )
+        .then((response) => response.json())
+        .then((data) => dispatch(analyticsActions.updateChartData(data[0])));
+    }, 60000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   return (
