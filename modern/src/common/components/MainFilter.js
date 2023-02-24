@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
@@ -95,6 +95,32 @@ const MainFilter = () => {
   };
 
   const filterSet = useSelector((state) => state.bins.filterSet);
+
+  //Filter Using Search Box
+  const {searchTerm, filteredBins} = useSelector(state => state.bins);
+  
+
+  useEffect(() => {
+
+    console.log(filteredBins)
+    if(!filteredBins.length) return
+
+    if(searchTerm === "") {
+      return;
+    }
+
+    const filtered = filteredBins.filter(item => {
+      // console.log(item)
+      if (!item.description) return false;
+
+      if (item.description.toLowerCase().indexOf(searchTerm) !== -1) return true
+
+      return false;
+    })
+
+    dispatch(binsActions.updateFilteredBin(filtered))
+  }, [searchTerm])
+
   return (
     <Dialog
       open

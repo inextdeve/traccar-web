@@ -62,7 +62,7 @@ const MapButtons = () => {
     map.addControl(kpiCharts, "top-right");
 
     // Search Box
-    const SearchBox = new SearchButton();
+    const SearchBox = new SearchButton((term) => dispatch(binsActions.updateSearchTerm(term)));
     map.removeControl(SearchBox);
     map.addControl(SearchBox, "top-right");
   };

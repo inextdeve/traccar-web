@@ -99,6 +99,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
       .then((response) => {
         dispatch(binsActions.updateLoading(false));
         let [reportedBins, data] = response; // data is for all bins i don't change it for the function need to change all things
+        console.log(data)
         if (reportedBins === null) {
           reportedBins = [];
         }
@@ -123,6 +124,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
                 bintype,
                 center_name,
                 route,
+                description
               }) => {
                 let category = "";
                 let report = { is: false, status: null };
@@ -155,6 +157,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
                   status,
                   binType: bintype,
                   report,
+                  description
                 };
               }
             )
