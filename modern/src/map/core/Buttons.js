@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { map } from "./MapView";
-import { MapButton } from "../mapButton/mapButton";
+import { MapButton, SearchButton } from "../mapButton/mapButton";
 import { binsActions, devicesActions, analyticsActions } from "../../store";
 
 const ICONS = {
@@ -60,10 +60,12 @@ const MapButtons = () => {
     );
     map.removeControl(kpiCharts);
     map.addControl(kpiCharts, "top-right");
-  };
 
-  //Search Box
-  // const SearchBox = new HTMLMapButton();
+    // Search Box
+    const SearchBox = new SearchButton();
+    map.removeControl(SearchBox);
+    map.addControl(SearchBox, "top-right");
+  };
 
   useEffect(() => {
     if (renderConstant < 1) {
