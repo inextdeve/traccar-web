@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
@@ -64,8 +64,8 @@ const MainFilter = () => {
         : true;
       const center_name = selectedItems.center_name.length
         ? selectedItems.center_name.some(
-          (filter) => item.center_name === filter,
-        )
+            (filter) => item.center_name === filter
+          )
         : true;
 
       let status = true;
@@ -76,14 +76,18 @@ const MainFilter = () => {
       ) {
         status = item.status === selectedItems.status;
       } else if (selectedItems.status === "reported") {
-        status = reportedBins.some((reported) => parseInt(reported.id_bin) === parseInt(item.id));
+        status = reportedBins.some(
+          (reported) => parseInt(reported.id_bin) === parseInt(item.id)
+        );
       }
 
       return route && bintype && center_name && status;
     });
 
     dispatch(binsActions.updateFilteredBin(filteredBins));
-    document.getElementById("filterDialog").style.display = "none";
+    if (document.getElementById("filterDialog")) {
+      document.getElementById("filterDialog").style.display = "none";
+    }
   };
 
   const showBins = useSelector((state) => state.bins.showBins);
@@ -97,29 +101,28 @@ const MainFilter = () => {
   const filterSet = useSelector((state) => state.bins.filterSet);
 
   //Filter Using Search Box
-  const {searchTerm, filteredBins} = useSelector(state => state.bins);
-  
+  const { searchTerm, filteredBins } = useSelector((state) => state.bins);
 
   useEffect(() => {
+    handleFilter();
+    if (!filteredBins.length) return;
 
-    console.log(filteredBins)
-    if(!filteredBins.length) return
-
-    if(searchTerm === "") {
+    if (searchTerm === "") {
       return;
     }
 
-    const filtered = filteredBins.filter(item => {
+    const filtered = filteredBins.filter((item) => {
       // console.log(item)
       if (!item.description) return false;
 
-      if (item.description.toLowerCase().indexOf(searchTerm) !== -1) return true
+      if (item.description.toLowerCase().indexOf(searchTerm) !== -1)
+        return true;
 
       return false;
-    })
+    });
 
-    dispatch(binsActions.updateFilteredBin(filtered))
-  }, [searchTerm])
+    dispatch(binsActions.updateFilteredBin(filtered));
+  }, [searchTerm]);
 
   return (
     <Dialog
@@ -164,7 +167,9 @@ const MainFilter = () => {
                   label={t("reportFrom")}
                   type="datetime-local"
                   value={from}
-                  onChange={(e) => dispatch(analyticsActions.updateFrom(e.target.value))}
+                  onChange={(e) =>
+                    dispatch(analyticsActions.updateFrom(e.target.value))
+                  }
                   fullWidth
                 />
               </div>
@@ -175,7 +180,9 @@ const MainFilter = () => {
                   label={t("reportTo")}
                   type="datetime-local"
                   value={to}
-                  onChange={(e) => dispatch(analyticsActions.updateTo(e.target.value))}
+                  onChange={(e) =>
+                    dispatch(analyticsActions.updateTo(e.target.value))
+                  }
                   fullWidth
                 />
               </div>
