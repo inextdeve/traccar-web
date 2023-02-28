@@ -59,7 +59,7 @@ const ByRoutes = () => {
   const [selectedItem, setSelectedItem] = useState(false);
 
   const generateMessage = async (tag, id, driverName, routeName) => {
-    const url = `${URL}/?token=${token}&bins&limit=0;60&${tag}=${id}&status=unempty`;
+    const url = `${URL}/?token=${token}&bins&limit=0;10000&${tag}=${id}&status=unempty`;
     //60 foreach 60times
     const data = await fetch(url);
     const unemptyBins = await data.json();
