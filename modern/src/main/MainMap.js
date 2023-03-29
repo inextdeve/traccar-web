@@ -73,7 +73,10 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   useEffect(() => {
     const fetchData = async () => {
       const reportedBinData = await fetch(
-        `${ALTURL}/?token=${token}&report_bins&date_f=${dateFrom.date}&date_t=${dateTo.date}`
+        `http://38.54.114.215:3003/api/bins/reports`,
+        {
+          headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
+        }
       );
 
       const data = await reportedBinData.json();
@@ -86,20 +89,19 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   useEffect(() => {
     dispatch(binsActions.updateLoading(true));
     const reportedBinData = fetch(
-      `${ALTURL}/?token=${token}&report_bins&date_f=${dateFrom.date}&date_t=${dateTo.date}`
-    ).then((response) => {
-      return response.json();
-    });
-
-    const allBinsData = fetch(
-      `${URL}/?token=${token}&bins&limit=0;10000&date_f=${dateFrom.date}&date_t=${dateTo.date}`
+      `http://38.54.114.215:3003/api/bins/reports`,
+      {
+        headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
+      }
     ).then((response) => response.json());
-
+    const allBinsData = fetch(`http://38.54.114.215:3003/api/bins`, {
+      headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
+    }).then((response) => response.json());
     Promise.all([reportedBinData, allBinsData])
       .then((response) => {
         dispatch(binsActions.updateLoading(false));
         let [reportedBins, data] = response; // data is for all bins i don't change it for the function need to change all things
-        console.log(data)
+        console.log(reportedBinData);
         if (reportedBins === null) {
           reportedBins = [];
         }
@@ -124,7 +126,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
                 bintype,
                 center_name,
                 route,
-                description
+                description,
               }) => {
                 let category = "";
                 let report = { is: false, status: null };
@@ -157,7 +159,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
                   status,
                   binType: bintype,
                   report,
-                  description
+                  description,
                 };
               }
             )
