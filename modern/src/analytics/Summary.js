@@ -46,7 +46,7 @@ const Summary = () => {
   const data = useSelector((state) => state.analytics.items);
   const keys = [
     "id",
-    "date_from",
+    "date",
     "total",
     "empty_bin",
     "un_empty_bin",
@@ -55,15 +55,13 @@ const Summary = () => {
   const items = data.map((item, index) => ({
     id: index,
     ...item,
-    empty_bin: item.on,
-    un_empty_bin: item.off,
-    date_from: moment(item.date_from).format("MMM Do YY"),
+    date: moment(item.date).format("MMM Do YY"),
     rate: `${countRate(item.total, item.on).toFixed(2)}%`,
   }));
   items.push({
     id: t("total"),
     total: countTotal(items, "total"),
-    date_from: "All",
+    date: "All",
     empty_bin: countTotal(items, "empty_bin"),
     un_empty_bin: countTotal(items, "un_empty_bin"),
     rate: `${countRate(

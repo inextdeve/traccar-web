@@ -120,7 +120,7 @@ const WashingRoutes = () => {
     "actions",
   ];
   const keys = [
-    "route_name",
+    "route",
     "total",
     "shift",
     "cleaned",
@@ -149,7 +149,7 @@ const WashingRoutes = () => {
                 "routid",
                 item.route_id,
                 item.driver,
-                item.route_name,
+                item.route,
               ),
               item.phone,
             )}
@@ -165,7 +165,7 @@ const WashingRoutes = () => {
     };
   });
   items.push({
-    route_name: t("total"),
+    route: t("total"),
     total: countTotal(items, "total"),
     cleaned: countTotal(items, "cleaned"),
     not_cleaned: countTotal(items, "not_cleaned"),
@@ -364,7 +364,7 @@ const WashingRoutes = () => {
                         const cleaned = (item.cleaned * 100) / item.total;
 
                         return {
-                          name: item.route_name,
+                          name: item.route,
                           cleaned: countRate(item.total, item.cleaned).toFixed(
                             2,
                           ),

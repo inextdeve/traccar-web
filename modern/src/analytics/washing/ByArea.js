@@ -85,7 +85,7 @@ const WashingArea = () => {
     "maps",
   ];
   const keys = [
-    "center_name",
+    "center",
     "total",
     "cleaned",
     "not_cleaned",
@@ -110,7 +110,7 @@ const WashingArea = () => {
     };
   });
   items.push({
-    center_name: t("total"),
+    center: t("total"),
     total: countTotal(items, "total"),
     cleaned: countTotal(items, "cleaned"),
     not_cleaned: countTotal(items, "not_cleaned"),
@@ -269,7 +269,7 @@ const WashingArea = () => {
                           const cleaned = (item.cleaned * 100) / item.total;
 
                           return {
-                            name: item.center_name,
+                            name: item.center,
                             cleaned: countRate(
                               item.total,
                               item.cleaned,
