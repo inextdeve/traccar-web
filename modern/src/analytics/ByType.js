@@ -1,6 +1,4 @@
-import React, {
-  useCallback, useEffect, useRef, useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Grid,
   Typography,
@@ -34,19 +32,23 @@ import MapAnalytics from "../map/MapAnalytics";
 import { URL } from "../common/util/constant";
 import { formatDate } from "../common/util/formatter";
 
+// const URL = "http://127.0.0.1:3003";
+
 const ByType = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const dispatch = useDispatch();
   const TableRef = useRef(null);
   const theme = useTheme();
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   // Map Processing
   const [mapLoading, setMapLoading] = useState(false);
@@ -55,9 +57,11 @@ const ByType = () => {
   const mapButtonClick = useCallback(async ({ id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
-    const url = `${URL}/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
+    const url = `http://38.54.114.166:3003/api/bins?${tag}=${id}`;
 
-    const data = await fetch(url);
+    const data = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     setMapLoading(false);
     const positions = await data.json();
@@ -71,8 +75,8 @@ const ByType = () => {
           latitude,
           longitude,
           binType: bintype,
-        })),
-      ),
+        }))
+      )
     );
   });
 
@@ -96,7 +100,7 @@ const ByType = () => {
   ];
   const items = data.map((item) => {
     const requestParams = {
-      id: item.id_type,
+      id: item.binTypeId,
       tag: "bintypeid",
     };
 
@@ -117,7 +121,7 @@ const ByType = () => {
     un_empty_bin: countTotal(items, "un_empty_bin"),
     rate: `${countRate(
       countTotal(items, "total"),
-      countTotal(items, "empty_bin"),
+      countTotal(items, "empty_bin")
     ).toFixed(2)}%`,
   });
   // Data for charts drop Total item
@@ -125,7 +129,9 @@ const ByType = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${URL}/?token=${token}&binstype`)
+    fetch(`http://38.54.114.166:3003/api/bins/by/bintype`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => {
         setIsLoading(false);
         return data.json();
@@ -136,22 +142,27 @@ const ByType = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
-  const handleSubmit = ({ from: dateFrom, to: dateTo }) => {
-    const from = formatDate(dateFrom);
-    const to = formatDate(dateTo);
-
+  const handleSubmit = ({ from, to }) => {
+    // const from = formatDate(dateFrom);
+    // const to = formatDate(dateTo);
+    // console.log(from, to);
     const query = new URLSearchParams({
-      token,
-      date_f: from.date,
-      time_f: from.time,
-      date_t: to.date,
-      time_t: to.time,
+      // token,
+      from,
+      to,
+      // date_f: from.date,
+      // time_f: from.time,
+      // date_t: to.date,
+      // time_t: to.time,
     });
 
-    const url = `${URL}/?${query.toString()}&binstype`;
+    // const url = `${URL}/?${query.toString()}&binstype`;
+    const url = `http://38.54.114.166:3003/api/bins/by/bintype?${query.toString()}`;
 
     setIsLoading(true);
-    fetch(url)
+    fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => data.json())
       .then((data) => {
         dispatch(analyticsActions.updateItems(data));
@@ -189,7 +200,7 @@ const ByType = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -197,7 +208,7 @@ const ByType = () => {
                 >
                   {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box ref={TableRef}>
@@ -234,7 +245,7 @@ const ByType = () => {
                         key2="Unempted"
                         title={t("binsStatus")}
                         subtitle={t(
-                          "theProportionOfTheEmptedBinsAndTheUnempted",
+                          "theProportionOfTheEmptedBinsAndTheUnempted"
                         )}
                         bins={[
                           {
@@ -267,7 +278,7 @@ const ByType = () => {
                         key2="unempted"
                         title={t("binsStatusByType")}
                         subtitle={t(
-                          "theProportionOfEmptedAndUnemptedBinsByTypes",
+                          "theProportionOfEmptedAndUnemptedBinsByTypes"
                         )}
                         bins={chartData.map((item) => {
                           const empted = (item.empty_bin * 100) / item.total;
@@ -276,7 +287,7 @@ const ByType = () => {
                             name: item.bintype,
                             empted: countRate(
                               item.total,
-                              item.empty_bin,
+                              item.empty_bin
                             ).toFixed(2),
                             unempted: 100 - empted,
                             amt: 100,

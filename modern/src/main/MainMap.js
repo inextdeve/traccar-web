@@ -73,7 +73,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   useEffect(() => {
     const fetchData = async () => {
       const reportedBinData = await fetch(
-        `http://38.54.114.215:3003/api/bins/reports`,
+        `http://38.54.114.166:3003/api/bins/reports`,
         {
           headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
         }
@@ -89,12 +89,12 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   useEffect(() => {
     dispatch(binsActions.updateLoading(true));
     const reportedBinData = fetch(
-      `http://38.54.114.215:3003/api/bins/reports`,
+      `http://38.54.114.166:3003/api/bins/reports`,
       {
         headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
       }
     ).then((response) => response.json());
-    const allBinsData = fetch(`http://38.54.114.215:3003/api/bins`, {
+    const allBinsData = fetch(`http://38.54.114.166:3003/api/bins`, {
       headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
     }).then((response) => response.json());
     Promise.all([reportedBinData, allBinsData])
