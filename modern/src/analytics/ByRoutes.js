@@ -59,9 +59,11 @@ const ByRoutes = () => {
   const [selectedItem, setSelectedItem] = useState(false);
 
   const generateMessage = async (tag, id, driverName, routeName) => {
-    const url = `${URL}/?token=${token}&bins&limit=0;10000&${tag}=${id}&status=unempty`;
+    const url = `http://38.54.114.166:3003/api/bins?${tag}=${id}&status=unempted`;
     //60 foreach 60times
-    const data = await fetch(url);
+    const data = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const unemptyBins = await data.json();
 
     const bins = unemptyBins
@@ -89,8 +91,10 @@ const ByRoutes = () => {
   const mapButtonClick = useCallback(async ({ id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
-    const url = `${URL}/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
-    const data = await fetch(url);
+    const url = `http://38.54.114.166:3003/api/bins?${tag}=${id}`;
+    const data = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     setMapLoading(false);
     const positions = await data.json();
@@ -120,7 +124,7 @@ const ByRoutes = () => {
     "actions",
   ];
   const keys = [
-    "route_name",
+    "route",
     "total",
     "shift",
     "empty_bin",
@@ -133,8 +137,8 @@ const ByRoutes = () => {
 
   const items = tableData.map((item) => {
     const requestParams = {
-      id: item.route_id,
-      tag: "routid",
+      id: item.routeId,
+      tag: "routeid",
     };
 
     return {
@@ -147,10 +151,10 @@ const ByRoutes = () => {
             onClick={() =>
               sendMessage(
                 generateMessage(
-                  "routid",
-                  item.route_id,
+                  "routeid",
+                  item.routeId,
                   item.driver,
-                  item.route_name
+                  item.route
                 ),
                 item.phone
               )
@@ -167,7 +171,7 @@ const ByRoutes = () => {
     };
   });
   items.push({
-    route_name: t("total"),
+    route: t("total"),
     total: countTotal(items, "total"),
     empty_bin: countTotal(items, "empty_bin"),
     un_empty_bin: countTotal(items, "un_empty_bin"),
@@ -182,7 +186,9 @@ const ByRoutes = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${URL}/?token=${token}&bins_routes`)
+    fetch(`http://38.54.114.166:3003/api/bins/by/route`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => {
         setIsLoading(false);
         return data.json();
@@ -194,22 +200,18 @@ const ByRoutes = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
-  const handleSubmit = ({ from: dateFrom, to: dateTo }) => {
-    const from = formatDate(dateFrom);
-    const to = formatDate(dateTo);
-
+  const handleSubmit = ({ from, to }) => {
     const query = new URLSearchParams({
-      token,
-      date_f: from.date,
-      time_f: from.time,
-      date_t: to.date,
-      time_t: to.time,
+      from,
+      to,
     });
 
-    const url = `${URL}/?${query.toString()}&bins_routes`;
+    const url = `http://38.54.114.166:3003/api/bins/by/route?${query.toString()}`;
 
     setIsLoading(true);
-    fetch(url)
+    fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => data.json())
       .then((data) => {
         setTableData(data);
@@ -351,7 +353,7 @@ const ByRoutes = () => {
                       title={t("theProportionOfTracksCode")}
                       subtitle={t("theProportionOfEachTrackCode")}
                       data={chartData.map((item) => ({
-                        name: item.route_name,
+                        name: item.route,
                         value: parseInt(item.total, 10),
                       }))}
                     />
@@ -368,7 +370,7 @@ const ByRoutes = () => {
                         const empted = (item.empty_bin * 100) / item.total;
 
                         return {
-                          name: item.route_name,
+                          name: item.route,
                           empted: countRate(item.total, item.empty_bin).toFixed(
                             2
                           ),

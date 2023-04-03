@@ -1,7 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import {
-  Grid, Typography, Box, Skeleton, Button,
-} from "@mui/material";
+import { Grid, Typography, Box, Skeleton, Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import Print from "./common/Print";
@@ -26,13 +24,15 @@ const Summary = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   // Table Data Processing
   const columnsHead = [
@@ -44,19 +44,12 @@ const Summary = () => {
     "completionRate",
   ];
   const data = useSelector((state) => state.analytics.items);
-  const keys = [
-    "id",
-    "date",
-    "total",
-    "empty_bin",
-    "un_empty_bin",
-    "rate",
-  ];
+  const keys = ["id", "date", "total", "empty_bin", "un_empty_bin", "rate"];
   const items = data.map((item, index) => ({
     id: index,
     ...item,
     date: moment(item.date).format("MMM Do YY"),
-    rate: `${countRate(item.total, item.on).toFixed(2)}%`,
+    rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
   }));
   items.push({
     id: t("total"),
@@ -66,7 +59,7 @@ const Summary = () => {
     un_empty_bin: countTotal(items, "un_empty_bin"),
     rate: `${countRate(
       countTotal(items, "total"),
-      countTotal(items, "empty_bin"),
+      countTotal(items, "empty_bin")
     ).toFixed(2)}%`,
   });
   // Data for charts drop Total item
@@ -74,7 +67,9 @@ const Summary = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${URL}/?token=${token}&device_daily`)
+    fetch(`http://38.54.114.166:3003/api/bins/summary`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => {
         setIsLoading(false);
         return data.json();
@@ -83,22 +78,18 @@ const Summary = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
-  const handleSubmit = ({ from: dateFrom, to: dateTo }) => {
-    const from = formatDate(dateFrom);
-    const to = formatDate(dateTo);
-
+  const handleSubmit = ({ from, to }) => {
     const query = new URLSearchParams({
-      token,
-      date_f: from.date,
-      time_f: from.time,
-      date_t: to.date,
-      time_t: to.time,
+      from,
+      to,
     });
 
-    const url = `${URL}/?${query.toString()}&device_daily`;
+    const url = `http://38.54.114.166:3003/api/bins/summary?${query.toString()}`;
 
     setIsLoading(true);
-    fetch(url)
+    fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => data.json())
       .then((data) => {
         dispatch(analyticsActions.updateItems(data));
@@ -121,7 +112,7 @@ const Summary = () => {
             <ExcelExport excelData={items} fileName="SummarySheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -129,7 +120,7 @@ const Summary = () => {
                 >
                   {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box ref={TableRef}>
@@ -196,14 +187,16 @@ const Summary = () => {
                       key2="unempted"
                       title={t("binsStatusByType")}
                       subtitle={t(
-                        "theProportionOfEmptedAndUnemptedBinsByTypes",
+                        "theProportionOfEmptedAndUnemptedBinsByTypes"
                       )}
                       bins={chartData.map((item) => {
-                        const empted = (item.on * 100) / item.total;
+                        const empted = (item.empty_bin * 100) / item.total;
 
                         return {
                           name: item.id,
-                          empted: countRate(item.total, item.on).toFixed(2),
+                          empted: countRate(item.total, item.empty_bin).toFixed(
+                            2
+                          ),
                           unempted: 100 - empted,
                           amt: 100,
                         };

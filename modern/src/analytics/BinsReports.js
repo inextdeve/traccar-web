@@ -53,30 +53,9 @@ const BinsReports = () => {
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
-  const { from, to } = useSelector((state) => state.analytics);
-
   const [reportImages, setReportImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  const dateFrom = {
-    date: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
-      .toISOString()
-      .split("T")[0],
-    time: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
-      .toISOString()
-      .split("T")[1]
-      .split(".")[0],
-  };
-  const dateTo = {
-    date: moment(to, moment.HTML5_FMT.DATETIME_LOCAL)
-      .toISOString()
-      .split("T")[0],
-    time: moment(to, moment.HTML5_FMT.DATETIME_LOCAL)
-      .toISOString()
-      .split("T")[1]
-      .split(".")[0],
-  };
 
   const setIsLoading = (state) =>
     dispatch(analyticsActions.updateLoading(state));
@@ -87,14 +66,17 @@ const BinsReports = () => {
   const mapButtonClick = useCallback(async ({ id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
-    const url = `${URL}/?token=${token}&${tag}=${id}`;
-    const data = await fetch(url);
+    const url = `http://localhost:3003/api/bins/${id}`;
+    const data = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     setMapLoading(false);
     const positions = await data.json();
+    console.log(positions);
     dispatch(
       analyticsActions.updatePositions(
-        [positions[0]].map(
+        [positions.bin[0]].map(
           ({ id_bin, status, latitude, longitude, bintype }) => ({
             id: id_bin,
             category: `${
@@ -170,9 +152,9 @@ const BinsReports = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(
-      `${ALTURL}/?token=${token}&report_bins&date_f=${dateFrom.date}&date_t=${dateTo.date}`
-    )
+    fetch(`http://localhost:3003/api/bins/reports`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => {
         setIsLoading(false);
         return data.json();
@@ -185,21 +167,17 @@ const BinsReports = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
-  const handleSubmit = ({ from: dateFrom, to: dateTo }) => {
-    const from = formatDate(dateFrom);
-    const to = formatDate(dateTo);
-
+  const handleSubmit = ({ from, to }) => {
     const query = new URLSearchParams({
-      token,
-      date_f: from.date,
-      time_t: to.time,
-      time_f: from.time,
-      date_t: to.date,
+      from,
+      to,
     });
 
-    const url = `${ALTURL}/?${query.toString()}&report_bins`;
+    const url = `http://localhost:3003/api/bins/reports/?${query.toString()}`;
     setIsLoading(true);
-    fetch(url)
+    fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => data.json())
       .then((data) => {
         dispatch(analyticsActions.updateItems(data));
