@@ -1,6 +1,4 @@
-import React, {
-  useEffect, useRef, useState, useCallback,
-} from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -47,21 +45,25 @@ const WashingRoutes = () => {
   const TableRef = useRef(null);
   const theme = useTheme();
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   const [mapLoading, setMapLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(false);
 
   const generateMessage = async (tag, id, driverName, routeName) => {
-    const url = `${URL}/?token=${token}&bins&limit=0;10&${tag}=${id}&status=unempty`;
+    const url = `http://38.54.114.166:3003/api/bins?${tag}=${id}&status=unempted`;
 
-    const data = await fetch(url);
+    const data = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const unemptyBins = await data.json();
 
     const bins = unemptyBins
@@ -70,7 +72,7 @@ const WashingRoutes = () => {
               Bin Code: ${item.id_bin}
               Bin Type: ${item.bintype}
               https://www.google.com/maps/place/${item.longitude},${item.latitude}
-              ** `,
+              ** `
       )
       .join("\n");
 
@@ -89,8 +91,10 @@ const WashingRoutes = () => {
   const mapButtonClick = useCallback(async ({ id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
-    const url = `${URL}/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
-    const data = await fetch(url);
+    const url = `http://38.54.114.166:3003/api/bins?${tag}=${id}`;
+    const data = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     setMapLoading(false);
     const positions = await data.json();
@@ -104,8 +108,8 @@ const WashingRoutes = () => {
           latitude,
           longitude,
           binType: bintype,
-        })),
-      ),
+        }))
+      )
     );
   });
 
@@ -133,7 +137,7 @@ const WashingRoutes = () => {
 
   const items = tableData.map((item) => {
     const requestParams = {
-      id: item.route_id,
+      id: item.routeId,
       tag: "routid",
     };
 
@@ -144,15 +148,17 @@ const WashingRoutes = () => {
         <>
           <IconButton
             color="secondary"
-            onClick={() => sendMessage(
-              generateMessage(
-                "routid",
-                item.route_id,
-                item.driver,
-                item.route,
-              ),
-              item.phone,
-            )}
+            onClick={() =>
+              sendMessage(
+                generateMessage(
+                  "routeId",
+                  item.routeId,
+                  item.driver,
+                  item.route
+                ),
+                item.phone
+              )
+            }
             disabled={false}
           >
             <WhatsAppIcon />
@@ -178,7 +184,9 @@ const WashingRoutes = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    fetch(`${ALTURL}/?token=${token}&cn_bins_routes`)
+    fetch(`http://localhost:3003/api/washing/by/route`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => {
         setIsLoading(false);
         return data.json();
@@ -190,22 +198,18 @@ const WashingRoutes = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
-  const handleSubmit = ({ from: dateFrom, to: dateTo }) => {
-    const from = formatDate(dateFrom);
-    const to = formatDate(dateTo);
-
+  const handleSubmit = ({ from, to }) => {
     const query = new URLSearchParams({
-      token,
-      date_f: from.date,
-      time_f: from.time,
-      date_t: to.date,
-      time_t: to.time,
+      from,
+      to,
     });
 
-    const url = `${ALTURL}/?${query.toString()}&cn_bins_routes`;
+    const url = `http://localhost:3003/api/washing/by/route?${query.toString()}`;
 
     setIsLoading(true);
-    fetch(url)
+    fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => data.json())
       .then((data) => {
         dispatch(analyticsActions.updateItems(data));
@@ -259,7 +263,7 @@ const WashingRoutes = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -267,7 +271,7 @@ const WashingRoutes = () => {
                 >
                   {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box
@@ -325,7 +329,7 @@ const WashingRoutes = () => {
                       key2="Uncleaned"
                       title={t("binsStatus")}
                       subtitle={t(
-                        "theProportionOfTheCleanedBinsAndTheUncleaned",
+                        "theProportionOfTheCleanedBinsAndTheUncleaned"
                       )}
                       bins={[
                         {
@@ -358,7 +362,7 @@ const WashingRoutes = () => {
                       key2="uncleaned"
                       title={t("binsStatusByTrack")}
                       subtitle={t(
-                        "theProportionOfTheCleanedBinsAndTheUncleaned",
+                        "theProportionOfTheCleanedBinsAndTheUncleaned"
                       )}
                       bins={chartData.map((item) => {
                         const cleaned = (item.cleaned * 100) / item.total;
@@ -366,7 +370,7 @@ const WashingRoutes = () => {
                         return {
                           name: item.route,
                           cleaned: countRate(item.total, item.cleaned).toFixed(
-                            2,
+                            2
                           ),
                           uncleaned: 100 - cleaned,
                           amt: 100,

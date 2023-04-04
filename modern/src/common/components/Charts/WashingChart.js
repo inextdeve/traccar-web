@@ -13,11 +13,11 @@ const WashingChart = () => {
     if (chartData !== null) {
       setItem({
         name: "Washing",
-        done: chartData.bins_clean.cleaned,
-        undone: chartData.bins_clean.not_cleaned,
-        amt: chartData.bins_clean.cleaned + chartData.bins_clean.not_cleaned,
-        total: chartData.bins_clean.totla,
-        rate: chartData.bins_clean.rate,
+        done: chartData[1].completed,
+        undone: chartData[1].uncompleted,
+        amt: chartData[1].total,
+        total: chartData[1].total,
+        rate: chartData[1]?.rate,
       });
     }
   }, [chartData]);
@@ -26,11 +26,7 @@ const WashingChart = () => {
     <>
       {item ? (
         <>
-          <Typography variant="h5">
-            {item.name}
-            {" "}
-            Status
-          </Typography>
+          <Typography variant="h5">{item.name} Status</Typography>
           <Box
             sx={{
               display: "flex",

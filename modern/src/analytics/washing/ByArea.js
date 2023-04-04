@@ -1,6 +1,4 @@
-import React, {
-  useEffect, useRef, useState, useCallback,
-} from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   Grid,
   Typography,
@@ -40,13 +38,15 @@ const WashingArea = () => {
   const TableRef = useRef(null);
   const theme = useTheme();
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   // Map Processing
   const [mapLoading, setMapLoading] = useState(false);
@@ -55,8 +55,11 @@ const WashingArea = () => {
   const mapButtonClick = useCallback(async ({ id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
-    const url = `${URL}/?token=${token}&bins&limit=0;10000&${tag}=${id}`;
-    const data = await fetch(url);
+    const url = `http://38.54.114.166:3003/api/bins?${tag}=${id}`;
+
+    const data = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     setMapLoading(false);
     const positions = await data.json();
@@ -70,8 +73,8 @@ const WashingArea = () => {
           latitude,
           longitude,
           binType: bintype,
-        })),
-      ),
+        }))
+      )
     );
   });
 
@@ -95,8 +98,8 @@ const WashingArea = () => {
   const data = useSelector((state) => state.analytics.items);
   const items = data.map((item) => {
     const requestParams = {
-      id: item.center_id,
-      tag: "centerid",
+      id: item.centerId,
+      tag: "centerId",
     };
 
     return {
@@ -122,7 +125,9 @@ const WashingArea = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${ALTURL}/?token=${token}&cn_bins_centers`)
+    fetch(`http://localhost:3003/api/washing/by/center`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => {
         setIsLoading(false);
 
@@ -132,22 +137,18 @@ const WashingArea = () => {
       .catch(() => setIsLoading(false));
   }, []);
 
-  const handleSubmit = ({ from: dateFrom, to: dateTo }) => {
-    const from = formatDate(dateFrom);
-    const to = formatDate(dateTo);
-
+  const handleSubmit = ({ from, to }) => {
     const query = new URLSearchParams({
-      token,
-      date_f: from.date,
-      time_f: from.time,
-      date_t: to.date,
-      time_t: to.time,
+      from,
+      to,
     });
 
-    const url = `${ALTURL}/?${query.toString()}&cn_bins_centers`;
+    const url = `http://localhost:3003/api/washing/by/center?${query.toString()}`;
 
     setIsLoading(true);
-    fetch(url)
+    fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => data.json())
       .then((data) => {
         dispatch(analyticsActions.updateItems(data));
@@ -184,7 +185,7 @@ const WashingArea = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -192,7 +193,7 @@ const WashingArea = () => {
                 >
                   {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
 
@@ -230,7 +231,7 @@ const WashingArea = () => {
                         key2="Uncleaned"
                         title={t("binsStatus")}
                         subtitle={t(
-                          "theProportionOfTheCleanedBinsAndTheUncleaned",
+                          "theProportionOfTheCleanedBinsAndTheUncleaned"
                         )}
                         bins={[
                           {
@@ -263,7 +264,7 @@ const WashingArea = () => {
                         key2="uncleaned"
                         title={t("binsStatusByArea")}
                         subtitle={t(
-                          "theProportionOfTheCleanedBinsAndTheUncleaned",
+                          "theProportionOfTheCleanedBinsAndTheUncleaned"
                         )}
                         bins={chartData.map((item) => {
                           const cleaned = (item.cleaned * 100) / item.total;
@@ -272,7 +273,7 @@ const WashingArea = () => {
                             name: item.center,
                             cleaned: countRate(
                               item.total,
-                              item.cleaned,
+                              item.cleaned
                             ).toFixed(2),
                             uncleaned: 100 - cleaned,
                             amt: 100,

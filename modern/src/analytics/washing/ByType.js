@@ -124,7 +124,7 @@ const ByType = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`http://localhost:3003/api/washing/by/bintype`, {
+    fetch(`http://38.54.114.166:3003/api/washing/by/bintype`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {
@@ -143,7 +143,7 @@ const ByType = () => {
       to,
     });
 
-    const url = `http://localhost:3003/api/washing/by/bintype?${query.toString()}`;
+    const url = `http://38.54.114.166:3003/api/washing/by/bintype?${query.toString()}`;
 
     setIsLoading(true);
     fetch(url, {

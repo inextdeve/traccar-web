@@ -137,17 +137,17 @@ const MainPage = () => {
   };
 
   useEffect(() => {
-    fetch(
-      `https://bins.rcj.care/api/?token=${token}&statistics&time_f=${from.time}&date_f=${from.date}&time_t=${to.time}&date_t=${to.date}`
-    )
+    fetch(`http://localhost:3003/api/statistics/kpi`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((response) => response.json())
-      .then((data) => dispatch(analyticsActions.updateChartData(data[0])));
+      .then((data) => dispatch(analyticsActions.updateChartData(data)));
     const interval = setInterval(() => {
-      fetch(
-        `https://bins.rcj.care/api/?token=${token}&statistics&time_f=${from.time}&date_f=${from.date}&time_t=${to.time}&date_t=${to.date}`
-      )
+      fetch(`http://localhost:3003/api/statistics/kpi`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
         .then((response) => response.json())
-        .then((data) => dispatch(analyticsActions.updateChartData(data[0])));
+        .then((data) => dispatch(analyticsActions.updateChartData(data)));
     }, 60000);
 
     return () => {

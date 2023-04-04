@@ -14,11 +14,11 @@ const VehicleChart = () => {
     if (chartData !== null) {
       setItem({
         name: "Vehicle",
-        done: chartData.devices.on,
-        undone: chartData.devices.off,
-        amt: chartData.devices.on + 1999,
-        total: chartData.devices.totla,
-        rate: chartData.devices.rate,
+        done: chartData[2].completed,
+        undone: chartData[2].uncompleted,
+        amt: chartData[2].completed + 1999,
+        total: chartData[2].total,
+        rate: chartData[2]?.rate,
       });
     }
   }, [chartData]);
@@ -27,11 +27,7 @@ const VehicleChart = () => {
     <>
       {item ? (
         <>
-          <Typography variant="h5">
-            {item.name}
-            {" "}
-            Status
-          </Typography>
+          <Typography variant="h5">{item.name} Status</Typography>
           <Box
             sx={{
               display: "flex",
