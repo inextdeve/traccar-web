@@ -35,8 +35,6 @@ import PrintingHeader from "../common/components/PrintingHeader";
 
 import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
-import { URL } from "../common/util/constant";
-import { formatDate } from "../common/util/formatter";
 
 const ByRoutes = () => {
   const classes = useReportStyles();
@@ -60,7 +58,7 @@ const ByRoutes = () => {
 
   const generateMessage = async (tag, id, driverName, routeName) => {
     const url = `http://38.54.114.166:3003/api/bins?${tag}=${id}&status=unempted`;
-    //60 foreach 60times
+    // 60 foreach 60times
     const data = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -186,7 +184,7 @@ const ByRoutes = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`http://38.54.114.166:3003/api/bins/by/route`, {
+    fetch("http://38.54.114.166:3003/api/bins/by/route", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {

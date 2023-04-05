@@ -64,8 +64,8 @@ const MainFilter = () => {
         : true;
       const center_name = selectedItems.center_name.length
         ? selectedItems.center_name.some(
-            (filter) => item.center_name === filter
-          )
+          (filter) => item.center_name === filter,
+        )
         : true;
 
       let status = true;
@@ -77,7 +77,7 @@ const MainFilter = () => {
         status = item.status === selectedItems.status;
       } else if (selectedItems.status === "reported") {
         status = reportedBins.some(
-          (reported) => parseInt(reported.id_bin) === parseInt(item.id)
+          (reported) => parseInt(reported.id_bin) === parseInt(item.id),
         );
       }
 
@@ -100,7 +100,7 @@ const MainFilter = () => {
 
   const filterSet = useSelector((state) => state.bins.filterSet);
 
-  //Filter Using Search Box
+  // Filter Using Search Box
   const { searchTerm, filteredBins } = useSelector((state) => state.bins);
 
   useEffect(() => {
@@ -115,8 +115,7 @@ const MainFilter = () => {
       // console.log(item)
       if (!item.description) return false;
 
-      if (item.description.toLowerCase().indexOf(searchTerm) !== -1)
-        return true;
+      if (item.description.toLowerCase().indexOf(searchTerm) !== -1) return true;
 
       return false;
     });
@@ -167,9 +166,7 @@ const MainFilter = () => {
                   label={t("reportFrom")}
                   type="datetime-local"
                   value={from}
-                  onChange={(e) =>
-                    dispatch(analyticsActions.updateFrom(e.target.value))
-                  }
+                  onChange={(e) => dispatch(analyticsActions.updateFrom(e.target.value))}
                   fullWidth
                 />
               </div>
@@ -180,9 +177,7 @@ const MainFilter = () => {
                   label={t("reportTo")}
                   type="datetime-local"
                   value={to}
-                  onChange={(e) =>
-                    dispatch(analyticsActions.updateTo(e.target.value))
-                  }
+                  onChange={(e) => dispatch(analyticsActions.updateTo(e.target.value))}
                   fullWidth
                 />
               </div>

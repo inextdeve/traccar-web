@@ -28,8 +28,6 @@ import PrintingHeader from "../../common/components/PrintingHeader";
 // MAP IMPORTS
 import MapAnalytics from "../../map/MapAnalytics";
 import Popup from "../../common/components/Popup";
-import { URL, ALTURL } from "../../common/util/constant";
-import { formatDate } from "../../common/util/formatter";
 
 const WashingArea = () => {
   const classes = useReportStyles();
@@ -125,7 +123,7 @@ const WashingArea = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`http://localhost:3003/api/washing/by/center`, {
+    fetch("http://localhost:3003/api/washing/by/center", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {

@@ -27,7 +27,7 @@ const MapButtons = () => {
         const filterDialog = document.getElementById("filterDialog");
         filterDialog.style.display = "block";
       },
-      "filterId-22"
+      "filterId-22",
     );
     map.removeControl(filterSwitcher);
     map.addControl(filterSwitcher, "top-right");
@@ -38,7 +38,7 @@ const MapButtons = () => {
       () => {
         dispatch(binsActions.refresh());
       },
-      "refresh-id-383"
+      "refresh-id-383",
     );
     map.removeControl(refresh);
     map.addControl(refresh, "top-right");
@@ -47,7 +47,7 @@ const MapButtons = () => {
     const camera = new MapButton(
       ICONS.camera,
       () => dispatch(devicesActions.updateShowCameraList(true)),
-      "camera-37353-ca"
+      "camera-37353-ca",
     );
     map.removeControl(camera);
     map.addControl(camera, "top-right");
@@ -56,7 +56,7 @@ const MapButtons = () => {
     const kpiCharts = new MapButton(
       ICONS.charts,
       () => dispatch(analyticsActions.updateShowKPI(true)),
-      "kpis-charts-status-2023-04-02"
+      "kpis-charts-status-2023-04-02",
     );
     map.removeControl(kpiCharts);
     map.addControl(kpiCharts, "top-right");

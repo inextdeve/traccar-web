@@ -1,7 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import {
-  Grid, Typography, Box, Skeleton, Button,
-} from "@mui/material";
+import { Grid, Typography, Box, Skeleton, Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import Print from "../common/Print";
@@ -17,8 +15,6 @@ import BinsPercentageChart from "../components/Charts/BinsPercentageChart";
 import BinsStatusChart from "../components/Charts/BinsStatusChart";
 import ExcelExport from "../components/ExcelExport";
 import PrintingHeader from "../../common/components/PrintingHeader";
-import { URL, ALTURL } from "../../common/util/constant";
-import { formatDate } from "../../common/util/formatter";
 
 const WashingSummary = () => {
   const classes = useReportStyles();
@@ -26,13 +22,15 @@ const WashingSummary = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   // Table Data Processing
   const columnsHead = [
@@ -44,19 +42,19 @@ const WashingSummary = () => {
     "completionRate",
   ];
   const data = useSelector((state) => state.analytics.items);
-  const keys = ["id", "date_from", "total", "cleaned", "not_cleaned", "rate"];
+  const keys = ["id", "date", "total", "cleaned", "not_cleaned", "rate"];
   const items = data.map((item, index) => ({
     id: index,
     ...item,
     cleaned: item.cleaned,
     not_cleaned: item.not_cleaned,
-    date_from: moment(item.date_from).format("MMM Do YY"),
+    date: moment(item.date).format("MMM Do YY"),
     rate: `${countRate(item.total, item.cleaned).toFixed(2)}%`,
   }));
   items.push({
     id: t("total"),
     total: countTotal(items, "total"),
-    date_from: "All",
+    date: "All",
     cleaned: countTotal(items, "cleaned"),
     not_cleaned: countTotal(items, "not_cleaned"),
     rate: `${(countTotal(items, "rate") / items.length).toFixed(2)}%`,
@@ -66,7 +64,9 @@ const WashingSummary = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${URL}/?token=${token}&cn_bins_daily`)
+    fetch(`http://localhost:3003/api/washing/summary`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => {
         setIsLoading(false);
         return data.json();
@@ -74,22 +74,18 @@ const WashingSummary = () => {
       .then((data) => dispatch(analyticsActions.updateItems(data)))
       .catch(() => setIsLoading(false));
   }, []);
-  const handleSubmit = ({ from: dateFrom, to: dateTo }) => {
-    const from = formatDate(dateFrom);
-    const to = formatDate(dateTo);
-
+  const handleSubmit = ({ from, to }) => {
     const query = new URLSearchParams({
-      token,
-      date_f: from.date,
-      time_f: from.time,
-      date_t: to.date,
-      time_t: to.time,
+      from,
+      to,
     });
 
-    const url = `${ALTURL}/?${query.toString()}&cn_bins_daily`;
+    const url = `http://localhost:3003/api/washing/summary?${query.toString()}`;
 
     setIsLoading(true);
-    fetch(url)
+    fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((data) => data.json())
       .then((data) => {
         dispatch(analyticsActions.updateItems(data));
@@ -112,7 +108,7 @@ const WashingSummary = () => {
             <ExcelExport excelData={items} fileName="SummarySheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -120,7 +116,7 @@ const WashingSummary = () => {
                 >
                   {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box ref={TableRef}>
@@ -156,7 +152,7 @@ const WashingSummary = () => {
                       key2="Uncleaned"
                       title={t("binsStatus")}
                       subtitle={t(
-                        "theProportionOfTheCleanedBinsAndTheUncleaned",
+                        "theProportionOfTheCleanedBinsAndTheUncleaned"
                       )}
                       bins={[
                         {
@@ -189,7 +185,7 @@ const WashingSummary = () => {
                       key2="uncleaned"
                       title={t("binsStatusByType")}
                       subtitle={t(
-                        "theProportionOfTheCleanedBinsAndTheUncleaned",
+                        "theProportionOfTheCleanedBinsAndTheUncleaned"
                       )}
                       bins={chartData.map((item) => {
                         const cleaned = (item.cleaned * 100) / item.total;
@@ -197,7 +193,7 @@ const WashingSummary = () => {
                         return {
                           name: item.route_name,
                           cleaned: countRate(item.total, item.cleaned).toFixed(
-                            2,
+                            2
                           ),
                           uncleaned: 100 - cleaned,
                           amt: 100,

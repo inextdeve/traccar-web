@@ -28,8 +28,6 @@ import PrintingHeader from "../common/components/PrintingHeader";
 // MAP IMPORTS
 import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
-import { URL } from "../common/util/constant";
-import { formatDate } from "../common/util/formatter";
 
 const ByArea = () => {
   const classes = useReportStyles();
@@ -127,7 +125,7 @@ const ByArea = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`http://38.54.114.166:3003/api/bins/by/center`, {
+    fetch("http://38.54.114.166:3003/api/bins/by/center", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {

@@ -35,8 +35,6 @@ import PrintingHeader from "../../common/components/PrintingHeader";
 
 import MapAnalytics from "../../map/MapAnalytics";
 import Popup from "../../common/components/Popup";
-import { URL, ALTURL } from "../../common/util/constant";
-import { formatDate } from "../../common/util/formatter";
 
 const WashingRoutes = () => {
   const classes = useReportStyles();
@@ -184,7 +182,7 @@ const WashingRoutes = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    fetch(`http://localhost:3003/api/washing/by/route`, {
+    fetch("http://localhost:3003/api/washing/by/route", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {

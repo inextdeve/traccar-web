@@ -4,6 +4,7 @@ import { MaxCharMsg } from "./constant";
 const sendMessage = async (msg, number) => {
   const promise = new Promise(async (resolve) => {
     const message = await msg;
+    console.log("Message", message);
     resolve();
 
     const SendingList = [];

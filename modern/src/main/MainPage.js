@@ -18,6 +18,7 @@ import CameraList from "./CameraList";
 import CameraPopup from "../common/components/CameraPopup";
 import MainFilter from "../common/components/MainFilter";
 import KIPCharts from "../common/components/KPICharts";
+import { countRate } from "../common/util/converter";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,21 +67,6 @@ const MainPage = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const theme = useTheme();
-
-  const { from, to } = useSelector((state) => {
-    const date = state.analytics.fromToDay;
-
-    return {
-      from: {
-        date: date.from.split("T")[0],
-        time: date.from.split("T")[1],
-      },
-      to: {
-        date: date.to.split("T")[0],
-        time: date.to.split("T")[1],
-      },
-    };
-  });
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
@@ -141,13 +127,31 @@ const MainPage = () => {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => response.json())
-      .then((data) => dispatch(analyticsActions.updateChartData(data)));
+      .then((data) =>
+        dispatch(
+          analyticsActions.updateChartData(
+            data.map((item) => ({
+              ...item,
+              rate: Math.round(countRate(item.total, item.completed)) + "%",
+            }))
+          )
+        )
+      );
     const interval = setInterval(() => {
       fetch(`http://localhost:3003/api/statistics/kpi`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((response) => response.json())
-        .then((data) => dispatch(analyticsActions.updateChartData(data)));
+        .then((data) =>
+          dispatch(
+            analyticsActions.updateChartData(
+              data.map((item) => ({
+                ...item,
+                rate: Math.round(countRate(item.total, item.completed)) + "%",
+              }))
+            )
+          )
+        );
     }, 60000);
 
     return () => {

@@ -29,11 +29,6 @@ const ByWeek = () => {
   const events = useSelector((state) => [...state.analytics.events]);
   const equipments = useSelector((state) => state.devices.equipments);
 
-  const countTotal = (array, prop) =>
-    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
-
-  const countRate = (total, n) => (n * 100) / total;
-
   // Table Data Processing
   const columnsHead = [
     "date",
@@ -100,17 +95,6 @@ const ByWeek = () => {
   useEffect(() => {
     handleSubmit({ from, to });
   }, []);
-
-  // events.push({
-  //   type: t("total"),
-  //   total: countTotal(equipments, "total"),
-  //   online: countTotal(equipments, "online"),
-  //   offline: countTotal(equipments, "offline"),
-  //   rate: `${countRate(
-  //     countTotal(equipments, "total"),
-  //     countTotal(equipments, "online")
-  //   ).toFixed(2)}%`,
-  // });
 
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>

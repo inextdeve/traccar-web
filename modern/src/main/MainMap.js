@@ -94,7 +94,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
         headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
       }
     ).then((response) => response.json());
-    const allBinsData = fetch(`http://38.54.114.166:3003/api/bins`, {
+    const allBinsData = fetch(`http://localhost:3003/api/bins`, {
       headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
     }).then((response) => response.json());
     Promise.all([reportedBinData, allBinsData])

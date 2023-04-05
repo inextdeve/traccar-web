@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Carousel from "react-material-ui-carousel";
-import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -31,8 +30,6 @@ import PrintingHeader from "../common/components/PrintingHeader";
 
 import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
-import { ALTURL, URL } from "../common/util/constant";
-import { formatDate } from "../common/util/formatter";
 
 const Item = (props) => {
   const classes = useReportStyles();
@@ -152,7 +149,7 @@ const BinsReports = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`http://localhost:3003/api/bins/reports`, {
+    fetch("http://localhost:3003/api/bins/reports", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {

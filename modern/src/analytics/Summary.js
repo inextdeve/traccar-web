@@ -15,8 +15,6 @@ import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
 import BinsStatusChart from "./components/Charts/BinsStatusChart";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
-import { URL } from "../common/util/constant";
-import { formatDate } from "../common/util/formatter";
 
 const Summary = () => {
   const classes = useReportStyles();
@@ -67,7 +65,7 @@ const Summary = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`http://38.54.114.166:3003/api/bins/summary`, {
+    fetch("http://38.54.114.166:3003/api/bins/summary", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {

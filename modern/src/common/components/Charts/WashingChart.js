@@ -26,7 +26,11 @@ const WashingChart = () => {
     <>
       {item ? (
         <>
-          <Typography variant="h5">{item.name} Status</Typography>
+          <Typography variant="h5">
+            {item.name}
+            {" "}
+            Status
+          </Typography>
           <Box
             sx={{
               display: "flex",

@@ -13,7 +13,7 @@ const { reducer, actions } = createSlice({
     refresh: false,
     renderConstant: 0,
     reportedBins: [],
-    searchTerm: ""
+    searchTerm: "",
   },
   reducers: {
     updateBins(state, action) {
@@ -49,7 +49,7 @@ const { reducer, actions } = createSlice({
     },
     updateSearchTerm(state, action) {
       state.searchTerm = action.payload;
-    }
+    },
   },
 });
 

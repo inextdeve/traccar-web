@@ -29,10 +29,6 @@ import PrintingHeader from "../common/components/PrintingHeader";
 import Popup from "../common/components/Popup";
 
 import MapAnalytics from "../map/MapAnalytics";
-import { URL } from "../common/util/constant";
-import { formatDate } from "../common/util/formatter";
-
-// const URL = "http://127.0.0.1:3003";
 
 const ByType = () => {
   const classes = useReportStyles();
@@ -129,7 +125,7 @@ const ByType = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`http://38.54.114.166:3003/api/bins/by/bintype`, {
+    fetch("http://38.54.114.166:3003/api/bins/by/bintype", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {
