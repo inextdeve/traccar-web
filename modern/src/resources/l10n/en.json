@@ -634,5 +634,6 @@
   "exitTime": "Exit Time",
   "weeklyReport": "Weekly Report",
   "byService": "By Service",
-  "exited": "Exited"
+  "exited": "Exited",
+  "notExited": "Not Exited"
 }

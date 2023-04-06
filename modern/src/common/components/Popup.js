@@ -144,7 +144,12 @@ const Item = (props) => {
   return (
     <div className={classes.repImgContainer}>
       {props.launchLink && (
-        <a href={props.item} target="_blank" className={classes.launchLink} rel="noreferrer">
+        <a
+          href={props.item}
+          target="_blank"
+          className={classes.launchLink}
+          rel="noreferrer"
+        >
           <LaunchIcon />
         </a>
       )}
@@ -176,13 +181,14 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
     setShowMore(false);
     setShowReport((prev) => !prev);
   };
+  console.log("Bin DATA", binData);
   const lastOperation = () => {
-    const last7days = binData[1].last7days.filter((item) => item.datetime);
+    const last7Days = binData[1].last7Days.filter((item) => item.emptedTime);
 
-    return last7days[last7days.length - 1]?.datetime || "-";
+    return last7Days[last7Days.length - 1]?.emptedTime || "-";
   };
 
-  const generateMessage = () => `Hello! ${binData[0].driver}
+  const generateMessage = () => `Hello! ${binData[0].driverName}
                 JCR Cleaning Project 
                 Alarm Bin Not Empty 
                 DateTime: ${moment().format("MMMM Do YYYY, h:mm:ss a")}
@@ -192,8 +198,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 Bin Type: ${popup.binType}
                 Last Time Emptied: ${lastOperation()}
                 https://www.google.com/maps/place/${binData[0].latitude},${
-  binData[0].longitude
-}`;
+    binData[0].longitude
+  }`;
 
   return (
     <div className={classes.root}>
@@ -226,7 +232,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     <StatusRow name={t("binType")} content={popup.binType} />
                     <StatusRow
                       name={t("status")}
-                      content={(
+                      content={
                         <span
                           style={{
                             color: `${
@@ -238,12 +244,12 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           {binData[0].status}
                         </span>
-                      )}
+                      }
                     />
                     <StatusRow
                       name={t("lastOperation")}
                       content={moment(lastOperation()).format(
-                        "MMM Do YY, H:mm",
+                        "MMM Do YY, H:mm"
                       )}
                     />
                     <StatusRow
@@ -252,7 +258,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     />
                     <StatusRow
                       name={t("sharedDriver")}
-                      content={binData[0].driver}
+                      content={binData[0].driverName}
                     />
                     <StatusRow
                       name={t("position")}
@@ -260,7 +266,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     />
                     <StatusRow
                       name={t("position")}
-                      content={(
+                      content={
                         <a
                           href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
                           target="_blank"
@@ -268,7 +274,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           Google Map
                         </a>
-                      )}
+                      }
                     />
                   </TableBody>
                 </Table>
@@ -328,7 +334,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                   launchLink
                                 />
                               );
-                            },
+                            }
                           )}
                         </Carousel>
                       </Box>
@@ -437,7 +443,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {[...binData[1].last7days]
+                        {[...binData[1].last7Days]
                           .reverse()
                           .map((item, index) => (
                             <TableRow key={index}>
@@ -466,11 +472,11 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                     }`,
                                   }}
                                 >
-                                  {item.datetime
-                                    ? moment(item.datetime).format(
-                                      "MMM Do YY, H:mm",
-                                    )
-                                    : "-"}
+                                  {item.emptedTime
+                                    ? moment(item.emptedTime).format(
+                                        "MMM Do YY, H:mm"
+                                      )
+                                    : moment(item.date).format("MMM Do YY")}
                                 </Typography>
                               </TableCell>
                               <TableCell className={classes.cell}>
@@ -484,7 +490,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                     }`,
                                   }}
                                 >
-                                  {item.emptied_by}
+                                  {item.emptiedBy}
                                 </Typography>
                               </TableCell>
                             </TableRow>
@@ -512,7 +518,9 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 ) : null}
                 <IconButton
                   color="secondary"
-                  onClick={() => sendMessage(generateMessage(), binData[0].driver_phone)}
+                  onClick={() =>
+                    sendMessage(generateMessage(), binData[0].driver_phone)
+                  }
                   disabled={binData ? !binData[0]?.driver_phone : true}
                 >
                   <WhatsAppIcon />

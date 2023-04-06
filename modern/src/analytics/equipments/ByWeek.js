@@ -13,6 +13,7 @@ import ExcelExport from "../components/ExcelExport";
 import PrintingHeader from "../../common/components/PrintingHeader";
 import { useCatch } from "../../reactHelper";
 import { analyticsActions } from "../../store";
+import { countRate } from "../../common/util/converter";
 import { formatPHPDate } from "../../common/util/formatter";
 import { ALTURL } from "../../common/util/constant";
 
@@ -30,62 +31,36 @@ const ByWeek = () => {
   const equipments = useSelector((state) => state.devices.equipments);
 
   // Table Data Processing
-  const columnsHead = [
-    "date",
-    "total",
-    "exited",
-    "deviceStatusOnline",
-    "deviceStatusOffline",
-    "rate",
-  ];
-  const keys = ["date", "total", "totalExited", "on", "off", "rate"];
+  const columnsHead = ["date", "total", "exited", "notExited", "rate"];
+  const keys = ["date", "total", "exited", "notExited", "rate"];
 
   const handleSubmit = useCatch(async ({ from, to }) => {
     dispatch(analyticsActions.updateLoading(true));
 
-    const date_f = formatPHPDate(from).date;
-    const date_t = formatPHPDate(to).date;
-    const time_t = "23:59";
-    const time_f = "00:00";
+    const query = new URLSearchParams({ from, to });
 
-    const query = new URLSearchParams({ date_f, time_f, date_t, time_t });
+    const url = `http://localhost:3003/api/devices/summary?${query.toString()}`;
 
-    const url = `${ALTURL}/?token=${token}&device_daily&${query.toString()}`;
-
-    fetch(url)
+    fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((response) => response.json())
       .then((data) => {
         const summary = data.map((item) => ({
           ...item,
-          totalExited: item.on,
           date: (
             <Stack direction="row" spacing={1}>
               <Chip
-                label={`${
-                  moment(item.date_from).format().split("T")[0]
-                } - ${moment(item.date_from)
-                  .format()
-                  .split("T")[1]
-                  .split("+")[0]
-                  .split(":")
-                  .slice(0, 2)
-                  .join(":")}`}
+                label={`${item.eventTime.split("T")[0]} - 00:00`}
                 color="positive"
               />
               <Chip
-                label={`${
-                  moment(item.date_to).format().split("T")[0]
-                } - ${moment(item.date_to)
-                  .format()
-                  .split("T")[1]
-                  .split("+")[0]
-                  .split(":")
-                  .slice(0, 2)
-                  .join(":")}`}
+                label={`${item.eventTime.split("T")[0]} - 23:00`}
                 color="positive"
               />
             </Stack>
           ),
+          rate: countRate(item.total, item.exited).toFixed(2) + "%",
         }));
         dispatch(analyticsActions.updateEvents(summary));
       })

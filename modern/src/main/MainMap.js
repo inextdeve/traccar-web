@@ -43,30 +43,9 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
     },
     [dispatch]
   );
-  const authenticated = useSelector((state) => !!state.session.user);
   const binsPositions = useSelector((state) => state.bins.bins);
   const filteredBins = useSelector((state) => state.bins.filteredBins);
   const refresh = useSelector((state) => state.bins.refresh);
-
-  const { to, from } = useSelector((state) => state.analytics);
-  const dateTo = {
-    date: moment(to, moment.HTML5_FMT.DATETIME_LOCAL)
-      .toISOString()
-      .split("T")[0],
-    time: moment(to, moment.HTML5_FMT.DATETIME_LOCAL)
-      .toISOString()
-      .split("T")[1]
-      .split(".")[0],
-  };
-  const dateFrom = {
-    date: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
-      .toISOString()
-      .split("T")[0],
-    time: moment(from, moment.HTML5_FMT.DATETIME_LOCAL)
-      .toISOString()
-      .split("T")[1]
-      .split(".")[0],
-  };
 
   const reportedBins = useSelector((state) => state.bins.reportedBins);
 
@@ -94,14 +73,14 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
         headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
       }
     ).then((response) => response.json());
-    const allBinsData = fetch(`http://localhost:3003/api/bins`, {
+    const allBinsData = fetch(`http://38.54.114.166:3003/api/bins`, {
       headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
     }).then((response) => response.json());
     Promise.all([reportedBinData, allBinsData])
       .then((response) => {
         dispatch(binsActions.updateLoading(false));
         let [reportedBins, data] = response; // data is for all bins i don't change it for the function need to change all things
-        console.log(reportedBinData);
+
         if (reportedBins === null) {
           reportedBins = [];
         }
@@ -182,7 +161,9 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
       );
       dispatch(analyticsActions.updateBinData(null));
 
-      const data = await fetch(`${URL}/?token=${token}&bin=${id}`);
+      const data = await fetch(`http://38.54.114.166:3003/api/bins/${id}`, {
+        headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
+      });
 
       const binData = await data.json();
 

@@ -634,5 +634,6 @@
   "exitTime": "وقت الخروج",
   "weeklyReport": "التقرير الأسبوعي",
   "byService": "حسب الخدمة",
-  "exited": "الخارجة"
+  "exited": "الخارجة",
+  "notExited": "لم تخرج"
 }
