@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { Grid, Typography, Box, Skeleton, Button } from "@mui/material";
+import {
+  Grid, Typography, Box, Skeleton, Button,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import Print from "../common/Print";
@@ -22,15 +24,13 @@ const WashingSummary = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
 
-  const countTotal = (array, prop) =>
-    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) =>
-    dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
 
   // Table Data Processing
   const columnsHead = [
@@ -64,7 +64,7 @@ const WashingSummary = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`http://localhost:3003/api/washing/summary`, {
+    fetch(`${URL}/api/washing/summary`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {
@@ -80,7 +80,7 @@ const WashingSummary = () => {
       to,
     });
 
-    const url = `http://localhost:3003/api/washing/summary?${query.toString()}`;
+    const url = `${URL}/api/washing/summary?${query.toString()}`;
 
     setIsLoading(true);
     fetch(url, {
@@ -108,7 +108,7 @@ const WashingSummary = () => {
             <ExcelExport excelData={items} fileName="SummarySheet" />
             <Print
               target={TableRef.current}
-              button={
+              button={(
                 <Button
                   variant="contained"
                   color="secondary"
@@ -116,7 +116,7 @@ const WashingSummary = () => {
                 >
                   {t("print")}
                 </Button>
-              }
+              )}
             />
           </Box>
           <Box ref={TableRef}>
@@ -152,7 +152,7 @@ const WashingSummary = () => {
                       key2="Uncleaned"
                       title={t("binsStatus")}
                       subtitle={t(
-                        "theProportionOfTheCleanedBinsAndTheUncleaned"
+                        "theProportionOfTheCleanedBinsAndTheUncleaned",
                       )}
                       bins={[
                         {
@@ -185,7 +185,7 @@ const WashingSummary = () => {
                       key2="uncleaned"
                       title={t("binsStatusByType")}
                       subtitle={t(
-                        "theProportionOfTheCleanedBinsAndTheUncleaned"
+                        "theProportionOfTheCleanedBinsAndTheUncleaned",
                       )}
                       bins={chartData.map((item) => {
                         const cleaned = (item.cleaned * 100) / item.total;
@@ -193,7 +193,7 @@ const WashingSummary = () => {
                         return {
                           name: item.route_name,
                           cleaned: countRate(item.total, item.cleaned).toFixed(
-                            2
+                            2,
                           ),
                           uncleaned: 100 - cleaned,
                           amt: 100,

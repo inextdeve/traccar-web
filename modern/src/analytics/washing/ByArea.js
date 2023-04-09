@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from "react";
 import {
   Grid,
   Typography,
@@ -29,6 +31,8 @@ import PrintingHeader from "../../common/components/PrintingHeader";
 import MapAnalytics from "../../map/MapAnalytics";
 import Popup from "../../common/components/Popup";
 
+import { URL } from "../../common/util/constant";
+
 const WashingArea = () => {
   const classes = useReportStyles();
   const t = useTranslation();
@@ -36,15 +40,13 @@ const WashingArea = () => {
   const TableRef = useRef(null);
   const theme = useTheme();
 
-  const countTotal = (array, prop) =>
-    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) =>
-    dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
 
   // Map Processing
   const [mapLoading, setMapLoading] = useState(false);
@@ -53,7 +55,7 @@ const WashingArea = () => {
   const mapButtonClick = useCallback(async ({ id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
-    const url = `http://38.54.114.166:3003/api/bins?${tag}=${id}`;
+    const url = `${URL}/api/bins?${tag}=${id}`;
 
     const data = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
@@ -71,8 +73,8 @@ const WashingArea = () => {
           latitude,
           longitude,
           binType: bintype,
-        }))
-      )
+        })),
+      ),
     );
   });
 
@@ -123,7 +125,7 @@ const WashingArea = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("http://localhost:3003/api/washing/by/center", {
+    fetch(`${URL}/api/washing/by/center`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {
@@ -141,7 +143,7 @@ const WashingArea = () => {
       to,
     });
 
-    const url = `http://localhost:3003/api/washing/by/center?${query.toString()}`;
+    const url = `${URL}/api/washing/by/center?${query.toString()}`;
 
     setIsLoading(true);
     fetch(url, {
@@ -183,7 +185,7 @@ const WashingArea = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={
+              button={(
                 <Button
                   variant="contained"
                   color="secondary"
@@ -191,7 +193,7 @@ const WashingArea = () => {
                 >
                   {t("print")}
                 </Button>
-              }
+              )}
             />
           </Box>
 
@@ -229,7 +231,7 @@ const WashingArea = () => {
                         key2="Uncleaned"
                         title={t("binsStatus")}
                         subtitle={t(
-                          "theProportionOfTheCleanedBinsAndTheUncleaned"
+                          "theProportionOfTheCleanedBinsAndTheUncleaned",
                         )}
                         bins={[
                           {
@@ -262,7 +264,7 @@ const WashingArea = () => {
                         key2="uncleaned"
                         title={t("binsStatusByArea")}
                         subtitle={t(
-                          "theProportionOfTheCleanedBinsAndTheUncleaned"
+                          "theProportionOfTheCleanedBinsAndTheUncleaned",
                         )}
                         bins={chartData.map((item) => {
                           const cleaned = (item.cleaned * 100) / item.total;
@@ -271,7 +273,7 @@ const WashingArea = () => {
                             name: item.center,
                             cleaned: countRate(
                               item.total,
-                              item.cleaned
+                              item.cleaned,
                             ).toFixed(2),
                             uncleaned: 100 - cleaned,
                             amt: 100,

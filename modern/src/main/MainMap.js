@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
-import moment from "moment";
+import React, { useCallback, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { LinearProgress } from "@mui/material";
@@ -22,7 +21,7 @@ import MapNotification from "../map/notification/MapNotification";
 import useFeatures from "../common/util/useFeatures";
 import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
 import Popup from "../common/components/Popup";
-import { URL, ALTURL } from "../common/util/constant";
+import { URL } from "../common/util/constant";
 import MyMapButton from "../map/core/Buttons";
 
 const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
@@ -51,12 +50,9 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const reportedBinData = await fetch(
-        `http://38.54.114.166:3003/api/bins/reports`,
-        {
-          headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
-        }
-      );
+      const reportedBinData = await fetch(`${URL}/api/bins/reports`, {
+        headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
+      });
 
       const data = await reportedBinData.json();
 
@@ -67,14 +63,11 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
 
   useEffect(() => {
     dispatch(binsActions.updateLoading(true));
-    const reportedBinData = fetch(
-      `http://38.54.114.166:3003/api/bins/reports`,
-      {
-        headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
-      }
-    ).then((response) => response.json());
-    const allBinsData = fetch(`http://38.54.114.166:3003/api/bins`, {
-      headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
+    const reportedBinData = fetch(`${URL}/api/bins/reports`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((response) => response.json());
+    const allBinsData = fetch(`${URL}/api/bins`, {
+      headers: { Authorization: `Bearer ${token}` },
     }).then((response) => response.json());
     Promise.all([reportedBinData, allBinsData])
       .then((response) => {
@@ -161,8 +154,8 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
       );
       dispatch(analyticsActions.updateBinData(null));
 
-      const data = await fetch(`http://38.54.114.166:3003/api/bins/${id}`, {
-        headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
+      const data = await fetch(`${URL}/api/bins/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const binData = await data.json();

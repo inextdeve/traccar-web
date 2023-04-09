@@ -1,6 +1,4 @@
-import React, {
-  useState, useEffect, useRef, useCallback,
-} from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   IconButton,
   Paper,
@@ -21,6 +19,7 @@ import {
   Button,
   MenuItem,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
@@ -156,14 +155,14 @@ const ReplayPage = () => {
     (_, index) => {
       setIndex(index);
     },
-    [setIndex],
+    [setIndex]
   );
 
   const onMarkerClick = useCallback(
     (positionId) => {
       setShowCard(!!positionId);
     },
-    [setShowCard],
+    [setShowCard]
   );
 
   const handleSubmit = useCatch(async ({ deviceId, from, to }) => {
@@ -201,17 +200,19 @@ const ReplayPage = () => {
           show: true,
           id,
           binType,
-        }),
+        })
       );
       dispatch(analyticsActions.updateBinData(null));
 
-      const data = await fetch(`${URL}/?token=${token}&bin=${id}`);
+      const data = await fetch(`${URL}/api/bins/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       const binData = await data.json();
 
       dispatch(analyticsActions.updateBinData(binData));
     },
-    [filteredBins], // ROD LBAL M#A HADI LA W9a3 mochkil
+    [filteredBins] // ROD LBAL M#A HADI LA W9a3 mochkil
   );
   const onClose = () => {
     dispatch(analyticsActions.updatePopup(false));
@@ -242,8 +243,8 @@ const ReplayPage = () => {
         : true;
       const center_name = selectedItems.center_name.length
         ? selectedItems.center_name.some(
-          (filter) => item.center_name === filter,
-        )
+            (filter) => item.center_name === filter
+          )
         : true;
       let status = true;
 

@@ -181,7 +181,6 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
     setShowMore(false);
     setShowReport((prev) => !prev);
   };
-  console.log("Bin DATA", binData);
   const lastOperation = () => {
     const last7Days = binData[1].last7Days.filter((item) => item.emptedTime);
 

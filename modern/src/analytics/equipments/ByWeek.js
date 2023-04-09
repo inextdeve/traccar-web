@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from "react";
-import { Box, Button, Stack, Chip } from "@mui/material";
+import {
+  Box, Button, Stack, Chip,
+} from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import moment from "moment";
 import Print from "../common/Print";
 import PageLayout from "../../common/components/PageLayout";
 import useReportStyles from "../common/useReportStyles";
@@ -14,8 +15,7 @@ import PrintingHeader from "../../common/components/PrintingHeader";
 import { useCatch } from "../../reactHelper";
 import { analyticsActions } from "../../store";
 import { countRate } from "../../common/util/converter";
-import { formatPHPDate } from "../../common/util/formatter";
-import { ALTURL } from "../../common/util/constant";
+import { URL } from "../../common/util/constant";
 
 const ByWeek = () => {
   const classes = useReportStyles();
@@ -39,7 +39,7 @@ const ByWeek = () => {
 
     const query = new URLSearchParams({ from, to });
 
-    const url = `http://localhost:3003/api/devices/summary?${query.toString()}`;
+    const url = `${URL}/api/devices/summary?${query.toString()}`;
 
     fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
@@ -60,7 +60,7 @@ const ByWeek = () => {
               />
             </Stack>
           ),
-          rate: countRate(item.total, item.exited).toFixed(2) + "%",
+          rate: `${countRate(item.total, item.exited).toFixed(2)}%`,
         }));
         dispatch(analyticsActions.updateEvents(summary));
       })
@@ -86,7 +86,7 @@ const ByWeek = () => {
             <ExcelExport excelData={equipments} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={
+              button={(
                 <Button
                   variant="contained"
                   color="secondary"
@@ -94,7 +94,7 @@ const ByWeek = () => {
                 >
                   {t("print")}
                 </Button>
-              }
+              )}
             />
           </Box>
           <Box ref={TableRef}>

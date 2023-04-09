@@ -22,9 +22,9 @@ const MapAnalytics = () => {
       }),
     );
     dispatch(analyticsActions.updateBinData(null));
-    const data = await fetch(
-      `${URL}/?token=${token}&bin=${id}`,
-    );
+    const data = await fetch(`${URL}/api/bins/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     const binData = await data.json();
 

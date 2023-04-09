@@ -1,3 +1,3 @@
-export const URL = "https://med-reports.almajal.co/al/rcj/api";
-export const ALTURL = "https://bins.rcj.care/api";
+export const URL = "http://38.54.114.166:3003";
+// export const ALTURL = "https://bins.rcj.care/api";
 export const MaxCharMsg = 4096;

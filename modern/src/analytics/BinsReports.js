@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from "react";
 import Carousel from "react-material-ui-carousel";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -27,9 +29,9 @@ import { useTranslation } from "../common/components/LocalizationProvider";
 import ReportFilter from "./components/ReportFilter";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
-
 import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
+import { URL } from "../common/util/constant";
 
 const Item = (props) => {
   const classes = useReportStyles();
@@ -54,8 +56,7 @@ const BinsReports = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const setIsLoading = (state) =>
-    dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
   const [mapLoading, setMapLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(false);
 
@@ -63,7 +64,7 @@ const BinsReports = () => {
   const mapButtonClick = useCallback(async ({ id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
-    const url = `http://localhost:3003/api/bins/${id}`;
+    const url = `${URL}/api/bins/${id}`;
     const data = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -82,9 +83,9 @@ const BinsReports = () => {
             latitude,
             longitude,
             binType: bintype,
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
   });
 
@@ -149,7 +150,7 @@ const BinsReports = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("http://localhost:3003/api/bins/reports", {
+    fetch(`${URL}/api/bins/reports`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {
@@ -170,7 +171,7 @@ const BinsReports = () => {
       to,
     });
 
-    const url = `http://localhost:3003/api/bins/reports/?${query.toString()}`;
+    const url = `${URL}/api/bins/reports/?${query.toString()}`;
     setIsLoading(true);
     fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
@@ -203,7 +204,8 @@ const BinsReports = () => {
           id="alert-dialog-title"
           sx={{ display: "flex", justifyContent: "space-between" }}
         >
-          <span>Report Images</span>{" "}
+          <span>Report Images</span>
+          {" "}
           {selectedImage ? (
             <span className={`${classes.positive} ${classes.imageReportTag}`}>
               After
@@ -271,7 +273,7 @@ const BinsReports = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={
+              button={(
                 <Button
                   variant="contained"
                   color="secondary"
@@ -279,7 +281,7 @@ const BinsReports = () => {
                 >
                   {t("print")}
                 </Button>
-              }
+              )}
             />
           </Box>
           <Box ref={TableRef}>

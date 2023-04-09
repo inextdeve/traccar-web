@@ -35,6 +35,7 @@ import PrintingHeader from "../common/components/PrintingHeader";
 
 import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
+import { URL } from "../common/util/constant";
 
 const ByRoutes = () => {
   const classes = useReportStyles();
@@ -57,7 +58,7 @@ const ByRoutes = () => {
   const [selectedItem, setSelectedItem] = useState(false);
 
   const generateMessage = async (tag, id, driverName, routeName) => {
-    const url = `http://38.54.114.166:3003/api/bins?${tag}=${id}&status=unempted`;
+    const url = `${URL}/api/bins?${tag}=${id}&status=unempted`;
     // 60 foreach 60times
     const data = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
@@ -89,7 +90,7 @@ const ByRoutes = () => {
   const mapButtonClick = useCallback(async ({ id, tag }) => {
     setSelectedItem(true);
     setMapLoading(null);
-    const url = `http://38.54.114.166:3003/api/bins?${tag}=${id}`;
+    const url = `${URL}/api/bins?${tag}=${id}`;
     const data = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -184,7 +185,7 @@ const ByRoutes = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("http://38.54.114.166:3003/api/bins/by/route", {
+    fetch(`${URL}/api/bins/by/route`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {
@@ -204,7 +205,7 @@ const ByRoutes = () => {
       to,
     });
 
-    const url = `http://38.54.114.166:3003/api/bins/by/route?${query.toString()}`;
+    const url = `${URL}/api/bins/by/route?${query.toString()}`;
 
     setIsLoading(true);
     fetch(url, {

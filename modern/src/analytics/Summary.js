@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { Grid, Typography, Box, Skeleton, Button } from "@mui/material";
+import {
+  Grid, Typography, Box, Skeleton, Button,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import Print from "./common/Print";
@@ -15,6 +17,7 @@ import BinsPercentageChart from "./components/Charts/BinsPercentageChart";
 import BinsStatusChart from "./components/Charts/BinsStatusChart";
 import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
+import { URL } from "../common/util/constant";
 
 const Summary = () => {
   const classes = useReportStyles();
@@ -22,15 +25,13 @@ const Summary = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
 
-  const countTotal = (array, prop) =>
-    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) =>
-    dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
 
   // Table Data Processing
   const columnsHead = [
@@ -57,7 +58,7 @@ const Summary = () => {
     un_empty_bin: countTotal(items, "un_empty_bin"),
     rate: `${countRate(
       countTotal(items, "total"),
-      countTotal(items, "empty_bin")
+      countTotal(items, "empty_bin"),
     ).toFixed(2)}%`,
   });
   // Data for charts drop Total item
@@ -65,7 +66,7 @@ const Summary = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("http://38.54.114.166:3003/api/bins/summary", {
+    fetch(`${URL}/api/bins/summary`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {
@@ -82,7 +83,7 @@ const Summary = () => {
       to,
     });
 
-    const url = `http://38.54.114.166:3003/api/bins/summary?${query.toString()}`;
+    const url = `${URL}/api/bins/summary?${query.toString()}`;
 
     setIsLoading(true);
     fetch(url, {
@@ -110,7 +111,7 @@ const Summary = () => {
             <ExcelExport excelData={items} fileName="SummarySheet" />
             <Print
               target={TableRef.current}
-              button={
+              button={(
                 <Button
                   variant="contained"
                   color="secondary"
@@ -118,7 +119,7 @@ const Summary = () => {
                 >
                   {t("print")}
                 </Button>
-              }
+              )}
             />
           </Box>
           <Box ref={TableRef}>
@@ -185,7 +186,7 @@ const Summary = () => {
                       key2="unempted"
                       title={t("binsStatusByType")}
                       subtitle={t(
-                        "theProportionOfEmptedAndUnemptedBinsByTypes"
+                        "theProportionOfEmptedAndUnemptedBinsByTypes",
                       )}
                       bins={chartData.map((item) => {
                         const empted = (item.empty_bin * 100) / item.total;
@@ -193,7 +194,7 @@ const Summary = () => {
                         return {
                           name: item.id,
                           empted: countRate(item.total, item.empty_bin).toFixed(
-                            2
+                            2,
                           ),
                           unempted: 100 - empted,
                           amt: 100,

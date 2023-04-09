@@ -19,6 +19,7 @@ import CameraPopup from "../common/components/CameraPopup";
 import MainFilter from "../common/components/MainFilter";
 import KIPCharts from "../common/components/KPICharts";
 import { countRate } from "../common/util/converter";
+import { URL } from "../common/util/constant";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -123,7 +124,7 @@ const MainPage = () => {
   };
 
   useEffect(() => {
-    fetch(`http://localhost:3003/api/statistics/kpi`, {
+    fetch(`${URL}/api/statistics/kpi`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => response.json())
@@ -138,7 +139,7 @@ const MainPage = () => {
         )
       );
     const interval = setInterval(() => {
-      fetch(`http://localhost:3003/api/statistics/kpi`, {
+      fetch(`${URL}/api/statistics/kpi`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((response) => response.json())
