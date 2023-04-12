@@ -73,6 +73,8 @@ const MainPage = () => {
 
   const showKPI = useSelector((state) => state.analytics.showKPI);
 
+  const from = useSelector((state) => state.analytics.from);
+
   const desktop = useMediaQuery(theme.breakpoints.up("md"));
 
   const mapOnSelect = useAttributePreference("mapOnSelect", true);
@@ -123,8 +125,8 @@ const MainPage = () => {
     dispatch(devicesActions.removeCamera(item.id));
   };
 
-  useEffect(() => {
-    fetch(`${URL}/api/statistics/kpi`, {
+  const fetchKPI = () => {
+    fetch(`${URL}/api/statistics/kpi?from=${from}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => response.json())
@@ -138,27 +140,16 @@ const MainPage = () => {
           )
         )
       );
-    const interval = setInterval(() => {
-      fetch(`${URL}/api/statistics/kpi`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((response) => response.json())
-        .then((data) =>
-          dispatch(
-            analyticsActions.updateChartData(
-              data.map((item) => ({
-                ...item,
-                rate: Math.round(countRate(item.total, item.completed)) + "%",
-              }))
-            )
-          )
-        );
-    }, 60000);
+  }
+
+  useEffect(() => {
+    fetchKPI()
+    const interval = setInterval(fetchKPI, 60000);
 
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [from]);
 
   return (
     <div className={classes.root}>

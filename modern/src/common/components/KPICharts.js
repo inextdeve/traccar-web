@@ -1,8 +1,8 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Draggable from "react-draggable";
 import {
-  Card, Box, Typography, IconButton, CardContent,
+  Card, Box, Typography, IconButton, CardContent,TextField
 } from "@mui/material";
 import { green } from "@mui/material/colors";
 import makeStyles from "@mui/styles/makeStyles";
@@ -85,6 +85,12 @@ const PopupModel = () => {
     dispatch(analyticsActions.updateShowKPI(false));
   };
 
+  const from = useSelector((state) => state.analytics.from);
+
+  const handleDateChange = (event) => {
+    dispatch(analyticsActions.updateFrom(new Date(event.target.value).toISOString()));
+  }
+
   return (
     <Draggable handle={`.${classes.media}, .${classes.header}`}>
       <Card elevation={3} className={`${classes.card} scroll ${classes.root}`}>
@@ -96,6 +102,14 @@ const PopupModel = () => {
           }}
         >
           <Typography variant="body2">KPI</Typography>
+          <div className={classes.filterItem}>
+            <TextField
+              type="date"
+              value={from}
+              onChange={handleDateChange}
+              fullWidth
+            />
+          </div>
           <IconButton size="small" onClick={onClose} onTouchStart={onClose}>
             <CloseIcon fontSize="small" />
           </IconButton>
