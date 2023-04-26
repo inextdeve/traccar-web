@@ -1,6 +1,4 @@
-import React, {
-  useEffect, useRef, useState, useCallback,
-} from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -47,13 +45,15 @@ const WashingRoutes = () => {
   const TableRef = useRef(null);
   const theme = useTheme();
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   const [mapLoading, setMapLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(false);
@@ -71,8 +71,8 @@ const WashingRoutes = () => {
         (item, index) => `${index} - 
               Bin Code: ${item.id_bin}
               Bin Type: ${item.bintype}
-              https://www.google.com/maps/place/${item.longitude},${item.latitude}
-              ** `,
+              https://www.google.com/maps/place/${item.latitude},${item.longitude}
+              ** `
       )
       .join("\n");
 
@@ -108,8 +108,8 @@ const WashingRoutes = () => {
           latitude,
           longitude,
           binType: bintype,
-        })),
-      ),
+        }))
+      )
     );
   });
 
@@ -148,15 +148,17 @@ const WashingRoutes = () => {
         <>
           <IconButton
             color="secondary"
-            onClick={() => sendMessage(
-              generateMessage(
-                "routeId",
-                item.routeId,
-                item.driver,
-                item.route,
-              ),
-              item.phone,
-            )}
+            onClick={() =>
+              sendMessage(
+                generateMessage(
+                  "routeId",
+                  item.routeId,
+                  item.driver,
+                  item.route
+                ),
+                item.phone
+              )
+            }
             disabled={false}
           >
             <WhatsAppIcon />
@@ -261,7 +263,7 @@ const WashingRoutes = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -269,7 +271,7 @@ const WashingRoutes = () => {
                 >
                   {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box
@@ -327,7 +329,7 @@ const WashingRoutes = () => {
                       key2="Uncleaned"
                       title={t("binsStatus")}
                       subtitle={t(
-                        "theProportionOfTheCleanedBinsAndTheUncleaned",
+                        "theProportionOfTheCleanedBinsAndTheUncleaned"
                       )}
                       bins={[
                         {
@@ -360,7 +362,7 @@ const WashingRoutes = () => {
                       key2="uncleaned"
                       title={t("binsStatusByTrack")}
                       subtitle={t(
-                        "theProportionOfTheCleanedBinsAndTheUncleaned",
+                        "theProportionOfTheCleanedBinsAndTheUncleaned"
                       )}
                       bins={chartData.map((item) => {
                         const cleaned = (item.cleaned * 100) / item.total;
@@ -368,7 +370,7 @@ const WashingRoutes = () => {
                         return {
                           name: item.route,
                           cleaned: countRate(item.total, item.cleaned).toFixed(
-                            2,
+                            2
                           ),
                           uncleaned: 100 - cleaned,
                           amt: 100,
