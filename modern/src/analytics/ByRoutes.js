@@ -70,7 +70,7 @@ const ByRoutes = () => {
         (item, index) => `${index} - 
               Bin Code: ${item.description}
               Bin Type: ${item.bintype}
-              https://www.google.com/maps/place/${item.longitude},${item.latitude}
+              https://www.google.com/maps/place/${item.latitude},${item.longitude}
               ** `
       )
       .join("\n");

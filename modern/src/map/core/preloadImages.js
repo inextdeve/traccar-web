@@ -31,6 +31,15 @@ import trashWarningSvg from "../../resources/images/icon/trashYellow.svg";
 import trashInfoSvg from "../../resources/images/icon/trashBlue.svg";
 // import binSvg from "../../resources/images/icon/bin.svg";
 import cameraSvg from "../../resources/images/icon/camera.svg";
+import skidLoaderSvg from "../../resources/images/icon/skidLoader.svg";
+import compactorSvg from "../../resources/images/icon/compactor.svg";
+import boomTruckSvg from "../../resources/images/icon/boomTruck.svg";
+import dumbTruckSvg from "../../resources/images/icon/dumbTruck.svg";
+import sweeperSvg from "../../resources/images/icon/sweeper.svg";
+import waterTruckSvg from "../../resources/images/icon/waterTruck.svg";
+import LowBedTrailerSvg from "../../resources/images/icon/lowBedTrailer.svg";
+import hookLifterSvg from "../../resources/images/icon/hookLifter.svg";
+import wreckerTruckSvg from "../../resources/images/icon/wreckerTruck.svg";
 
 export const mapIcons = {
   animal: animalSvg,
@@ -60,9 +69,19 @@ export const mapIcons = {
   trashInfo: trashInfoSvg,
   // bin: binSvg,
   camera: cameraSvg,
+  skidLoader: skidLoaderSvg,
+  compactor: compactorSvg,
+  boomTruck: boomTruckSvg,
+  dumbTruck: dumbTruckSvg,
+  sweeper: sweeperSvg,
+  waterTruck: waterTruckSvg,
+  lowBedTrailer: LowBedTrailerSvg,
+  hookLifter: hookLifterSvg,
+  wreckerTruck: wreckerTruckSvg,
 };
 
-export const mapIconKey = (category) => (mapIcons.hasOwnProperty(category) ? category : "default");
+export const mapIconKey = (category) =>
+  mapIcons.hasOwnProperty(category) ? category : "default";
 
 export const mapImages = {};
 
@@ -76,7 +95,7 @@ export default async () => {
       const results = [];
       ["primary", "positive", "negative", "neutral"].forEach((color) => {
         results.push(
-          loadImage(mapIcons[category]).then((icon) => {
+          loadImage(mapIcons[category]).then(async (icon) => {
             // Add here any category if you want to be transparent BG
             if (
               category === "trashPositive" ||
@@ -88,19 +107,20 @@ export default async () => {
               mapImages[`${category}-${color}`] = prepareIcon(
                 noBackground,
                 icon,
-                "#FFFFFF00",
+                "#FFFFFF00"
               );
               return;
             }
+
             mapImages[`${category}-${color}`] = prepareIcon(
               background,
               icon,
-              palette.colors[color],
+              palette.colors[color]
             );
-          }),
+          })
         );
       });
       await Promise.all(results);
-    }),
+    })
   );
 };
