@@ -190,8 +190,19 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
   const generateMessage = () => `Hello! ${binData[0].driverName}
                 JCR Cleaning Project 
                 Alarm Bin Not Empty 
-                DateTime: ${moment().format("MMMM Do YYYY, h:mm:ss a")}
-                Bin no: ${popup.id}
+                DateTime: ${moment(
+                  new Intl.DateTimeFormat("sv-SE", {
+                    timeZone: "Asia/Riyadh",
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: false,
+                  }).format(new Date())
+                ).format("MMMM Do YYYY, h:mm:ss a")}
+                Bin no: ${binData[0].description}
                 RoutNo: ${binData[0].route}
                 Area: ${binData[0].center}
                 Bin Type: ${popup.binType}

@@ -81,7 +81,18 @@ const WashingRoutes = () => {
           JCR Cleaning Project 
           
           Alarm Bins Not Empty 
-          DateTime ${moment().format("MMMM Do YYYY, h:mm:ss a")}
+          DateTime ${moment(
+            new Intl.DateTimeFormat("sv-SE", {
+              timeZone: "Asia/Riyadh",
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: false,
+            }).format(new Date())
+          ).format("MMMM Do YYYY, h:mm:ss a")}
           RoutNo: ${routeName}
           
           ${bins}
