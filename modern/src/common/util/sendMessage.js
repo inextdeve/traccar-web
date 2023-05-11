@@ -13,13 +13,19 @@ const sendMessage = async (msg, number) => {
         i * MaxCharMsg,
         i * MaxCharMsg + MaxCharMsg
       );
+
+      //Message Api
+      const formdata = new FormData();
+      formdata.append("appkey", "30716d9c-fcab-4ea1-87ed-028b2a632b67");
+      formdata.append("authkey", "KtqDYNjNL5QeUO0o9uaqaiYiPEFwPqNfM98ukxZGUdyYty5Wz3");
+      formdata.append("to", '212704866309');
+      formdata.append("message", messageSlice);
+
       SendingList.push(
-        fetch("https://api.ultramsg.com/instance27714/messages/chat", {
+        fetch("https://wacode.app/api/create-message", {
           method: "POST",
-          headers: {
-            "content-type": "application/x-www-form-urlencoded",
-          },
-          body: `token=x6lf1axmx0kmiimb&to=+${number}&body=${messageSlice}&priority=1&referenceId=`,
+          body: formdata,
+          redirect: 'follow'
         })
       );
     }
