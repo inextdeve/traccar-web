@@ -20,6 +20,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import DeviceHubIcon from "@mui/icons-material/DeviceHub";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import AltRouteIcon from "@mui/icons-material/AltRoute";
 
 import { analyticsActions } from "../../store";
 import RouteIcon from "../../common/icons/RouteIcon";
@@ -52,7 +53,7 @@ const ReportsMenu = () => {
   const washOpen = useSelector((state) => state.analytics.menu.washing);
   const sweepOpen = useSelector((state) => state.analytics.menu.sweeping);
   const equipmentsOpen = useSelector(
-    (state) => state.analytics.menu.equipments,
+    (state) => state.analytics.menu.equipments
   );
 
   const handleClick = () => {
@@ -106,6 +107,12 @@ const ReportsMenu = () => {
               link="/analytics/bin/summary"
               icon={<StockIcon />}
               selected={location.pathname === "/analytics/bin/summary"}
+            />
+            <MenuItem
+              title={t("simulator")}
+              link="/analytics/bin/simulator"
+              icon={<AltRouteIcon />}
+              selected={location.pathname === "/analytics/bin/simulator"}
             />
           </List>
         </Collapse>

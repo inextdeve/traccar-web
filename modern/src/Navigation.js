@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import {
-  Route, Routes, useLocation, useNavigate,
-} from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { LinearProgress } from "@mui/material";
 import MainPage from "./main/MainPage";
@@ -63,6 +61,7 @@ import EquipmentsByType from "./analytics/equipments/ByType";
 import EquipmentsByDetails from "./analytics/equipments/ByDetails";
 import EquipmentsByWeek from "./analytics/equipments/ByWeek";
 import EquipmentsByService from "./analytics/equipments/ByService";
+import Simulator from "./analytics/Simulator";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -177,6 +176,7 @@ const Navigation = () => {
           <Route path="equipments/details" element={<EquipmentsByDetails />} />
           <Route path="equipments/week" element={<EquipmentsByWeek />} />
           <Route path="equipments/service" element={<EquipmentsByService />} />
+          <Route path="bin/simulator" element={<Simulator />} />
         </Route>
       </Route>
     </Routes>

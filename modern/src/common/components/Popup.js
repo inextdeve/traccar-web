@@ -191,25 +191,25 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 JCR Cleaning Project 
                 Alarm Bin Not Empty 
                 DateTime: ${moment(
-                  new Intl.DateTimeFormat("sv-SE", {
-                    timeZone: "Asia/Riyadh",
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                    hour12: false,
-                  }).format(new Date())
-                ).format("MMMM Do YYYY, h:mm:ss a")}
+    new Intl.DateTimeFormat("sv-SE", {
+      timeZone: "Asia/Riyadh",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }).format(new Date()),
+  ).format("MMMM Do YYYY, h:mm:ss a")}
                 Bin no: ${binData[0].description}
                 RoutNo: ${binData[0].route}
                 Area: ${binData[0].center}
                 Bin Type: ${popup.binType}
                 Last Time Emptied: ${lastOperation()}
                 https://www.google.com/maps/place/${binData[0].latitude},${
-    binData[0].longitude
-  }`;
+  binData[0].longitude
+}`;
 
   return (
     <div className={classes.root}>
@@ -242,7 +242,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     <StatusRow name={t("binType")} content={popup.binType} />
                     <StatusRow
                       name={t("status")}
-                      content={
+                      content={(
                         <span
                           style={{
                             color: `${
@@ -254,12 +254,12 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           {binData[0].status}
                         </span>
-                      }
+                      )}
                     />
                     <StatusRow
                       name={t("lastOperation")}
                       content={moment(lastOperation()).format(
-                        "MMM Do YY, H:mm"
+                        "MMM Do YY, H:mm",
                       )}
                     />
                     <StatusRow
@@ -276,7 +276,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     />
                     <StatusRow
                       name={t("position")}
-                      content={
+                      content={(
                         <a
                           href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
                           target="_blank"
@@ -284,7 +284,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           Google Map
                         </a>
-                      }
+                      )}
                     />
                   </TableBody>
                 </Table>
@@ -344,7 +344,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                   launchLink
                                 />
                               );
-                            }
+                            },
                           )}
                         </Carousel>
                       </Box>
@@ -484,8 +484,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                 >
                                   {item.emptedTime
                                     ? moment(item.emptedTime).format(
-                                        "MMM Do YY, H:mm"
-                                      )
+                                      "MMM Do YY, H:mm",
+                                    )
                                     : moment(item.date).format("MMM Do YY")}
                                 </Typography>
                               </TableCell>
@@ -528,9 +528,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 ) : null}
                 <IconButton
                   color="secondary"
-                  onClick={() =>
-                    sendMessage(generateMessage(), binData[0].driver_phone)
-                  }
+                  onClick={() => sendMessage(generateMessage(), binData[0].driver_phone)}
                   disabled={binData ? !binData[0]?.driver_phone : true}
                 >
                   <WhatsAppIcon />

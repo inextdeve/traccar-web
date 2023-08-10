@@ -8,7 +8,7 @@
     <meta name="description" content="Smart Waste Management" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <link rel="stylesheet" href="%PUBLIC_URL%/styles.css">
+    <link rel="stylesheet" href="%PUBLIC_URL%/styles.css" />
 
     <meta property="og:title" content="RCJ Tracking System" />
     <meta property="og:type" content="article" />
@@ -20,13 +20,32 @@
     <meta name="twitter:card" content="RCJ Tracking System" />
 
     <!--  Non-Essential, But Recommended -->
-    <meta
-      property="og:description"
-      content="Smart Waste System"
-    />
+    <meta property="og:description" content="Smart Waste System" />
     <meta property="og:RCJ" content="RCJ Tracking System" />
 
     <title>RCJ Tracking System</title>
+    <script>
+      Promise.prototype.allSequently = async (iterablePromises) => {
+        if (typeof iterablePromises === "object") {
+          if (iterablePromises instanceof "Array") {
+            const promiseList = [];
+            for (let i = 0; i < iterablePromises.length; i++) {
+              try {
+                const fullFilled = await iterablePromises[i];
+                promiseList.push(new Promise((resolve) => resolve(fullFilled)));
+              } catch (e) {
+                promiseList.push(new Promise((_, reject) => reject(e)));
+              }
+            }
+            return promiseList;
+          } else {
+            throw new Error("Passed argument is not type of Array");
+          }
+        } else {
+          throw new Error("Passed argument is not type of Array");
+        }
+      };
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

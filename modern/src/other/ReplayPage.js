@@ -392,7 +392,9 @@ const ReplayPage = () => {
         {showBins ? (
           <MapMarkersAnalytics positions={filteredBins} onClick={onMarkClick} />
         ) : null}
-        <MapRoutePoints positions={positions} onClick={onPointClick} />
+        {index < positions.length && (
+          <MapRoutePoints positions={positions} onClick={onPointClick} />
+        )}
         {index < positions.length && (
           <MapPositions
             positions={[positions[index]]}

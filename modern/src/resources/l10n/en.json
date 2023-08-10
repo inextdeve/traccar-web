@@ -644,5 +644,6 @@
   "weeklyReport": "Weekly Report",
   "byService": "By Service",
   "exited": "Exited",
-  "notExited": "Not Exited"
+  "notExited": "Not Exited",
+  "simulator": "Simulator"
 }

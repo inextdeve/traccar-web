@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Draggable from "react-draggable";
 import {
-  Card, Box, Typography, IconButton, CardContent,TextField
+  Card, Box, Typography, IconButton, CardContent, TextField,
 } from "@mui/material";
 import { green } from "@mui/material/colors";
 import makeStyles from "@mui/styles/makeStyles";
@@ -89,7 +89,7 @@ const PopupModel = () => {
 
   const handleDateChange = (event) => {
     dispatch(analyticsActions.updateFrom(new Date(event.target.value).toISOString()));
-  }
+  };
 
   return (
     <Draggable handle={`.${classes.media}, .${classes.header}`}>
