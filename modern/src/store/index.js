@@ -12,6 +12,7 @@ import { reportsReducer as reports } from "./reports";
 import { analyticsReducer as analytics } from "./analytics";
 import { popupReducer as popup } from "./popup";
 import { binsReducer as bins } from "./bins";
+import { gmapReducer as GMap } from "./GMap";
 import throttleMiddleware from "./throttleMiddleware";
 
 const reducer = combineReducers({
@@ -27,6 +28,7 @@ const reducer = combineReducers({
   analytics,
   popup,
   bins,
+  GMap
 });
 
 export { errorsActions } from "./errors";
@@ -41,6 +43,7 @@ export { reportsActions } from "./reports";
 export { analyticsActions } from "./analytics";
 export { popupActions } from "./popup";
 export { binsActions } from "./bins";
+export { gmapActions } from "./GMap";
 
 export default configureStore({
   reducer,

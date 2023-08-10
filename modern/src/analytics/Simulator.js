@@ -29,6 +29,7 @@ import ReportsMenu from "./components/ReportsMenu";
 import AnalyticsTable from "./components/AnalyticsTable";
 import { useTranslation } from "../common/components/LocalizationProvider";
 import ReportFilter from "./components/ReportFilter";
+import GMap from "./components/GoogleMap";
 
 import sendMessage from "../common/util/sendMessage";
 import BinsChart from "./components/Charts/BinsChart";
@@ -48,44 +49,47 @@ const Simulator = () => {
   const theme = useTheme();
 
   const [route, setRoute] = useState("");
+  const loca = ["33.3754879,-8.0087335", "33.2334864,-8.5242641", "33.0497165,-8.687911", "32.9542232,-8.6994071", "32.8833501,-8.6769667", "32.7673477,-8.7359118", "32.6040652,-8.9143387", "32.2458345,-8.5462353", "31.6347411,-8.0902537", "31.3528488,-7.9559362", "30.9890276,-8.2000208", "30.8805213,-10.4413758", "30.8805213,-10.4413758", "29.7010105,-9.7511263", "29.6103325,-9.8781819", "29.5785859,-10.0623824", "29.3666527,-10.2170285", "28.9653313,-10.6043879", "28.4306906,-11.1191513", "28.4858899,-11.3590052"]
+  const [wayPoints, setWayPoints] = useState([{
+    location: "33.9693338,-6.9396633"
+  },{
+    location: "33.909968,-6.9794782"
+  },
+  {
+    location: "33.8439625,-7.0959533"
+  }, {
+    location: "33.7402036,-7.296381"
+  }, {
+    location: "33.572037, -7.591169"
+  },
+{location:"33.4215329,-7.8540586"}]);
+
+  // WayPoints Object
+  // location: `${waypoint.latitude},${waypoint.longitude}`
+
   const apiKey = useSelector((state) => state.session.user.attributes.apitoken);
 
-  // Table Data Processing
-  const columnsHead = [
-    "trackCode",
-    "numberOfBins",
-    "time",
-    "empted",
-    "notEmpted",
-    "completionRate",
-    "actions",
-  ];
-  const keys = [
-    "route",
-    "total",
-    "shift",
-    "empty_bin",
-    "un_empty_bin",
-    "rate",
-    "actions",
-  ];
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
+  // useEffect(() => {
+  //   // setIsLoading(true);
+  //   fetch(`${URL}/api/bins/by/route`, {
+  //     headers: { Authorization: `Bearer ${token}` },
+  //   })
+  //     .then((data) => {
+  //       // setIsLoading(false);
+  //       return data.json();
+  //     })
+  //     .then((data) => {
+  //       // setTableData(data);
+  //       dispatch(analyticsActions.updateItems(data));
+  //     })
+  //     .catch(() => setIsLoading(false));
+  // }, []);
+
   useEffect(() => {
-    // setIsLoading(true);
-    fetch(`${URL}/api/bins/by/route`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((data) => {
-        // setIsLoading(false);
-        return data.json();
-      })
-      .then((data) => {
-        // setTableData(data);
-        dispatch(analyticsActions.updateItems(data));
-      })
-      .catch(() => setIsLoading(false));
-  }, []);
+    console.log("render page simulator")
+  }, [])
 
   const handleClick = () => {};
 
@@ -116,7 +120,9 @@ const Simulator = () => {
               {t("reportShow")}
             </Button>
           </Box>
-          Content
+          <Box>
+            <GMap waypoints={wayPoints}></GMap>
+          </Box>
         </Box>
       </div>
     </PageLayout>
