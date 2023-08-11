@@ -3,13 +3,16 @@ import { createSlice } from "@reduxjs/toolkit";
 const { reducer, actions } = createSlice({
   name: "gmap",
   initialState: {
-    directions: [],
+    loading: false,
+    distanceNTime: { duration: null, distance: null },
   },
   reducers: {
-    setDirections(state, action) {
-      state.directions=action.payload;
+    setLoading(state, action) {
+      state.loading = action.payload;
     },
-    
+    setDistanceNTime(state, action) {
+      state.distanceNTime = action.payload;
+    },
   },
 });
 
