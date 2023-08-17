@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import {
-  GoogleMap,
-  useJsApiLoader,
-  DirectionsRenderer,
-} from "@react-google-maps/api";
+import React, { useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
+import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 import { chunkArray } from "../../common/util/converter";
 import { useDispatch } from "react-redux";
 import { gmapActions } from "../../store";
+//Icon Test
+import trashNegative from "../../resources/images/png/trashNegative.png";
+import trashPositive from "../../resources/images/png/trashPositive.png";
 
 const containerStyle = {
   width: "100%",
@@ -18,20 +18,45 @@ const center = {
   lng: 49.5683506,
 };
 
-function GMap({ waypoints }) {
+function GMap() {
   const dispatch = useDispatch();
 
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: "AIzaSyARJ_KeukkNkWiSOWFZ6nJl31anmVC_R14",
-  });
+  const [waypoints, setWayPoints] = useState([]);
+
   const [directions, setDirections] = useState(null);
 
   const [map, setMap] = React.useState(null);
 
-  const onLoad = React.useCallback(function callback(map) {
-    // const directionsService = new google.maps.DirectionsService();
-  }, []);
+  const [legs, setLegs] = useState([]);
+
+  const directionsRendererRef = useRef(null);
+
+  const binsVisibility = useSelector((state) => state.GMap.binsVisibility);
+  useEffect(() => {
+    console.log("visi", binsVisibility);
+  }, [binsVisibility]);
+
+  const googleMapsApiKey = useSelector(
+    (state) => state.session.server.attributes["Google Map Api Key"]
+  );
+
+  //Items (Bins)
+  const data = useSelector((state) => state.GMap.items);
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey,
+  });
+
+  useEffect(() => {
+    if (data) {
+      setWayPoints(
+        data.map((point) => ({
+          location: `${point.latitude},${point.longitude}`,
+        }))
+      );
+    }
+  }, [data]);
 
   const calculateRoute = async () => {
     // eslint-disable-next-line no-undef
@@ -78,7 +103,7 @@ function GMap({ waypoints }) {
         }, 0) / 60;
 
     dispatch(gmapActions.setDistanceNTime({ duration, distance }));
-
+    console.log("res", responses);
     setDirections(() => {
       return {
         request: { travelMode: "DRIVING" },
@@ -101,6 +126,36 @@ function GMap({ waypoints }) {
       calculateRoute();
     }
   }, [isLoaded, waypoints]);
+
+  useEffect(() => {
+    //Flush the previous pathline from the map
+    if (directionsRendererRef.current)
+      directionsRendererRef.current.setMap(null);
+
+    if (directions) {
+      directionsRendererRef.current = new google.maps.DirectionsRenderer({
+        map,
+        suppressMarkers: true, // Hide markers
+      });
+
+      directionsRendererRef.current.setDirections(directions);
+    }
+  }, [directions]);
+
+  useEffect(() => {
+    if (!directions) return;
+    const legs = [];
+
+    directions.routes[0].legs.forEach((leg) => {
+      legs.push(...leg.steps);
+    });
+    setLegs(legs);
+  }, [directions]);
+
+  const onLoad = React.useCallback(function callback(map) {
+    setMap(map);
+  }, []);
+
   const onUnmount = React.useCallback(function callback(map) {
     setMap(null);
   }, []);
@@ -110,11 +165,32 @@ function GMap({ waypoints }) {
       mapContainerStyle={containerStyle}
       center={center}
       zoom={10}
-      onLoad={onLoad}
       onUnmount={onUnmount}
+      onLoad={onLoad}
     >
       {/* Child components, such as markers, info windows, etc. */}
-      {directions && <DirectionsRenderer directions={directions} />}
+      {/* {directions && <DirectionsRenderer directions={directions} />} */}
+      {/* {legs &&
+        legs.map((step, index) => {
+          return (
+            <Marker
+              key={index}
+              position={step.start_location}
+              label={{ text: (index + 1).toString(), color: "white" }} // Use numeric label
+            />
+          );
+        })} */}
+      {binsVisibility &&
+        data.map(({ empted, longitude, latitude, id_bin }) => (
+          <Marker
+            key={id_bin}
+            position={{
+              lat: parseFloat(latitude),
+              lng: parseFloat(longitude),
+            }}
+            icon={empted ? trashPositive : trashNegative}
+          />
+        ))}
     </GoogleMap>
   ) : (
     <></>

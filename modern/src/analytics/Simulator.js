@@ -11,7 +11,6 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
 import ReportsMenu from "./components/ReportsMenu";
@@ -24,7 +23,6 @@ const Simulator = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const dispatch = useDispatch();
-  //   const theme = useTheme();
 
   const filterRef = useRef();
   const [filterEleHeight, setFilterEleHeight] = useState(71.99);
@@ -33,16 +31,9 @@ const Simulator = () => {
 
   const loading = useSelector((state) => state.GMap.loading);
 
-  const distanceNTime = useSelector((state) => {
-    return state.GMap.distanceNTime;
-  });
+  const distanceNTime = useSelector((state) => state.GMap.distanceNTime);
 
-  const [wayPoints, setWayPoints] = useState([]);
-
-  // WayPoints Object
-  // location: `${waypoint.latitude},${waypoint.longitude}`
-
-  //   const apiKey = useSelector((state) => state.session.user.attributes.apitoken);
+  const binsVisibility = useSelector((state) => state.GMap.binsVisibility);
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
@@ -52,7 +43,6 @@ const Simulator = () => {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {
-        // setIsLoading(false);
         return data.json();
       })
       .then((data) => {
@@ -76,20 +66,17 @@ const Simulator = () => {
         }
       );
       const data = await response.json();
-      setWayPoints(
-        data.map((point) => ({
-          location: `${point.latitude},${point.longitude}`,
-        }))
-      );
+      dispatch(gmapActions.setItems(data));
     } catch (error) {
     } finally {
       dispatch(gmapActions.setLoading(false));
     }
   };
+
   useEffect(() => {
-    console.log(loading);
     setFilterEleHeight(filterRef.current.clientHeight);
   }, [loading]);
+
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
       <div className={classes.container}>
@@ -152,9 +139,18 @@ const Simulator = () => {
                   : "--"}
               </Typography>
             </Box>
+            <Box>
+              <Button
+                variant="contained"
+                sx={{ background: "#1d90fe", borderRadius: "1rem" }}
+                onClick={() => dispatch(gmapActions.setBinVisiblity())}
+              >
+                {binsVisibility ? t("sharedHide") : t("reportShow")}
+              </Button>
+            </Box>
           </Box>
           <Box style={{ height: `calc(100vh - ${filterEleHeight + 30}px)` }}>
-            <GMap waypoints={wayPoints}></GMap>
+            <GMap />
           </Box>
         </Box>
       </div>
