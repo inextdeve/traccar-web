@@ -53,7 +53,7 @@ const ReportsMenu = () => {
   const washOpen = useSelector((state) => state.analytics.menu.washing);
   const sweepOpen = useSelector((state) => state.analytics.menu.sweeping);
   const equipmentsOpen = useSelector(
-    (state) => state.analytics.menu.equipments
+    (state) => state.analytics.menu.equipments,
   );
 
   const handleClick = () => {

@@ -15,12 +15,8 @@ const MapPositions = ({ positions: pos, onClick }) => {
     positions.push({ ...item, index });
   });
   console.log(positions);
-  const isHydrolic = (item) => {
-    return item?.attributes["Hydrolic Status"] === "yes";
-  };
-  const isNotHydrolic = (item) => {
-    return item?.attributes["Hydrolic Status"] === "No";
-  };
+  const isHydrolic = (item) => item?.attributes["Hydrolic Status"] === "yes";
+  const isNotHydrolic = (item) => item?.attributes["Hydrolic Status"] === "No";
 
   const onMouseEnter = () => (map.getCanvas().style.cursor = "pointer");
   const onMouseLeave = () => (map.getCanvas().style.cursor = "");
@@ -33,7 +29,7 @@ const MapPositions = ({ positions: pos, onClick }) => {
         onClick(feature.properties.id, feature.properties.index);
       }
     },
-    [onClick]
+    [onClick],
   );
 
   useEffect(() => {
@@ -72,7 +68,7 @@ const MapPositions = ({ positions: pos, onClick }) => {
     };
   }, [onMarkerClick]);
 
-  //RED POINTS
+  // RED POINTS
 
   useEffect(() => {
     map.addSource(hydrolicId, {
@@ -113,35 +109,31 @@ const MapPositions = ({ positions: pos, onClick }) => {
   useEffect(() => {
     map.getSource(id).setData({
       type: "FeatureCollection",
-      features: positions.filter(isNotHydrolic).map((position, index) => {
-        return {
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: [position.longitude, position.latitude],
-          },
-          properties: {
-            index: position.index,
-            id: position.id,
-          },
-        };
-      }),
+      features: positions.filter(isNotHydrolic).map((position, index) => ({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [position.longitude, position.latitude],
+        },
+        properties: {
+          index: position.index,
+          id: position.id,
+        },
+      })),
     });
     map.getSource(hydrolicId).setData({
       type: "FeatureCollection",
-      features: positions.filter(isHydrolic).map((position, index) => {
-        return {
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: [position.longitude, position.latitude],
-          },
-          properties: {
-            index: position.index,
-            id: position.id,
-          },
-        };
-      }),
+      features: positions.filter(isHydrolic).map((position, index) => ({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [position.longitude, position.latitude],
+        },
+        properties: {
+          index: position.index,
+          id: position.id,
+        },
+      })),
     });
   }, [positions]);
 

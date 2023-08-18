@@ -113,7 +113,6 @@ export const volumeToLiters = (value, unit) => value * volumeConverter(unit);
 
 export const countRate = (total, n) => (n * 100) / total;
 
-
 /**
  * @param {Array} array Array List
  * @param {Number} chunkSize Size of chunks
@@ -124,4 +123,4 @@ export const chunkArray = (array, chunkSize) => {
     chunks.push(array.slice(i, i + chunkSize));
   }
   return chunks;
-}
+};

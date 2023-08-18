@@ -27,6 +27,7 @@ const colors = {
   bsWarning: "#ffc107",
   solidBlue: blue[300],
   grey: blueGrey[500],
+  blueSky: "#1d90fe",
 };
 
 export default {
@@ -52,6 +53,11 @@ export default {
   },
   positive: {
     main: colors.positive,
+    contrastText: colors.white,
+  },
+  blueSky: {
+    main: colors.blueSky,
+    dark: "#2a56ca",
     contrastText: colors.white,
   },
   colors,

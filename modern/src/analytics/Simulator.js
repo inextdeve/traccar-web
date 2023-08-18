@@ -42,12 +42,10 @@ const Simulator = () => {
     fetch(`${URL}/api/bins/by/route`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((data) => {
-        return data.json();
-      })
+      .then((data) => data.json())
       .then((data) => {
         setRoutes(
-          data.map((route) => ({ id: route.routeId, name: route.route }))
+          data.map((route) => ({ id: route.routeId, name: route.route })),
         );
       })
       .catch(() => {})
@@ -58,16 +56,19 @@ const Simulator = () => {
 
   const handleClick = async () => {
     try {
+      if (!selectedRoute.id) return;
+
       dispatch(gmapActions.setLoading(true));
       const response = await fetch(
         `${URL}/api/bins?routeid=${selectedRoute.id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       const data = await response.json();
       dispatch(gmapActions.setItems(data));
     } catch (error) {
+      console.log(error);
     } finally {
       dispatch(gmapActions.setLoading(false));
     }
@@ -80,7 +81,7 @@ const Simulator = () => {
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "reportBin"]}>
       <div className={classes.container}>
-        {loading ? <LinearProgress /> : <></>}
+        {loading ? <LinearProgress /> : null}
         <Box className={classes.containerMain}>
           <Box
             sx={{
@@ -88,6 +89,7 @@ const Simulator = () => {
               gap: "0.5rem",
               margin: "1rem 0",
               p: 2,
+              justifyContent: "space-between",
             }}
             ref={filterRef}
           >
@@ -96,12 +98,9 @@ const Simulator = () => {
               <Select
                 label={t("reportRoute")}
                 value={selectedRoute.id}
-                onChange={(e) =>
-                  setSelectedRoute(
-                    () =>
-                      routes.filter((route) => route.id === e.target.value)[0]
-                  )
-                }
+                onChange={(e) => setSelectedRoute(
+                  () => routes.filter((route) => route.id === e.target.value)[0],
+                )}
               >
                 {routes.map((route) => (
                   <MenuItem selected value={route.id} key={route.id}>
@@ -118,31 +117,38 @@ const Simulator = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                width: 2 / 4,
-                gap: 2,
+                gap: 1,
                 background: "#1d90fe",
-                borderRadius: "1rem",
+                borderRadius: 1,
                 color: "white",
-                ml: 4,
+                px: 1.4,
+                width: "90%",
               }}
             >
-              <Typography>
-                Duration:{" "}
-                {distanceNTime.duration
-                  ? `${distanceNTime.duration.toFixed()} min`
-                  : "--"}
+              <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
+                Duration:
+                {" "}
+                <span>
+                  {distanceNTime.duration
+                    ? `${distanceNTime.duration.toFixed()} min`
+                    : "--"}
+                </span>
               </Typography>
-              <Typography>
-                Distance:{" "}
-                {distanceNTime.distance
-                  ? `${distanceNTime.distance.toFixed()} km`
-                  : "--"}
+              <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
+                Distance:
+                {" "}
+                <span>
+                  {distanceNTime.distance
+                    ? `${distanceNTime.distance.toFixed()} km`
+                    : "--"}
+                </span>
               </Typography>
             </Box>
             <Box>
               <Button
+                color="blueSky"
                 variant="contained"
-                sx={{ background: "#1d90fe", borderRadius: "1rem" }}
+                sx={{ borderRadius: 1, minWidth: "74px" }}
                 onClick={() => dispatch(gmapActions.setBinVisiblity())}
               >
                 {binsVisibility ? t("sharedHide") : t("reportShow")}

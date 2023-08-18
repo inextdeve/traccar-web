@@ -28,7 +28,7 @@ const reducer = combineReducers({
   analytics,
   popup,
   bins,
-  GMap
+  GMap,
 });
 
 export { errorsActions } from "./errors";
