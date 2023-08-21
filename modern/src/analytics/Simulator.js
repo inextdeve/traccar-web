@@ -45,7 +45,7 @@ const Simulator = () => {
       .then((data) => data.json())
       .then((data) => {
         setRoutes(
-          data.map((route) => ({ id: route.routeId, name: route.route })),
+          data.map((route) => ({ id: route.routeId, name: route.route }))
         );
       })
       .catch(() => {})
@@ -63,7 +63,7 @@ const Simulator = () => {
         `${URL}/api/bins?routeid=${selectedRoute.id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        },
+        }
       );
       const data = await response.json();
       dispatch(gmapActions.setItems(data));
@@ -98,9 +98,12 @@ const Simulator = () => {
               <Select
                 label={t("reportRoute")}
                 value={selectedRoute.id}
-                onChange={(e) => setSelectedRoute(
-                  () => routes.filter((route) => route.id === e.target.value)[0],
-                )}
+                onChange={(e) =>
+                  setSelectedRoute(
+                    () =>
+                      routes.filter((route) => route.id === e.target.value)[0]
+                  )
+                }
               >
                 {routes.map((route) => (
                   <MenuItem selected value={route.id} key={route.id}>
@@ -126,8 +129,7 @@ const Simulator = () => {
               }}
             >
               <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
-                Duration:
-                {" "}
+                Duration:{" "}
                 <span>
                   {distanceNTime.duration
                     ? `${distanceNTime.duration.toFixed()} min`
@@ -135,8 +137,7 @@ const Simulator = () => {
                 </span>
               </Typography>
               <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
-                Distance:
-                {" "}
+                Distance:{" "}
                 <span>
                   {distanceNTime.distance
                     ? `${distanceNTime.distance.toFixed()} km`

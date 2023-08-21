@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 import { chunkArray } from "../../common/util/converter";
 import { gmapActions } from "../../store";
+import { URL } from "../../common/util/constant";
 import trashNegative from "../../resources/images/png/trashNegative.png";
 import trashPositive from "../../resources/images/png/trashPositive.png";
 
@@ -35,8 +36,11 @@ const GMap = () => {
     (state) => state.session.server.attributes["Google Map Api Key"]
   );
 
+  const token = useSelector((state) => state.session.user.attributes.apitoken);
+
   // Items (Bins)
   const data = useSelector((state) => state.GMap.items);
+  const itemsIsFetched = useSelector((state) => state.GMap.itemsIsFetched);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -145,6 +149,42 @@ const GMap = () => {
     setMap(null);
   }, []);
 
+  const handleDrag = async (event, id) => {
+    const position = `${event.latLng.lat()} ${event.latLng.lng()}`;
+    const body = { id_bin: id, position };
+    const updateGmapItems = data.map((item) => {
+      if (item.id_bin == id) {
+        return {
+          ...item,
+          latitude: parseFloat(position.split(" ")[0]),
+          longitude: parseFloat(position.split(" ")[1]),
+        };
+      }
+      return item;
+    });
+
+    dispatch(gmapActions.setItems(updateGmapItems));
+
+    try {
+      const response = await fetch(`${URL}/api/bins/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      const updatePosition = await response.json();
+
+      if (updatePosition.success) {
+        throw new Error("Cannot update position");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
@@ -156,20 +196,18 @@ const GMap = () => {
       {/* Child components, such as markers, info windows, etc. */}
       {/* {directions && <DirectionsRenderer directions={directions} />} */}
       {legs &&
-        legs.map((step, index) => {
-          console.log(step);
-          return (
-            <Marker
-              key={index}
-              position={step.start_location}
-              label={{ text: (index + 1).toString(), color: "white" }} // Use numeric label
-            />
-          );
-        })}
+        legs.map((step, index) => (
+          <Marker
+            key={index}
+            position={step.start_location}
+            label={{ text: `${index + 1}`, color: "white" }} // Use numeric label
+          />
+        ))}
       {binsVisibility &&
         data.map(({ empted, longitude, latitude, id_bin }) => (
           <Marker
             draggable
+            onDragEnd={(event) => handleDrag(event, id_bin)}
             key={id_bin}
             position={{
               lat: parseFloat(latitude),
