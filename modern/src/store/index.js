@@ -13,6 +13,7 @@ import { analyticsReducer as analytics } from "./analytics";
 import { popupReducer as popup } from "./popup";
 import { binsReducer as bins } from "./bins";
 import { gmapReducer as GMap } from "./GMap";
+import { binsDataTableReducer as binsDataTable } from "./binsDataTable";
 import throttleMiddleware from "./throttleMiddleware";
 
 const reducer = combineReducers({
@@ -29,6 +30,7 @@ const reducer = combineReducers({
   popup,
   bins,
   GMap,
+  binsDataTable
 });
 
 export { errorsActions } from "./errors";
@@ -44,6 +46,7 @@ export { analyticsActions } from "./analytics";
 export { popupActions } from "./popup";
 export { binsActions } from "./bins";
 export { gmapActions } from "./GMap";
+export {binsDataTableActions} from "./binsDataTable";
 
 export default configureStore({
   reducer,

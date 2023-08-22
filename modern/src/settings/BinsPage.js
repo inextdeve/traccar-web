@@ -2,13 +2,15 @@ import RoomOutlinedIcon from "@mui/icons-material/RoomOutlined";
 import SettingsMenu from "./components/SettingsMenu";
 import PageLayout from "../common/components/PageLayout";
 import CollectionTable from "./components/CollectionTable";
+import EditDialog from "./components/Dialog";
+import { Box } from "@mui/material";
 
 function createTableData(id, description, position, type, center, route) {
   return {
     id,
     description,
     position: (
-      <a href="" target="_blank">
+      <a href="" target="_blank" style={{color: "#ff4444"}}>
         <RoomOutlinedIcon />
       </a>
     ),
@@ -59,7 +61,7 @@ const BinsPage = () => {
   const keys = ["id", "description", "position", "type", "center", "route"];
 
   const rows = [
-    createTableData(1, "CTC-0005", 2939, "6 Yard", 4.3, "Yamama"),
+    createTableData(5, "CTC-0005", 2939, "6 Yard", 4.3, "Solama"),
     createTableData(2, "ATY-0035", 3243, "10 Litre", 4.9, "Nord"),
     createTableData(3, "HJZ-0305", 3233, "3 Yard", 6.0, "Earth"),
   ];
@@ -68,8 +70,10 @@ const BinsPage = () => {
     <PageLayout
       menu={<SettingsMenu />}
       breadcrumbs={["settingsTitle", "settingsGroups"]}
+      //Don't forget to change title
     >
-      <CollectionTable />
+      <CollectionTable rows={rows} keys={keys} headCells={headCells} title="Bins" />
+      
     </PageLayout>
   );
 };

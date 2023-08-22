@@ -1,5 +1,5 @@
 import * as React from "react";
-import { alpha } from "@mui/material/styles";
+import { alpha, keyframes } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -19,23 +19,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import EditIcon from "@mui/icons-material/Edit";
 import { visuallyHidden } from "@mui/utils";
+import { useDispatch, useSelector } from "react-redux";
+import { binsDataTableActions } from "../../store";
 
-function createData(id, description, position, type, center, route) {
-  return {
-    id,
-    description,
-    position,
-    type,
-    center,
-    route,
-  };
-}
-
-const rows = [
-  createData(1, "CTC-0005", 2939, "6 Yard", 4.3, "Yamama"),
-  createData(2, "ATY-0035", 3243, "10 Litre", 4.9, "Nord"),
-  createData(3, "HJZ-0305", 3233, "3 Yard", 6.0, "Earth"),
-];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -69,44 +55,6 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-const headCells = [
-  {
-    id: "id",
-    numeric: true,
-    disablePadding: true,
-    label: "ID",
-  },
-  {
-    id: "description",
-    numeric: true,
-    disablePadding: false,
-    label: "Description",
-  },
-  {
-    id: "position",
-    numeric: true,
-    disablePadding: false,
-    label: "Position",
-  },
-  {
-    id: "type",
-    numeric: true,
-    disablePadding: false,
-    label: "Type",
-  },
-  {
-    id: "center",
-    numeric: true,
-    disablePadding: false,
-    label: "Center",
-  },
-  {
-    id: "route",
-    numeric: true,
-    disablePadding: false,
-    label: "Route",
-  },
-];
 
 function EnhancedTableHead(props) {
   const {
@@ -135,10 +83,11 @@ function EnhancedTableHead(props) {
             }}
           />
         </TableCell>
-        {headCells.map((headCell) => (
+        {props.headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
+            // align={headCell.numeric ? "right" : "left"}
+            align="left"
             padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -194,12 +143,12 @@ function EnhancedTableToolbar(props) {
           id="tableTitle"
           component="div"
         >
-          Bins
+          {props.title}
         </Typography>
       )}
       {numSelected === 1 ? (
-        <Tooltip title="Filter list">
-          <IconButton>
+        <Tooltip title="Edit row">
+          <IconButton onClick={openEditDialog}>
             <EditIcon />
           </IconButton>
         </Tooltip>
@@ -221,12 +170,17 @@ function EnhancedTableToolbar(props) {
   );
 }
 
-export default function EnhancedTable() {
+export default function EnhancedTable({rows, headCells, title, keys}) {
+  const dispatch = useDispatch();
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("calories");
-  const [selected, setSelected] = React.useState([]);
+  // Order by column
+  const [orderBy, setOrderBy] = React.useState("id");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  //Store
+  const selected = useSelector(state => state.binsDataTable.selected);
+  const setSelected = (items) => dispatch(binsDataTableActions.setSelected(items));
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -289,8 +243,8 @@ export default function EnhancedTable() {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+      <Paper sx={{ width: "100%", mb: 2 , borderRadius: 0}} >
+        <EnhancedTableToolbar numSelected={selected.length} title={title}/>
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -304,6 +258,7 @@ export default function EnhancedTable() {
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
+              headCells={headCells}
             />
             <TableBody>
               {visibleRows.map((row, index) => {
@@ -330,19 +285,10 @@ export default function EnhancedTable() {
                         }}
                       />
                     </TableCell>
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                    >
-                      {row.id}
-                    </TableCell>
-                    <TableCell align="right">{row.description}</TableCell>
-                    <TableCell align="right">{row.position}</TableCell>
-                    <TableCell align="right">{row.type}</TableCell>
-                    <TableCell align="right">{row.center}</TableCell>
-                    <TableCell align="right">{row.route}</TableCell>
+                    
+                    {keys.map((key, index) => {
+                      return <TableCell key={`${key}-${index}`} align="left">{row[key]}</TableCell>
+                    })}
                   </TableRow>
                 );
               })}
