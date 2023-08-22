@@ -1,6 +1,10 @@
 import React from "react";
 import {
-  Divider, List, ListItemButton, ListItemIcon, ListItemText,
+  Divider,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CreateIcon from "@mui/icons-material/Create";
@@ -13,17 +17,19 @@ import PeopleIcon from "@mui/icons-material/People";
 import TodayIcon from "@mui/icons-material/Today";
 import PublishIcon from "@mui/icons-material/Publish";
 import SmartphoneIcon from "@mui/icons-material/Smartphone";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "../../common/components/LocalizationProvider";
 import {
-  useAdministrator, useDeviceReadonly, useManager, useRestriction,
+  useAdministrator,
+  useDeviceReadonly,
+  useManager,
+  useRestriction,
 } from "../../common/util/permissions";
 import useFeatures from "../../common/util/useFeatures";
 
-const MenuItem = ({
-  title, link, icon, selected,
-}) => (
+const MenuItem = ({ title, link, icon, selected }) => (
   <ListItemButton key={link} component={Link} to={link} selected={selected}>
     <ListItemIcon>{icon}</ListItemIcon>
     <ListItemText primary={title} />
@@ -123,7 +129,10 @@ const SettingsMenu = () => {
               title={t("sharedSavedCommands")}
               link="/settings/commands"
               icon={<PublishIcon />}
-              selected={location.pathname.startsWith("/settings/command") && !location.pathname.startsWith("/settings/command-send")}
+              selected={
+                location.pathname.startsWith("/settings/command") &&
+                !location.pathname.startsWith("/settings/command-send")
+              }
             />
           </>
         )}
@@ -144,8 +153,22 @@ const SettingsMenu = () => {
               title={t("settingsUsers")}
               link="/settings/users"
               icon={<PeopleIcon />}
-              selected={location.pathname.startsWith("/settings/user") && location.pathname !== `/settings/user/${userId}`}
+              selected={
+                location.pathname.startsWith("/settings/user") &&
+                location.pathname !== `/settings/user/${userId}`
+              }
             />
+          </List>
+          <Divider />
+          <List>
+            {admin && (
+              <MenuItem
+                title={t("bins")}
+                link="/settings/bins"
+                icon={<DeleteIcon />}
+                selected={location.pathname === "/settings/bins"}
+              />
+            )}
           </List>
         </>
       )}
