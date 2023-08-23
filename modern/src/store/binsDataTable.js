@@ -5,13 +5,17 @@ const { reducer, actions } = createSlice({
   initialState: {
     items: [],
     selected: [],
+    openEditDialog: false,
   },
   reducers: {
     setItems(state, action) {
       state.items = action.payload;
     },
     setSelected(state, action) {
-        state.selected = action.payload;
+      state.selected = action.payload;
+    },
+    setOpenEditDialog(state, action) {
+      state.openEditDialog = action.payload;
     },
   },
 });

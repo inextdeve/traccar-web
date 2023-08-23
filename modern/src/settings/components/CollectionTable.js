@@ -22,7 +22,6 @@ import { visuallyHidden } from "@mui/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { binsDataTableActions } from "../../store";
 
-
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -54,7 +53,6 @@ function stableSort(array, comparator) {
   });
   return stabilizedThis.map((el) => el[0]);
 }
-
 
 function EnhancedTableHead(props) {
   const {
@@ -111,8 +109,16 @@ function EnhancedTableHead(props) {
 }
 
 function EnhancedTableToolbar(props) {
+  const dispatch = useDispatch();
+
   const { numSelected } = props;
 
+  const setOpen = (bool) =>
+    dispatch(binsDataTableActions.setOpenEditDialog(bool));
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
   return (
     <Toolbar
       sx={{
@@ -148,7 +154,7 @@ function EnhancedTableToolbar(props) {
       )}
       {numSelected === 1 ? (
         <Tooltip title="Edit row">
-          <IconButton onClick={openEditDialog}>
+          <IconButton onClick={handleOpen}>
             <EditIcon />
           </IconButton>
         </Tooltip>
@@ -170,7 +176,7 @@ function EnhancedTableToolbar(props) {
   );
 }
 
-export default function EnhancedTable({rows, headCells, title, keys}) {
+export default function EnhancedTable({ rows, headCells, title, keys }) {
   const dispatch = useDispatch();
   const [order, setOrder] = React.useState("asc");
   // Order by column
@@ -179,8 +185,9 @@ export default function EnhancedTable({rows, headCells, title, keys}) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   //Store
-  const selected = useSelector(state => state.binsDataTable.selected);
-  const setSelected = (items) => dispatch(binsDataTableActions.setSelected(items));
+  const selected = useSelector((state) => state.binsDataTable.selected);
+  const setSelected = (items) =>
+    dispatch(binsDataTableActions.setSelected(items));
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -243,8 +250,8 @@ export default function EnhancedTable({rows, headCells, title, keys}) {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Paper sx={{ width: "100%", mb: 2 , borderRadius: 0}} >
-        <EnhancedTableToolbar numSelected={selected.length} title={title}/>
+      <Paper sx={{ width: "100%", mb: 2, borderRadius: 0 }}>
+        <EnhancedTableToolbar numSelected={selected.length} title={title} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -285,9 +292,13 @@ export default function EnhancedTable({rows, headCells, title, keys}) {
                         }}
                       />
                     </TableCell>
-                    
+
                     {keys.map((key, index) => {
-                      return <TableCell key={`${key}-${index}`} align="left">{row[key]}</TableCell>
+                      return (
+                        <TableCell key={`${key}-${index}`} align="left">
+                          {row[key]}
+                        </TableCell>
+                      );
                     })}
                   </TableRow>
                 );

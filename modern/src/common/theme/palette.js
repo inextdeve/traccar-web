@@ -13,7 +13,8 @@ import {
 const colors = {
   white: common.white,
   background: grey[50],
-  primary: indigo[900],
+  // primary: indigo[900],
+  primary: "#1876d2",
   secondary: green[500],
   positive: green[500],
   medium: amber[700],
@@ -35,6 +36,7 @@ export default {
     default: colors.background,
   },
   primary: {
+    default: colors.primary,
     main: colors.primary,
   },
   secondary: {
