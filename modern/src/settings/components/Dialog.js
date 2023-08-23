@@ -15,7 +15,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function EditDialog({ title = "Edit", children }) {
+export default function EditDialog({ title = "Edit", children, onSave }) {
   const dispatch = useDispatch();
 
   const open = useSelector((state) => state.binsDataTable.openEditDialog);
@@ -47,7 +47,7 @@ export default function EditDialog({ title = "Edit", children }) {
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               {title}
             </Typography>
-            <Button autoFocus color="inherit" onClick={handleClose}>
+            <Button autoFocus color="inherit" onClick={onSave}>
               save
             </Button>
           </Toolbar>

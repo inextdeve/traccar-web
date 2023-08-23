@@ -245,7 +245,7 @@ export default function EnhancedTable({ rows, headCells, title, keys }) {
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage
       ),
-    [order, orderBy, page, rowsPerPage]
+    [order, orderBy, page, rowsPerPage, rows]
   );
 
   return (
