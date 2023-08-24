@@ -11,12 +11,12 @@ import EditDialog from "./components/Dialog";
 import useDataTableStyle from "./common/useDataTableStyle";
 import trash from "../resources/images/icon/bin.svg";
 import { binsDataTableActions } from "../store";
+import { URL } from "../common/util/constant";
 
 const containerStyle = {
   width: "100%",
   height: "200px",
 };
-
 
 function createTableData(id, description, position, type, center, route) {
   return {
@@ -67,34 +67,86 @@ const BinsPage = () => {
       label: "Route",
     },
   ];
-  const keys = ["id", "description", "position", "type", "center", "route"];
-
-  const rows = [
-    createTableData(5, "CTC-0005","27.0094724 49.5546019", "6 Yard",  "Solama", "D"),
-    createTableData(2, "ATY-0035","27.0094724 49.5546019", "10 Litre", "Nord", "5F"),
-    createTableData(3, "HJZ-0305", "27.0094724 49.5546019", "3 Yard", "Earth", "9D"),
+  const keys = [
+    "id",
+    "description",
+    "position",
+    "bintype",
+    "center_name",
+    "route",
   ];
 
-
+  const rows = [
+    createTableData(
+      5,
+      "CTC-0005",
+      "27.0094724 49.5546019",
+      "6 Yard",
+      "Solama",
+      "D"
+    ),
+    createTableData(
+      2,
+      "ATY-0035",
+      "27.0094724 49.5546019",
+      "10 Litre",
+      "Nord",
+      "5F"
+    ),
+    createTableData(
+      3,
+      "HJZ-0305",
+      "27.0094724 49.5546019",
+      "3 Yard",
+      "Earth",
+      "9D"
+    ),
+  ];
 
   // StateFull
   const dispatch = useDispatch();
-    
+
+  const bins = useSelector((state) => state.bins.bins);
   useEffect(() => {
-    dispatch(binsDataTableActions.setItems(rows))
-  }, [])
+    if (bins.length) {
+      dispatch(binsDataTableActions.setItems([...bins]));
+    }
+  }, []);
 
   const classes = useDataTableStyle();
 
   // Currently selected row for editing or for adding
 
-  const [activeRow, setActiveRow] = useState({id: "", description: "", position: "", type: "", center: "", route: ""});
+  const initRow = {
+    id: "",
+    description: "",
+    position: "26.9555741 49.5683506",
+    bintype: "",
+    center_name: "",
+    route: "",
+    latitude: "",
+    longitude: "",
+  };
+
+  const [activeRow, setActiveRow] = useState(initRow);
+
+  const token = useSelector((state) => state.session.user.attributes.apitoken);
 
   const selected = useSelector((state) => state.binsDataTable.selected);
 
   const items = useSelector((state) => state.binsDataTable.items);
 
-  const setItems = (items) => dispatch(binsDataTableActions.setItems(items))
+  const setItems = (items) => dispatch(binsDataTableActions.setItems(items));
+
+  const openEdit = useSelector((state) => state.binsDataTable.openEditDialog);
+
+  const setOpenEdit = (bool) =>
+    dispatch(binsDataTableActions.setOpenEditDialog(bool));
+
+  const openAdd = useSelector((state) => state.binsDataTable.openAddDialog);
+
+  const setOpenAdd = (bool) =>
+    dispatch(binsDataTableActions.setOpenAddDialog(bool));
 
   const googleMapsApiKey = useSelector(
     (state) => state.session.server.attributes["Google Map Api Key"]
@@ -106,58 +158,112 @@ const BinsPage = () => {
   });
 
   useEffect(() => {
-    if(selected.length === 1) {
+    if (selected.length === 1 || openEdit) {
       // Id of selected item
       const id = selected[0];
 
-      const selectedItem = items.filter(item => item.id == id);
+      const selectedItem = items.filter((item) => item.id == id);
 
       setActiveRow(selectedItem[0]);
-      
     }
-  }, [selected])
+  }, [selected, openEdit]);
 
   // Handling functions
   const handleInputChange = (event) => {
-    setActiveRow(prev => ({...prev, [event.target.name]: event.target.value}))
-  }
+    setActiveRow((prev) => ({
+      ...prev,
+      [event.target.name]: event.target.value,
+    }));
+  };
 
   const handleDrag = (event) => {
-    const position = `${event.latLng.lat()} ${event.latLng.lng()}`;
-    setActiveRow(prev => ({...prev, position}))
-  }
+    const latitude = event.latLng.lat();
+    const longitude = event.latLng.lng();
+    setActiveRow((prev) => ({ ...prev, latitude, longitude }));
+  };
 
-  const handleSave = () => {
+  const handleSave = async (event) => {
+    // event params is a string ("edit" | "add")
     // Fetch a post request modify db
 
+    const body = {
+      ...activeRow,
+      position: `${activeRow.latitude} ${activeRow.longitude}`,
+    };
+
+    delete body.latitude;
+    delete body.longitude;
+    delete body.status;
+    delete body.report;
+    delete body.binType;
+
+    console.log("BODY", body);
+
+    // if (event === "edit") {
+    //   try {
+    //     const response = await fetch(`${URL}/api/bins/`, {
+    //       method: "PATCH",
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify(body),
+    //     });
+
+    //     const updatePosition = await response.json();
+
+    //     if (updatePosition.success) {
+    //       throw new Error("Cannot update position");
+    //     }
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // }
+
     // Change local state
+    const newItems = items.map((item) => {
+      if (Number(item.id) === Number(activeRow.id)) {
+        return activeRow;
+      }
+      return item;
+    });
 
-  const newItems = items.map((item) => {
-    if(Number(item.id) === Number(activeRow.id)) {
-      return activeRow;
-    }
-    return item
-  });
+    setItems(newItems);
+  };
+  const handleClose = () => {
+    setOpenEdit(false);
+    setOpenAdd(false);
+  };
 
-  setItems(newItems);
-
-  }
-
-
+  const handleAddClick = () => {
+    setActiveRow(initRow);
+    setOpenAdd(true);
+  };
   return (
     <PageLayout
       menu={<SettingsMenu />}
       breadcrumbs={["settingsTitle", "settingsGroups"]}
       //Don't forget to change title
     >
-       <CollectionTable
-       // Modify the position value to an anchor link to google maps
-        rows={items.map((item) => ({...item, position: <a href="" target="_blank"><RoomOutlinedIcon color="primary"/></a>}))}
+      <CollectionTable
+        // Modify the position value to an anchor link to google maps
+        rows={items.map((item) => ({
+          ...item,
+          position: (
+            <IconButton size="small">
+              <RoomOutlinedIcon color="primary" />
+            </IconButton>
+          ),
+        }))}
         keys={keys}
         headCells={headCells}
         title="Bins"
       />
-      <EditDialog onSave={handleSave}>
+      <EditDialog
+        onSave={() => handleSave("edit")}
+        onClose={handleClose}
+        open={openEdit}
+      >
         <Box>
           <Box
             sx={{
@@ -169,10 +275,106 @@ const BinsPage = () => {
               flexWrap: "wrap",
             }}
           >
-            <TextField label="Description" name="description" variant="outlined" value={activeRow.description} onChange={handleInputChange}/>
-            <TextField label="Type" name="type" variant="outlined" value={activeRow.type} onChange={handleInputChange}/>
-            <TextField label="Center" name="center" variant="outlined" value={activeRow.center} onChange={handleInputChange}/>
-            <TextField label="Route" name="route" variant="outlined" value={activeRow.route} onChange={handleInputChange}/>
+            <TextField
+              label="Description"
+              name="description"
+              variant="outlined"
+              value={activeRow.description}
+              onChange={handleInputChange}
+            />
+            <TextField
+              label="Type"
+              name="bintype"
+              variant="outlined"
+              value={activeRow.bintype}
+              onChange={handleInputChange}
+            />
+            <TextField
+              label="Center"
+              name="center_name"
+              variant="outlined"
+              value={activeRow.center_name}
+              onChange={handleInputChange}
+            />
+            <TextField
+              label="Route"
+              name="route"
+              variant="outlined"
+              value={activeRow.route}
+              onChange={handleInputChange}
+            />
+          </Box>
+          <Box>
+            <Box>
+              {isLoaded ? (
+                <GoogleMap
+                  mapContainerStyle={containerStyle}
+                  center={{
+                    lat: parseFloat(activeRow.latitude),
+                    lng: parseFloat(activeRow.longitude),
+                  }}
+                  zoom={10}
+                >
+                  <Marker
+                    draggable
+                    onDragEnd={handleDrag}
+                    position={{
+                      lat: parseFloat(activeRow.latitude),
+                      lng: parseFloat(activeRow.longitude),
+                    }}
+                    icon={trash}
+                  />
+                </GoogleMap>
+              ) : null}
+            </Box>
+          </Box>
+        </Box>
+      </EditDialog>
+      <EditDialog
+        onSave={() => handleSave("add")}
+        open={openAdd}
+        onClose={handleClose}
+        title="Add Bin"
+      >
+        <Box>
+          <Box
+            sx={{
+              p: 4,
+              mt: 2,
+              display: "flex",
+              gap: 3,
+              justifyContent: "space-around",
+              flexWrap: "wrap",
+            }}
+          >
+            <TextField
+              label="Description"
+              name="description"
+              variant="outlined"
+              value={activeRow.description}
+              onChange={handleInputChange}
+            />
+            <TextField
+              label="Type"
+              name="type"
+              variant="outlined"
+              value={activeRow.bintype}
+              onChange={handleInputChange}
+            />
+            <TextField
+              label="Center"
+              name="center"
+              variant="outlined"
+              value={activeRow.center_name}
+              onChange={handleInputChange}
+            />
+            <TextField
+              label="Route"
+              name="route"
+              variant="outlined"
+              value={activeRow.route}
+              onChange={handleInputChange}
+            />
           </Box>
           <Box>
             <Box>
@@ -201,7 +403,11 @@ const BinsPage = () => {
         </Box>
       </EditDialog>
       <Box sx={{ display: "flex", justifyContent: "flex-end", mr: 2 }}>
-        <IconButton size="large" className={classes.addButton}>
+        <IconButton
+          size="large"
+          className={classes.addButton}
+          onClick={handleAddClick}
+        >
           <AddIcon />
         </IconButton>
       </Box>

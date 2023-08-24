@@ -40,7 +40,6 @@ const GMap = () => {
 
   // Items (Bins)
   const data = useSelector((state) => state.GMap.items);
-  const itemsIsFetched = useSelector((state) => state.GMap.itemsIsFetched);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -167,7 +166,7 @@ const GMap = () => {
 
     try {
       const response = await fetch(`${URL}/api/bins/`, {
-        method: "POST",
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
