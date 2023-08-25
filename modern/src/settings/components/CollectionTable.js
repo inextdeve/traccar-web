@@ -20,7 +20,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import EditIcon from "@mui/icons-material/Edit";
 import { visuallyHidden } from "@mui/utils";
 import { useDispatch, useSelector } from "react-redux";
-import { binsDataTableActions } from "../../store";
+import { dbManagementActions } from "../../store";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -114,7 +114,7 @@ function EnhancedTableToolbar(props) {
   const { numSelected } = props;
 
   const setOpen = (bool) =>
-    dispatch(binsDataTableActions.setOpenEditDialog(bool));
+    dispatch(dbManagementActions.setOpenEditDialog(bool));
 
   const handleOpen = () => {
     setOpen(true);
@@ -185,9 +185,9 @@ export default function EnhancedTable({ rows, headCells, title, keys }) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   //Store
-  const selected = useSelector((state) => state.binsDataTable.selected);
+  const selected = useSelector((state) => state.dbManagement.selected);
   const setSelected = (items) =>
-    dispatch(binsDataTableActions.setSelected(items));
+    dispatch(dbManagementActions.setSelected(items));
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";

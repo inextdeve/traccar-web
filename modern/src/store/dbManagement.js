@@ -1,16 +1,29 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const { reducer, actions } = createSlice({
-  name: "binsDataTable",
+  name: "dbManagement",
   initialState: {
     items: [],
+    routes: [],
+    types: [],
+    centers: [],
     selected: [],
     openEditDialog: false,
     openAddDialog: false,
+    allDataIsFetched: false,
   },
   reducers: {
     setItems(state, action) {
       state.items = action.payload;
+    },
+    setRoutes(state, action) {
+      state.routes = action.payload;
+    },
+    setTypes(state, action) {
+      state.types = action.payload;
+    },
+    setCenters(state, action) {
+      state.centers = action.payload;
     },
     setSelected(state, action) {
       state.selected = action.payload;
@@ -24,5 +37,5 @@ const { reducer, actions } = createSlice({
   },
 });
 
-export { actions as binsDataTableActions };
-export { reducer as binsDataTableReducer };
+export { actions as dbManagementActions };
+export { reducer as dbManagementReducer };

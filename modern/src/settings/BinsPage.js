@@ -10,7 +10,7 @@ import CollectionTable from "./components/CollectionTable";
 import EditDialog from "./components/Dialog";
 import useDataTableStyle from "./common/useDataTableStyle";
 import trash from "../resources/images/icon/bin.svg";
-import { binsDataTableActions } from "../store";
+import { dbManagementActions } from "../store";
 import { URL } from "../common/util/constant";
 
 const containerStyle = {
@@ -107,9 +107,22 @@ const BinsPage = () => {
   const dispatch = useDispatch();
 
   const bins = useSelector((state) => state.bins.bins);
+
+  const allDataIsFetched = useSelector(
+    (state) => state.dbManagement.allDataIsFetched
+  );
   useEffect(() => {
+    if (allDataIsFetched) return;
     if (bins.length) {
-      dispatch(binsDataTableActions.setItems([...bins]));
+      dispatch(dbManagementActions.setItems([...bins]));
+    } else {
+      (async () => {
+        const allBins = await fetch(`${URL}/api/bins`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await allBins.json();
+        dispatch(dbManagementActions.setItems(data));
+      })();
     }
   }, []);
 
@@ -132,21 +145,21 @@ const BinsPage = () => {
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
-  const selected = useSelector((state) => state.binsDataTable.selected);
+  const selected = useSelector((state) => state.dbManagement.selected);
 
-  const items = useSelector((state) => state.binsDataTable.items);
+  const items = useSelector((state) => state.dbManagement.items);
 
-  const setItems = (items) => dispatch(binsDataTableActions.setItems(items));
+  const setItems = (items) => dispatch(dbManagementActions.setItems(items));
 
-  const openEdit = useSelector((state) => state.binsDataTable.openEditDialog);
+  const openEdit = useSelector((state) => state.dbManagement.openEditDialog);
 
   const setOpenEdit = (bool) =>
-    dispatch(binsDataTableActions.setOpenEditDialog(bool));
+    dispatch(dbManagementActions.setOpenEditDialog(bool));
 
-  const openAdd = useSelector((state) => state.binsDataTable.openAddDialog);
+  const openAdd = useSelector((state) => state.dbManagement.openAddDialog);
 
   const setOpenAdd = (bool) =>
-    dispatch(binsDataTableActions.setOpenAddDialog(bool));
+    dispatch(dbManagementActions.setOpenAddDialog(bool));
 
   const googleMapsApiKey = useSelector(
     (state) => state.session.server.attributes["Google Map Api Key"]
