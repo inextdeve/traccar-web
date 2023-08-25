@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, IconButton, TextField } from "@mui/material";
+import { Box, IconButton, TextField, FormControl,InputLabel,Select, MenuItem } from "@mui/material";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 import RoomOutlinedIcon from "@mui/icons-material/RoomOutlined";
 import AddIcon from "@mui/icons-material/Add";
@@ -12,6 +12,7 @@ import useDataTableStyle from "./common/useDataTableStyle";
 import trash from "../resources/images/icon/bin.svg";
 import { dbManagementActions } from "../store";
 import { URL } from "../common/util/constant";
+import { useTranslation } from "../common/components/LocalizationProvider";
 
 const containerStyle = {
   width: "100%",
@@ -77,33 +78,66 @@ const BinsPage = () => {
   ];
 
   const rows = [
-    createTableData(
-      5,
-      "CTC-0005",
-      "27.0094724 49.5546019",
-      "6 Yard",
-      "Solama",
-      "D"
-    ),
-    createTableData(
-      2,
-      "ATY-0035",
-      "27.0094724 49.5546019",
-      "10 Litre",
-      "Nord",
-      "5F"
-    ),
-    createTableData(
-      3,
-      "HJZ-0305",
-      "27.0094724 49.5546019",
-      "3 Yard",
-      "Earth",
-      "9D"
-    ),
+    {
+      id: 7,
+      id_bin: 7,
+      description: "CTC-0002",
+      position: "",
+      routid: 97,
+      centerid: 85,
+      bintypeid: 5,
+      center_name: "HZJ",
+      route: "ZAH",
+      bintype: "6 Yard",
+      latitude: "26.9791087",
+      longitude: "49.496904"
+    },
+    {
+      id: 9,
+      id_bin: 9,
+      description: "SLS-000E",
+      position: "",
+      routid: 98,
+      centerid: 86,
+      bintypeid: 6,
+      center_name: "LOK",
+      route: "JIN",
+      bintype: "10 Litre",
+      latitude: "26.9791087",
+      longitude: "49.496904"
+    }
   ];
 
+  const binTypeData = [{
+    id: 5,
+    bintype: "6 Yard",
+  },
+  {
+    id: 6,
+    bintype: "10 Litre",
+  }
+  ]
+  const centersData = [{
+    id: 85,
+    center_name: "HZJ",
+  },
+  {
+    id: 86,
+    center_name: "LOK",
+  }
+  ]
+  const routesData = [{
+    id: 97,
+    rout_code: "ZAH",
+  },
+  {
+    id: 98,
+    rout_code: "JIN",
+  }
+]
+
   // StateFull
+  const t = useTranslation()
   const dispatch = useDispatch();
 
   const bins = useSelector((state) => state.bins.bins);
@@ -112,18 +146,50 @@ const BinsPage = () => {
     (state) => state.dbManagement.allDataIsFetched
   );
   useEffect(() => {
-    if (allDataIsFetched) return;
     if (bins.length) {
       dispatch(dbManagementActions.setItems([...bins]));
     } else {
       (async () => {
-        const allBins = await fetch(`${URL}/api/bins`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await allBins.json();
-        dispatch(dbManagementActions.setItems(data));
+        try {
+          const allBins = await fetch(`${URL}/api/bins`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await allBins.json();
+          dispatch(dbManagementActions.setItems(data));
+        } catch (error) {
+          dispatch(dbManagementActions.setItems(rows));
+          console.log(error)
+        }
       })();
     }
+
+    const fetchData = async () => {
+      try {
+        // const routes = await fetch(`${URL}/api/routes`, {
+        //   headers: { Authorization: `Bearer ${token}` },
+        // });
+        // const centers = await fetch(`${URL}/api/centers`, {
+        //   headers: { Authorization: `Bearer ${token}` },
+        // });
+        // const types = await fetch(`${URL}/api/types`, {
+        //   headers: { Authorization: `Bearer ${token}` },
+        // });
+
+        // dispatch(dbManagementActions.setRoutes((await routes.json())))
+        // dispatch(dbManagementActions.setCenters((await centers.json())))
+        // dispatch(dbManagementActions.setTypes((await types.json())))
+        
+        
+        
+        dispatch(dbManagementActions.setRoutes(routesData))
+        dispatch(dbManagementActions.setCenters(centersData))
+        dispatch(dbManagementActions.setTypes(binTypeData))
+      } catch (error) {
+        
+      }
+    }
+    fetchData();
+
   }, []);
 
   const classes = useDataTableStyle();
@@ -137,8 +203,9 @@ const BinsPage = () => {
     bintype: "",
     center_name: "",
     route: "",
-    latitude: "",
-    longitude: "",
+    latitude: 26.9555741,
+    longitude: 49.5683506,
+    
   };
 
   const [activeRow, setActiveRow] = useState(initRow);
@@ -150,6 +217,12 @@ const BinsPage = () => {
   const items = useSelector((state) => state.dbManagement.items);
 
   const setItems = (items) => dispatch(dbManagementActions.setItems(items));
+
+  const routes = useSelector((state) => state.dbManagement.routes);
+  
+  const centers = useSelector((state) => state.dbManagement.centers);
+  
+  const types = useSelector((state) => state.dbManagement.types);
 
   const openEdit = useSelector((state) => state.dbManagement.openEditDialog);
 
@@ -295,27 +368,51 @@ const BinsPage = () => {
               value={activeRow.description}
               onChange={handleInputChange}
             />
-            <TextField
-              label="Type"
-              name="bintype"
-              variant="outlined"
-              value={activeRow.bintype}
-              onChange={handleInputChange}
-            />
-            <TextField
-              label="Center"
-              name="center_name"
-              variant="outlined"
-              value={activeRow.center_name}
-              onChange={handleInputChange}
-            />
-            <TextField
-              label="Route"
-              name="route"
-              variant="outlined"
-              value={activeRow.route}
-              onChange={handleInputChange}
-            />
+            <FormControl sx={{ width: "auto" }} >
+              <InputLabel>{t("sharedType")}</InputLabel>
+              <Select
+                label={t("sharedType")}
+                value={activeRow.bintypeid}
+                onChange={handleInputChange}
+                name="bintypeid"
+              >
+                  {types.map(type => {
+                    return <MenuItem selected={type.id === activeRow.bintypeid} value={type.id}>
+                              {type.bintype}
+                            </MenuItem>
+                  })}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: "auto" }} >
+              <InputLabel>{t("center")}</InputLabel>
+              <Select
+                label={t("center")}
+                value={activeRow.centerid}
+                onChange={handleInputChange}
+                name="centerid"
+              >
+                  {centers.map(center => {
+                    return <MenuItem selected={center.id === activeRow.centerid} value={center.id}>
+                              {center.center_name}
+                            </MenuItem>
+                  })}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: "auto" }}>
+              <InputLabel>{t("reportRoute")}</InputLabel>
+              <Select
+                label={t("reportRoute")}
+                value={activeRow.routid}
+                onChange={handleInputChange}
+                name="routid"
+              >
+                  {routes.map(route => {
+                    return <MenuItem selected={route.id === activeRow.routid} value={route.id}>
+                              {route.rout_code}
+                            </MenuItem>
+                  })}
+              </Select>
+            </FormControl>
           </Box>
           <Box>
             <Box>
@@ -367,27 +464,52 @@ const BinsPage = () => {
               value={activeRow.description}
               onChange={handleInputChange}
             />
-            <TextField
-              label="Type"
-              name="type"
-              variant="outlined"
-              value={activeRow.bintype}
-              onChange={handleInputChange}
-            />
-            <TextField
-              label="Center"
-              name="center"
-              variant="outlined"
-              value={activeRow.center_name}
-              onChange={handleInputChange}
-            />
-            <TextField
-              label="Route"
-              name="route"
-              variant="outlined"
-              value={activeRow.route}
-              onChange={handleInputChange}
-            />
+            <FormControl>
+              <InputLabel>{t("sharedType")}</InputLabel>
+              <Select
+                label={t("sharedType")}
+                value={activeRow.bintypeid}
+                onChange={handleInputChange}
+                name="bintypeid"
+              >
+                  {types.map(type => {
+                    return <MenuItem selected={type.id === activeRow.bintypeid} value={type.id}>
+                              {type.bintype}
+                            </MenuItem>
+                  })}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <InputLabel>{t("center")}</InputLabel>
+              <Select
+                label={t("center")}
+                value={activeRow.centerid}
+                onChange={handleInputChange}
+                name="centerid"
+              >
+                  {centers.map(center => {
+                    return <MenuItem selected={center.id === activeRow.centerid} value={center.id}>
+                              {center.center_name}
+                            </MenuItem>
+                  })}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <InputLabel>{t("reportRoute")}</InputLabel>
+              <Select
+                label={t("reportRoute")}
+                value={activeRow.routid}
+                onChange={handleInputChange}
+                name="routid"
+              >
+                  {routes.map(route => {
+                    return <MenuItem selected={route.id === activeRow.routid} value={route.id}>
+                              {route.rout_code}
+                            </MenuItem>
+                  })}
+              </Select>
+            </FormControl>
+            
           </Box>
           <Box>
             <Box>
@@ -404,8 +526,8 @@ const BinsPage = () => {
                     draggable
                     onDragEnd={handleDrag}
                     position={{
-                      lat: parseFloat(activeRow.position?.split(" ")[0]),
-                      lng: parseFloat(activeRow.position?.split(" ")[1]),
+                      lat: parseFloat(activeRow.latitude),
+                      lng: parseFloat(activeRow.longitude),
                     }}
                     icon={trash}
                   />
