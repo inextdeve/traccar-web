@@ -10,7 +10,7 @@ const { reducer, actions } = createSlice({
     selected: [],
     openEditDialog: false,
     openAddDialog: false,
-    allDataIsFetched: false,
+    loading: false
   },
   reducers: {
     setItems(state, action) {
@@ -33,6 +33,9 @@ const { reducer, actions } = createSlice({
     },
     setOpenAddDialog(state, action) {
       state.openAddDialog = action.payload;
+    },
+    setLoading(state, action) {
+      state.loading = action.payload;
     },
   },
 });

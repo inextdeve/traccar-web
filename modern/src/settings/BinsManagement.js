@@ -8,36 +8,46 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  LinearProgress,
+  Typography
 } from "@mui/material";
-import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 import RoomOutlinedIcon from "@mui/icons-material/RoomOutlined";
 import AddIcon from "@mui/icons-material/Add";
+import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import { toast } from "react-toastify";
+import { dbManagementActions } from "../store";
 import SettingsMenu from "./components/SettingsMenu";
-import PageLayout from "../common/components/PageLayout";
 import CollectionTable from "./components/CollectionTable";
 import EditDialog from "./components/Dialog";
+import PageLayout from "../common/components/PageLayout";
+import { URL } from "../common/util/constant";
 import useDataTableStyle from "./common/useDataTableStyle";
 import trash from "../resources/images/icon/bin.svg";
-import { dbManagementActions } from "../store";
-import { URL } from "../common/util/constant";
 import { useTranslation } from "../common/components/LocalizationProvider";
+import ConfirmDialog from "./components/ConfirmDialog";
 
 const containerStyle = {
   width: "100%",
   height: "200px",
 };
 
-function createTableData(id, description, position, type, center, route) {
-  return {
-    id,
-    description,
-    position,
-    type,
-    center,
-    route,
-  };
+const initRow = {
+  id_bin: null,
+  description: "",
+  bintypeid: "",
+  centerid: "",
+  routid: "",
+  position: `${26.9555741} ${49.5683506}`,
+};
+
+const inputErrInit = {
+  description: false,
+  bintypeid: false,
+  centerid: false,
+  routid: false,
 }
-const BinsPage = () => {
+
+const BinsManagement = () => {
   const headCells = [
     {
       id: "id",
@@ -85,133 +95,18 @@ const BinsPage = () => {
     "route",
   ];
 
-  // const rows = [
-  //   {
-  //     id: 7,
-  //     id_bin: 7,
-  //     description: "CTC-0002",
-  //     position: "",
-  //     routid: 97,
-  //     centerid: 85,
-  //     bintypeid: 5,
-  //     center_name: "HZJ",
-  //     route: "ZAH",
-  //     bintype: "6 Yard",
-  //     latitude: "26.9791087",
-  //     longitude: "49.496904",
-  //   },
-  //   {
-  //     id: 9,
-  //     id_bin: 9,
-  //     description: "SLS-000E",
-  //     position: "",
-  //     routid: 98,
-  //     centerid: 86,
-  //     bintypeid: 6,
-  //     center_name: "LOK",
-  //     route: "JIN",
-  //     bintype: "10 Litre",
-  //     latitude: "26.9791087",
-  //     longitude: "49.496904",
-  //   },
-  // ];
-
-  // const binTypeData = [
-  //   {
-  //     id: 5,
-  //     bintype: "6 Yard",
-  //   },
-  //   {
-  //     id: 6,
-  //     bintype: "10 Litre",
-  //   },
-  // ];
-  // const centersData = [
-  //   {
-  //     id: 85,
-  //     center_name: "HZJ",
-  //   },
-  //   {
-  //     id: 86,
-  //     center_name: "LOK",
-  //   },
-  // ];
-  // const routesData = [
-  //   {
-  //     id: 97,
-  //     rout_code: "ZAH",
-  //   },
-  //   {
-  //     id: 98,
-  //     rout_code: "JIN",
-  //   },
-  // ];
-
   // StateFull
   const t = useTranslation();
   const dispatch = useDispatch();
-
-  const bins = useSelector((state) => state.bins.bins);
-
-  useEffect(() => {
-    if (bins.length) {
-      dispatch(dbManagementActions.setItems([...bins]));
-    } else {
-      (async () => {
-        try {
-          const allBins = await fetch(`${URL}/api/bins`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const data = await allBins.json();
-          dispatch(
-            dbManagementActions.setItems(
-              data.map((item) => ({ id: item.id_bin, ...item }))
-            )
-          );
-        } catch (error) {
-          console.log(error);
-        }
-      })();
-    }
-
-    const fetchData = async () => {
-      try {
-        const routesResponse = await fetch(`${URL}/api/routes`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const centersResponse = await fetch(`${URL}/api/centers`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const typesResponse = await fetch(`${URL}/api/types`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const routes = await routesResponse.json();
-        const centers = await centersResponse.json();
-        const types = await typesResponse.json();
-
-        dispatch(dbManagementActions.setRoutes(routes));
-        dispatch(dbManagementActions.setCenters(centers));
-        dispatch(dbManagementActions.setTypes(types));
-      } catch (error) {}
-    };
-    fetchData();
-  }, []);
-
   const classes = useDataTableStyle();
 
-  // Currently selected row for editing or for adding
-
-  const initRow = {
-    id_bin: null,
-    description: "",
-    bintypeid: "",
-    centerid: "",
-    routid: "",
-    position: `${26.9555741} ${49.5683506}`,
-  };
-
   const [activeRow, setActiveRow] = useState(initRow);
+
+  const [inputErr, setInputErr] = useState(inputErrInit);
+
+  const [openDelete, setOpenDelete] = useState(false);
+
+  const bins = useSelector((state) => state.bins.bins);
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
@@ -237,6 +132,11 @@ const BinsPage = () => {
   const setOpenAdd = (bool) =>
     dispatch(dbManagementActions.setOpenAddDialog(bool));
 
+  const loading = useSelector((state) => state.dbManagement.loading);
+
+  const setLoading = (bool) =>
+  dispatch(dbManagementActions.setLoading(bool));
+
   const googleMapsApiKey = useSelector(
     (state) => state.session.server.attributes["Google Map Api Key"]
   );
@@ -245,6 +145,58 @@ const BinsPage = () => {
     id: "google-map-script",
     googleMapsApiKey,
   });
+
+  useEffect(() => {
+    setLoading(true)
+    if (bins.length) {
+      dispatch(dbManagementActions.setItems([...bins]));
+      setLoading(false)
+    } else {
+      (async () => {
+        try {
+          const allBins = await fetch(`${URL}/api/bins`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await allBins.json();
+          dispatch(
+            dbManagementActions.setItems(
+              data.map((item) => ({ id: item.id_bin, ...item }))
+            )
+          );
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoading(false)
+        }
+      })();
+    }
+
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        const routesResponse = await fetch(`${URL}/api/routes`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const centersResponse = await fetch(`${URL}/api/centers`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const typesResponse = await fetch(`${URL}/api/types`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const routes = await routesResponse.json();
+        const centers = await centersResponse.json();
+        const types = await typesResponse.json();
+
+        dispatch(dbManagementActions.setRoutes(routes));
+        dispatch(dbManagementActions.setCenters(centers));
+        dispatch(dbManagementActions.setTypes(types));
+      } catch (error) {} finally {
+        setLoading(false)
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (selected.length === 1 || openEdit) {
@@ -256,6 +208,21 @@ const BinsPage = () => {
       setActiveRow(selectedItem[0]);
     }
   }, [selected, openEdit]);
+
+  // Validation Func
+
+  const formValidation = () => {
+    // Just check any of the input label is empty
+
+    Object.keys(inputErr).forEach(key => {
+      if (activeRow[key] === "") {
+        setInputErr(prev => ({...prev, [key]: true}))
+      } else {
+        setInputErr(prev => ({...prev, [key]: false}))
+      }
+    });
+    return !Object.values(inputErr).includes(false);
+  }
 
   // Handling functions
   const handleInputChange = (event) => {
@@ -273,7 +240,9 @@ const BinsPage = () => {
 
   const handleSave = async (event) => {
     // event params is a string ("edit" | "add")
-    // Fetch a post request modify db
+    
+    // If the add form not filled return false
+    if (!formValidation()) return;
 
     const body = {
       id_bin: activeRow.id || null,
@@ -287,19 +256,25 @@ const BinsPage = () => {
     switch (event) {
       case "edit":
         try {
-          const response = await fetch(`${URL}/api/bins/`, {
-            method: "PATCH",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-          });
+          const response = await toast.promise(
+            fetch(`${URL}/api/bins/`, {
+              method: "PATCH",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            }),
+            {
+              pending: 'Please Wait',
+              success: 'Edited Successfully',
+              error: 'Error'
+            }
+        );
+          const update = await response.json();
 
-          const updatePosition = await response.json();
-
-          if (updatePosition.success) {
-            throw new Error("Cannot update position");
+          if (update.success) {
+            throw new Error("Cannot add item");
           }
         } catch (error) {
           console.log(error);
@@ -307,20 +282,35 @@ const BinsPage = () => {
         break;
       case "add":
         try {
-          const response = await fetch(`${URL}/api/bins/`, {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-          });
+          const response = await toast.promise(
+            fetch(`${URL}/api/bins/`, {
+              method: "PUT",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            }),
+            {
+              pending: 'Please Wait',
+              success: 'Added Successfully',
+              error: 'Error'
+            }
+        );
+          const added = await response.json();
 
-          const updatePosition = await response.json();
-
-          if (updatePosition.success) {
+          if (added.success) {
             throw new Error("Cannot update position");
           }
+          // Change local state
+          const newItems = items.map((item) => {
+            if (Number(item.id) === Number(activeRow.id)) {
+              return activeRow;
+            }
+            return item;
+          });
+
+          setItems(newItems);
         } catch (error) {
           console.log(error);
         }
@@ -329,31 +319,63 @@ const BinsPage = () => {
         break;
     }
 
-    // Change local state
-    const newItems = items.map((item) => {
-      if (Number(item.id) === Number(activeRow.id)) {
-        return activeRow;
-      }
-      return item;
-    });
-
-    setItems(newItems);
+    
   };
   const handleClose = () => {
     setOpenEdit(false);
     setOpenAdd(false);
+    setInputErr(inputErrInit);
   };
 
   const handleAddClick = () => {
     setActiveRow(initRow);
     setOpenAdd(true);
   };
+
+  const handleDelete = async () => {
+    const body = selected;
+    try {
+      const response = await toast.promise(
+        fetch(`${URL}/api/bins/`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        }),
+        {
+          pending: 'Please Wait',
+          success: 'Deleted',
+          error: 'Error'
+        }
+    );
+      const deletion = await response.json();
+
+      if (deletion.success) {
+        throw new Error("Cannot delete items");
+      }
+      // Remove the selected id rows
+      const newItems = items.filter((item) => {
+        return !selected.includes(item.id);
+      });
+
+      setItems(newItems);
+    } catch (error) {
+      
+    }
+  }
   return (
     <PageLayout
       menu={<SettingsMenu />}
-      breadcrumbs={["settingsTitle", "bins"]}
-      //Don't forget to change title
+      breadcrumbs={["settingsTitle", "binsManagement"]}
     >
+      {loading && <LinearProgress />}
+      {/* Deleting confirmation dialog */}
+      <ConfirmDialog open={openDelete} setOpen={setOpenDelete} onConfirm={handleDelete}>
+        <Typography variant="caption">Selected Rows IDs: </Typography>
+        <Typography variant="subtitle2">{selected.join(", ")}</Typography>
+      </ConfirmDialog>
       <CollectionTable
         // Modify the position value to an anchor link to google maps
         rows={items.map((item) => ({
@@ -367,6 +389,7 @@ const BinsPage = () => {
         keys={keys}
         headCells={headCells}
         title="Bins"
+        onDelete={() => setOpenDelete(true)}
       />
       <EditDialog
         onSave={() => handleSave("edit")}
@@ -384,6 +407,7 @@ const BinsPage = () => {
             }}
           >
             <TextField
+              error={inputErr.description}
               label="Description"
               name="description"
               variant="outlined"
@@ -393,6 +417,7 @@ const BinsPage = () => {
             <FormControl sx={{ width: "auto" }}>
               <InputLabel>{t("sharedType")}</InputLabel>
               <Select
+                error={inputErr.bintypeid}
                 label={t("sharedType")}
                 value={activeRow.bintypeid}
                 onChange={handleInputChange}
@@ -413,6 +438,7 @@ const BinsPage = () => {
             <FormControl sx={{ width: "auto" }}>
               <InputLabel>{t("center")}</InputLabel>
               <Select
+                error={inputErr.centerid}
                 label={t("center")}
                 value={activeRow.centerid}
                 onChange={handleInputChange}
@@ -433,6 +459,7 @@ const BinsPage = () => {
             <FormControl sx={{ width: "auto" }}>
               <InputLabel>{t("reportRoute")}</InputLabel>
               <Select
+                error={inputErr.routid}
                 label={t("reportRoute")}
                 value={activeRow.routid}
                 onChange={handleInputChange}
@@ -494,6 +521,7 @@ const BinsPage = () => {
             }}
           >
             <TextField
+              error={inputErr.description}
               label="Description"
               name="description"
               variant="outlined"
@@ -503,6 +531,7 @@ const BinsPage = () => {
             <FormControl>
               <InputLabel>{t("sharedType")}</InputLabel>
               <Select
+                error={inputErr.bintypeid}
                 label={t("sharedType")}
                 value={activeRow.bintypeid}
                 onChange={handleInputChange}
@@ -523,6 +552,7 @@ const BinsPage = () => {
             <FormControl>
               <InputLabel>{t("center")}</InputLabel>
               <Select
+                error={inputErr.centerid}
                 label={t("center")}
                 value={activeRow.centerid}
                 onChange={handleInputChange}
@@ -543,6 +573,7 @@ const BinsPage = () => {
             <FormControl>
               <InputLabel>{t("reportRoute")}</InputLabel>
               <Select
+                error={inputErr.routid}
                 label={t("reportRoute")}
                 value={activeRow.routid}
                 onChange={handleInputChange}
@@ -600,4 +631,4 @@ const BinsPage = () => {
   );
 };
 
-export default BinsPage;
+export default BinsManagement;

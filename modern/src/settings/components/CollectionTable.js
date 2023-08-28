@@ -1,20 +1,19 @@
 import * as React from "react";
-import { alpha, keyframes } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
+import { alpha } from "@mui/material/styles";
+import {Box, Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TableSortLabel,
+  Toolbar,
+  Typography,
+  Paper,
+  Checkbox,
+  IconButton,
+  Tooltip} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import EditIcon from "@mui/icons-material/Edit";
@@ -111,7 +110,7 @@ function EnhancedTableHead(props) {
 function EnhancedTableToolbar(props) {
   const dispatch = useDispatch();
 
-  const { numSelected } = props;
+  const { numSelected, onDelete } = props;
 
   const setOpen = (bool) =>
     dispatch(dbManagementActions.setOpenEditDialog(bool));
@@ -161,7 +160,7 @@ function EnhancedTableToolbar(props) {
       ) : null}
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton onClick={onDelete}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -176,7 +175,7 @@ function EnhancedTableToolbar(props) {
   );
 }
 
-export default function EnhancedTable({ rows, headCells, title, keys }) {
+export default function EnhancedTable({ rows, headCells, title, keys, onDelete }) {
   const dispatch = useDispatch();
   const [order, setOrder] = React.useState("asc");
   // Order by column
@@ -251,7 +250,7 @@ export default function EnhancedTable({ rows, headCells, title, keys }) {
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2, borderRadius: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} title={title} />
+        <EnhancedTableToolbar numSelected={selected.length} title={title} onDelete={onDelete} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
