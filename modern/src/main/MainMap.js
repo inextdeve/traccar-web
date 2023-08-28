@@ -99,6 +99,9 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
                 center_name,
                 route,
                 description,
+                centerid,
+                routid,
+                bintypeid,
               }) => {
                 let category = "";
                 let report = { is: false, status: null };
@@ -132,6 +135,9 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
                   binType: bintype,
                   report,
                   description,
+                  centerid,
+                  routid,
+                  bintypeid,
                 };
               }
             )

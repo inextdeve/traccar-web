@@ -575,6 +575,7 @@
   "total": "Total",
   "overview": "Overview",
   "binsStatus": "Bins Status",
+  "binsManagement": "Bins Management",
   "theProportionOfEachBinsType": "The proportion of each bins type",
   "binsStatusByType": "Bins Status By Type",
   "theProportionOfEmptedAndUnemptedBinsByTypes": "The proportion of empted and unempted bins by types",

@@ -62,7 +62,7 @@ import EquipmentsByDetails from "./analytics/equipments/ByDetails";
 import EquipmentsByWeek from "./analytics/equipments/ByWeek";
 import EquipmentsByService from "./analytics/equipments/ByService";
 import Simulator from "./analytics/Simulator";
-import BinsPage from "./settings/BinsPage";
+import BinsManagement from "./settings/BinsManagement";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -150,7 +150,7 @@ const Navigation = () => {
           <Route path="users" element={<UsersPage />} />
           <Route path="user/:id" element={<UserPage />} />
           <Route path="user" element={<UserPage />} />
-          <Route path="bins" element={<BinsPage />} />
+          <Route path="bins" element={<BinsManagement />} />
         </Route>
 
         <Route path="reports">

@@ -163,7 +163,7 @@ const SettingsMenu = () => {
           <List>
             {admin && (
               <MenuItem
-                title={t("bins")}
+                title={t("binsManagement")}
                 link="/settings/bins"
                 icon={<DeleteIcon />}
                 selected={location.pathname === "/settings/bins"}

@@ -624,6 +624,7 @@
   "reporterName": "اسم المبلغ",
   "reporterPhone": "الهاتف",
   "binsReports": "البلاغات",
+  "binsManagement": "ادارة الحاويات",
   "processing": "جاري التنفيذ",
   "done": "تم التنفيذ",
   "cleaned": "تم التنظيف",
