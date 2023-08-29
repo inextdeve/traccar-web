@@ -15,7 +15,7 @@ import RoomOutlinedIcon from "@mui/icons-material/RoomOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 import { toast } from "react-toastify";
-import { dbManagementActions } from "../store";
+import { dbManagementActions, errorsActions } from "../store";
 import SettingsMenu from "./components/SettingsMenu";
 import CollectionTable from "./components/CollectionTable";
 import EditDialog from "./components/Dialog";
@@ -25,7 +25,6 @@ import useDataTableStyle from "./common/useDataTableStyle";
 import trash from "../resources/images/icon/bin.svg";
 import { useTranslation } from "../common/components/LocalizationProvider";
 import ConfirmDialog from "./components/ConfirmDialog";
-import { useCallback } from "react";
 
 const containerStyle = {
   width: "100%",
@@ -37,7 +36,6 @@ const initRow = {
   bintypeid: "",
   centerid: "",
   routid: "",
-  position: `${26.9555741} ${49.5683506}`,
   latitude: 26.9555741,
   longitude: 49.5683506,
 };
@@ -155,17 +153,22 @@ const BinsManagement = () => {
     } else {
       (async () => {
         try {
-          const allBins = await fetch(`${URL}/api/bins`, {
+          const response = await fetch(`${URL}/api/bins`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          const data = await allBins.json();
+
+          if (response.status >= 400 && response.status < 600) {
+            throw new Error("Server Error");
+          }
+
+          const data = await response.json();
           dispatch(
             dbManagementActions.setItems(
               data.map((item) => ({ id: item.id_bin, ...item }))
             )
           );
         } catch (error) {
-          console.log(error);
+          dispatch(errorsActions.push(error.message));
         } finally {
           setLoading(false);
         }
@@ -178,12 +181,26 @@ const BinsManagement = () => {
         const routesResponse = await fetch(`${URL}/api/routes`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        if (routesResponse.status >= 400 && routesResponse.status < 600) {
+          throw new Error("Server Error: Cannot get routes");
+        }
+
         const centersResponse = await fetch(`${URL}/api/centers`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        if (centersResponse.status >= 400 && centersResponse.status < 600) {
+          throw new Error("Server Error: Cannot get centers");
+        }
+
         const typesResponse = await fetch(`${URL}/api/types`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        if (typesResponse.status >= 400 && typesResponse.status < 600) {
+          throw new Error("Server Error: Cannot get bins types");
+        }
 
         const routes = await routesResponse.json();
         const centers = await centersResponse.json();
@@ -193,6 +210,7 @@ const BinsManagement = () => {
         dispatch(dbManagementActions.setCenters(centers));
         dispatch(dbManagementActions.setTypes(types));
       } catch (error) {
+        dispatch(errorsActions.push(error.message));
       } finally {
         setLoading(false);
       }
@@ -214,7 +232,7 @@ const BinsManagement = () => {
   // Validation Func
 
   const formValidation = () => {
-    // Just check any of the input label is empty and update the input error state for input color
+    // Just check any of the inputs is empty and update the input error state for input color
     Object.keys(inputErr).forEach((key) => {
       if (activeRow[key] === "") {
         setInputErr((prev) => ({ ...prev, [key]: true }));
@@ -222,7 +240,7 @@ const BinsManagement = () => {
         setInputErr((prev) => ({ ...prev, [key]: false }));
       }
     });
-    // Check Validation
+    // Check Validation if just one inp is emptey => not valid => break the loop => return false
     let valid = true;
 
     for (let key of Object.keys(inputErr)) {
@@ -255,6 +273,7 @@ const BinsManagement = () => {
       return;
     }
 
+    // Save toast id for dimiss in future
 
     let toastId = toast.loading("Please Wait");
 
@@ -282,15 +301,14 @@ const BinsManagement = () => {
           toast.dismiss(toastId);
 
           if (response.status >= 400 && response.status < 600) {
-            throw new Error("Bad response from server");
+            throw new Error("Server Error: The item cannot updated");
           }
 
           const update = await response.json();
           toastId = toast.success("Added Susccessfully");
         } catch (error) {
           toast.dismiss(toastId);
-          toastId = toast.error("Error");
-          console.log(error);
+          toastId = toast.error(error.message);
         }
         break;
       case "add":
@@ -307,7 +325,7 @@ const BinsManagement = () => {
           toast.dismiss(toastId);
 
           if (response.status >= 400 && response.status < 600) {
-            throw new Error("Bad response from server");
+            throw new Error("Server Error: The item cannot added");
           }
 
           const added = await response.json();
@@ -328,8 +346,7 @@ const BinsManagement = () => {
           setOpenAdd(false);
         } catch (error) {
           toast.dismiss(toastId);
-          toastId = toast.error("Error");
-          console.log(error);
+          toastId = toast.error(error.message);
         }
         break;
       default:
@@ -349,7 +366,9 @@ const BinsManagement = () => {
 
   const handleDelete = async () => {
     const body = { selected };
+
     let toastId = toast.loading("Please Wait");
+
     try {
       const response = await fetch(`${URL}/api/bins/`, {
         method: "DELETE",
@@ -359,11 +378,11 @@ const BinsManagement = () => {
         },
         body: JSON.stringify(body),
       });
-      // Dimiss the loader
+
       toast.dismiss(toastId);
 
       if (response.status >= 400 && response.status < 600) {
-        throw new Error("Bad response from server");
+        throw new Error("Server Error: Cannot delete the items");
       }
 
       const deletion = await response.json();
@@ -375,9 +394,8 @@ const BinsManagement = () => {
       setItems(newItems);
       toastId = toast.success("Success");
     } catch (error) {
-      console.log(error);
       toast.dismiss(toastId);
-      toast.error("Error");
+      toast.error(error.message);
     }
   };
   return (
