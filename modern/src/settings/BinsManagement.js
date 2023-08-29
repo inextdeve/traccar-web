@@ -9,7 +9,7 @@ import {
   Select,
   MenuItem,
   LinearProgress,
-  Typography
+  Typography,
 } from "@mui/material";
 import RoomOutlinedIcon from "@mui/icons-material/RoomOutlined";
 import AddIcon from "@mui/icons-material/Add";
@@ -25,6 +25,7 @@ import useDataTableStyle from "./common/useDataTableStyle";
 import trash from "../resources/images/icon/bin.svg";
 import { useTranslation } from "../common/components/LocalizationProvider";
 import ConfirmDialog from "./components/ConfirmDialog";
+import { useCallback } from "react";
 
 const containerStyle = {
   width: "100%",
@@ -32,12 +33,13 @@ const containerStyle = {
 };
 
 const initRow = {
-  id_bin: null,
   description: "",
   bintypeid: "",
   centerid: "",
   routid: "",
   position: `${26.9555741} ${49.5683506}`,
+  latitude: 26.9555741,
+  longitude: 49.5683506,
 };
 
 const inputErrInit = {
@@ -45,7 +47,7 @@ const inputErrInit = {
   bintypeid: false,
   centerid: false,
   routid: false,
-}
+};
 
 const BinsManagement = () => {
   const headCells = [
@@ -134,8 +136,7 @@ const BinsManagement = () => {
 
   const loading = useSelector((state) => state.dbManagement.loading);
 
-  const setLoading = (bool) =>
-  dispatch(dbManagementActions.setLoading(bool));
+  const setLoading = (bool) => dispatch(dbManagementActions.setLoading(bool));
 
   const googleMapsApiKey = useSelector(
     (state) => state.session.server.attributes["Google Map Api Key"]
@@ -147,10 +148,10 @@ const BinsManagement = () => {
   });
 
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     if (bins.length) {
       dispatch(dbManagementActions.setItems([...bins]));
-      setLoading(false)
+      setLoading(false);
     } else {
       (async () => {
         try {
@@ -166,13 +167,13 @@ const BinsManagement = () => {
         } catch (error) {
           console.log(error);
         } finally {
-          setLoading(false)
+          setLoading(false);
         }
       })();
     }
 
     const fetchData = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
         const routesResponse = await fetch(`${URL}/api/routes`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -191,8 +192,9 @@ const BinsManagement = () => {
         dispatch(dbManagementActions.setRoutes(routes));
         dispatch(dbManagementActions.setCenters(centers));
         dispatch(dbManagementActions.setTypes(types));
-      } catch (error) {} finally {
-        setLoading(false)
+      } catch (error) {
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -212,17 +214,25 @@ const BinsManagement = () => {
   // Validation Func
 
   const formValidation = () => {
-    // Just check any of the input label is empty
-
-    Object.keys(inputErr).forEach(key => {
+    // Just check any of the input label is empty and update the input error state for input color
+    Object.keys(inputErr).forEach((key) => {
       if (activeRow[key] === "") {
-        setInputErr(prev => ({...prev, [key]: true}))
+        setInputErr((prev) => ({ ...prev, [key]: true }));
       } else {
-        setInputErr(prev => ({...prev, [key]: false}))
+        setInputErr((prev) => ({ ...prev, [key]: false }));
       }
     });
-    return !Object.values(inputErr).includes(false);
-  }
+    // Check Validation
+    let valid = true;
+
+    for (let key of Object.keys(inputErr)) {
+      if (activeRow[key] === "") {
+        valid = false;
+        break;
+      }
+    }
+    return valid;
+  };
 
   // Handling functions
   const handleInputChange = (event) => {
@@ -240,9 +250,14 @@ const BinsManagement = () => {
 
   const handleSave = async (event) => {
     // event params is a string ("edit" | "add")
-    
+
+    // console.log("FORM VALIDATION", formValidation());
+    if (!formValidation()) {
+      return;
+    }
     // If the add form not filled return false
-    if (!formValidation()) return;
+
+    let toastId = toast.loading("Please Wait");
 
     const body = {
       id_bin: activeRow.id || null,
@@ -256,52 +271,48 @@ const BinsManagement = () => {
     switch (event) {
       case "edit":
         try {
-          const response = await toast.promise(
-            fetch(`${URL}/api/bins/`, {
-              method: "PATCH",
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(body),
-            }),
-            {
-              pending: 'Please Wait',
-              success: 'Edited Successfully',
-              error: 'Error'
-            }
-        );
-          const update = await response.json();
+          const response = await fetch(`${URL}/api/bins/`, {
+            method: "PATCH",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
 
-          if (update.success) {
-            throw new Error("Cannot add item");
+          toast.dismiss(toastId);
+
+          if (response.status >= 400 && response.status < 600) {
+            throw new Error("Bad response from server");
           }
+
+          const update = await response.json();
+          toastId = toast.success("Added Susccessfully");
         } catch (error) {
+          toast.dismiss(toastId);
+          toastId = toast.error("Error");
           console.log(error);
         }
         break;
       case "add":
         try {
-          const response = await toast.promise(
-            fetch(`${URL}/api/bins/`, {
-              method: "PUT",
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(body),
-            }),
-            {
-              pending: 'Please Wait',
-              success: 'Added Successfully',
-              error: 'Error'
-            }
-        );
+          const response = await fetch(`${URL}/api/bins/`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
+
+          toast.dismiss(toastId);
+
+          if (response.status >= 400 && response.status < 600) {
+            throw new Error("Bad response from server");
+          }
+
           const added = await response.json();
 
-          if (added.success) {
-            throw new Error("Cannot update position");
-          }
           // Change local state
           const newItems = items.map((item) => {
             if (Number(item.id) === Number(activeRow.id)) {
@@ -311,15 +322,16 @@ const BinsManagement = () => {
           });
 
           setItems(newItems);
+          toastId = toast.success("Added Susccessfully");
         } catch (error) {
+          toast.dismiss(toastId);
+          toastId = toast.error("Error");
           console.log(error);
         }
         break;
       default:
         break;
     }
-
-    
   };
   const handleClose = () => {
     setOpenEdit(false);
@@ -333,38 +345,38 @@ const BinsManagement = () => {
   };
 
   const handleDelete = async () => {
-    const body = selected;
+    const body = { selected };
+    let toastId = toast.loading("Please Wait");
     try {
-      const response = await toast.promise(
-        fetch(`${URL}/api/bins/`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }),
-        {
-          pending: 'Please Wait',
-          success: 'Deleted',
-          error: 'Error'
-        }
-    );
+      const response = await fetch(`${URL}/api/bins/`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      // Dimiss the loader
+      toast.dismiss(toastId);
+
+      if (response.status >= 400 && response.status < 600) {
+        throw new Error("Bad response from server");
+      }
+
       const deletion = await response.json();
 
-      if (deletion.success) {
-        throw new Error("Cannot delete items");
-      }
       // Remove the selected id rows
       const newItems = items.filter((item) => {
         return !selected.includes(item.id);
       });
-
       setItems(newItems);
+      toastId = toast.success("Success");
     } catch (error) {
-      
+      console.log(error);
+      toast.dismiss(toastId);
+      toast.error("Error");
     }
-  }
+  };
   return (
     <PageLayout
       menu={<SettingsMenu />}
@@ -372,7 +384,11 @@ const BinsManagement = () => {
     >
       {loading && <LinearProgress />}
       {/* Deleting confirmation dialog */}
-      <ConfirmDialog open={openDelete} setOpen={setOpenDelete} onConfirm={handleDelete}>
+      <ConfirmDialog
+        open={openDelete}
+        setOpen={setOpenDelete}
+        onConfirm={handleDelete}
+      >
         <Typography variant="caption">Selected Rows IDs: </Typography>
         <Typography variant="subtitle2">{selected.join(", ")}</Typography>
       </ConfirmDialog>
