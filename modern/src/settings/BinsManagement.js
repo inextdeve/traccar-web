@@ -251,11 +251,10 @@ const BinsManagement = () => {
   const handleSave = async (event) => {
     // event params is a string ("edit" | "add")
 
-    // console.log("FORM VALIDATION", formValidation());
     if (!formValidation()) {
       return;
     }
-    // If the add form not filled return false
+
 
     let toastId = toast.loading("Please Wait");
 
@@ -313,6 +312,8 @@ const BinsManagement = () => {
 
           const added = await response.json();
 
+
+
           // Change local state
           const newItems = items.map((item) => {
             if (Number(item.id) === Number(activeRow.id)) {
@@ -323,6 +324,8 @@ const BinsManagement = () => {
 
           setItems(newItems);
           toastId = toast.success("Added Susccessfully");
+          setActiveRow(initRow);
+          setOpenAdd(false);
         } catch (error) {
           toast.dismiss(toastId);
           toastId = toast.error("Error");
