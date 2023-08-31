@@ -48,42 +48,44 @@ const inputErrInit = {
 };
 
 const BinsManagement = () => {
+  const t = useTranslation();
+
   const headCells = [
     {
       id: "id",
       numeric: true,
       disablePadding: true,
-      label: "ID",
+      label: t("id"),
     },
     {
       id: "description",
       numeric: true,
       disablePadding: false,
-      label: "Description",
+      label: t("sharedDescription"),
     },
     {
       id: "position",
       numeric: true,
       disablePadding: false,
-      label: "Position",
+      label: t("position"),
     },
     {
       id: "type",
       numeric: true,
       disablePadding: false,
-      label: "Type",
+      label: t("sharedType"),
     },
     {
       id: "center",
       numeric: true,
       disablePadding: false,
-      label: "Center",
+      label: t("center"),
     },
     {
       id: "route",
       numeric: true,
       disablePadding: false,
-      label: "Route",
+      label: t("reportRoute"),
     },
   ];
   const keys = [
@@ -96,7 +98,6 @@ const BinsManagement = () => {
   ];
 
   // StateFull
-  const t = useTranslation();
   const dispatch = useDispatch();
   const classes = useDataTableStyle();
 
@@ -289,7 +290,7 @@ const BinsManagement = () => {
     switch (event) {
       case "edit":
         try {
-          const response = await fetch(`${URL}/api/bins/`, {
+          const response = await fetch(`${URL}/api/bins`, {
             method: "PATCH",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -301,11 +302,23 @@ const BinsManagement = () => {
           toast.dismiss(toastId);
 
           if (response.status >= 400 && response.status < 600) {
-            throw new Error("Server Error: The item cannot updated");
+            const errorMessage = await response.json();
+            throw new Error(
+              errorMessage?.message || "Server Error: The item cannot updated"
+            );
           }
 
-          const update = await response.json();
-          toastId = toast.success("Added Susccessfully");
+          // Change local state
+          const newItems = items.map((item) => {
+            if (Number(item.id) === Number(activeRow.id)) {
+              return activeRow;
+            }
+            return item;
+          });
+
+          setItems(newItems);
+
+          toastId = toast.success("Edited Successfully");
         } catch (error) {
           toast.dismiss(toastId);
           toastId = toast.error(error.message);
@@ -313,7 +326,7 @@ const BinsManagement = () => {
         break;
       case "add":
         try {
-          const response = await fetch(`${URL}/api/bins/`, {
+          const response = await fetch(`${URL}/api/bins`, {
             method: "PUT",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -325,23 +338,13 @@ const BinsManagement = () => {
           toast.dismiss(toastId);
 
           if (response.status >= 400 && response.status < 600) {
-            throw new Error("Server Error: The item cannot added");
+            const errorMessage = await response.json();
+            throw new Error(
+              errorMessage?.message || "Server Error: The item cannot added"
+            );
           }
 
-          const added = await response.json();
-
-
-
-          // Change local state
-          const newItems = items.map((item) => {
-            if (Number(item.id) === Number(activeRow.id)) {
-              return activeRow;
-            }
-            return item;
-          });
-
-          setItems(newItems);
-          toastId = toast.success("Added Susccessfully");
+          toastId = toast.success("Added Successfully");
           setActiveRow(initRow);
           setOpenAdd(false);
         } catch (error) {
@@ -370,7 +373,7 @@ const BinsManagement = () => {
     let toastId = toast.loading("Please Wait");
 
     try {
-      const response = await fetch(`${URL}/api/bins/`, {
+      const response = await fetch(`${URL}/api/bins`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -382,10 +385,11 @@ const BinsManagement = () => {
       toast.dismiss(toastId);
 
       if (response.status >= 400 && response.status < 600) {
-        throw new Error("Server Error: Cannot delete the items");
+        const errorMessage = await response.json();
+        throw new Error(
+          errorMessage?.message || "Server Error: Cannot delete the items"
+        );
       }
-
-      const deletion = await response.json();
 
       // Remove the selected id rows
       const newItems = items.filter((item) => {
@@ -425,7 +429,7 @@ const BinsManagement = () => {
         }))}
         keys={keys}
         headCells={headCells}
-        title="Bins"
+        title={t("bins")}
         onDelete={() => setOpenDelete(true)}
       />
       <EditDialog
@@ -445,7 +449,7 @@ const BinsManagement = () => {
           >
             <TextField
               error={inputErr.description}
-              label="Description"
+              label={t("sharedDescription")}
               name="description"
               variant="outlined"
               value={activeRow.description}
@@ -463,6 +467,7 @@ const BinsManagement = () => {
                 {types.map((type) => {
                   return (
                     <MenuItem
+                      key={type.id}
                       selected={type.id === activeRow.bintypeid}
                       value={type.id}
                     >
@@ -484,6 +489,7 @@ const BinsManagement = () => {
                 {centers.map((center) => {
                   return (
                     <MenuItem
+                      key={center.id}
                       selected={center.id === activeRow.centerid}
                       value={center.id}
                     >
@@ -505,6 +511,7 @@ const BinsManagement = () => {
                 {routes.map((route) => {
                   return (
                     <MenuItem
+                      key={route.id}
                       selected={route.id === activeRow.routid}
                       value={route.id}
                     >
@@ -545,7 +552,7 @@ const BinsManagement = () => {
         onSave={() => handleSave("add")}
         open={openAdd}
         onClose={handleClose}
-        title="Add Bin"
+        title={t("sharedAdd")}
       >
         <Box>
           <Box
@@ -559,7 +566,7 @@ const BinsManagement = () => {
           >
             <TextField
               error={inputErr.description}
-              label="Description"
+              label={t("sharedDescription")}
               name="description"
               variant="outlined"
               value={activeRow.description}
@@ -577,6 +584,7 @@ const BinsManagement = () => {
                 {types.map((type) => {
                   return (
                     <MenuItem
+                      key={type.id}
                       selected={type.id === activeRow.bintypeid}
                       value={type.id}
                     >
@@ -598,6 +606,7 @@ const BinsManagement = () => {
                 {centers.map((center) => {
                   return (
                     <MenuItem
+                      key={center.id}
                       selected={center.id === activeRow.centerid}
                       value={center.id}
                     >
@@ -619,6 +628,7 @@ const BinsManagement = () => {
                 {routes.map((route) => {
                   return (
                     <MenuItem
+                      key={route.id}
                       selected={route.id === activeRow.routid}
                       value={route.id}
                     >

@@ -1,6 +1,8 @@
 import * as React from "react";
 import { alpha } from "@mui/material/styles";
-import {Box, Table,
+import {
+  Box,
+  Table,
   TableBody,
   TableCell,
   TableContainer,
@@ -13,7 +15,8 @@ import {Box, Table,
   Paper,
   Checkbox,
   IconButton,
-  Tooltip} from "@mui/material";
+  Tooltip,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import EditIcon from "@mui/icons-material/Edit";
@@ -76,7 +79,7 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              "aria-label": "select all desserts",
+              "aria-label": "select all items",
             }}
           />
         </TableCell>
@@ -175,7 +178,13 @@ function EnhancedTableToolbar(props) {
   );
 }
 
-export default function EnhancedTable({ rows, headCells, title, keys, onDelete }) {
+export default function EnhancedTable({
+  rows,
+  headCells,
+  title,
+  keys,
+  onDelete,
+}) {
   const dispatch = useDispatch();
   const [order, setOrder] = React.useState("asc");
   // Order by column
@@ -250,7 +259,11 @@ export default function EnhancedTable({ rows, headCells, title, keys, onDelete }
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2, borderRadius: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} title={title} onDelete={onDelete} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          title={title}
+          onDelete={onDelete}
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}

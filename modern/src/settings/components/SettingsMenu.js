@@ -18,6 +18,9 @@ import TodayIcon from "@mui/icons-material/Today";
 import PublishIcon from "@mui/icons-material/Publish";
 import SmartphoneIcon from "@mui/icons-material/Smartphone";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AltRouteIcon from "@mui/icons-material/AltRoute";
+import RouteIcon from "../../common/icons/RouteIcon";
+import AreaIcon from "../../common/icons/AreaIcon";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "../../common/components/LocalizationProvider";
@@ -162,12 +165,32 @@ const SettingsMenu = () => {
           <Divider />
           <List>
             {admin && (
-              <MenuItem
-                title={t("binsManagement")}
-                link="/settings/bins"
-                icon={<DeleteIcon />}
-                selected={location.pathname === "/settings/bins"}
-              />
+              <>
+                <MenuItem
+                  title={t("binsManagement")}
+                  link="/settings/bins"
+                  icon={<DeleteIcon />}
+                  selected={location.pathname === "/settings/bins"}
+                />
+                <MenuItem
+                  title={t("routesManagement")}
+                  link="/settings/routes"
+                  icon={<RouteIcon />}
+                  selected={location.pathname === "/settings/routes"}
+                />
+                <MenuItem
+                  title={t("centersManagement")}
+                  link="/settings/centers"
+                  icon={<AreaIcon />}
+                  selected={location.pathname === "/settings/centers"}
+                />
+                <MenuItem
+                  title={t("typesManagement")}
+                  link="/settings/types"
+                  icon={<AltRouteIcon />}
+                  selected={location.pathname === "/settings/types"}
+                />
+              </>
             )}
           </List>
         </>
