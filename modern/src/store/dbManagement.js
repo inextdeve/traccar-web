@@ -8,6 +8,7 @@ const { reducer, actions } = createSlice({
     types: [],
     centers: [],
     selected: [],
+    filtred: [],
     openEditDialog: false,
     openAddDialog: false,
     loading: false
@@ -27,6 +28,9 @@ const { reducer, actions } = createSlice({
     },
     setSelected(state, action) {
       state.selected = action.payload;
+    },
+    setFiltred(state, action) {
+      state.filtred = action.payload;
     },
     setOpenEditDialog(state, action) {
       state.openEditDialog = action.payload;

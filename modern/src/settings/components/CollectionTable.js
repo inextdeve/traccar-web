@@ -23,6 +23,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { visuallyHidden } from "@mui/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { dbManagementActions } from "../../store";
+import FilterPopover from "./FilterPopover";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -169,9 +170,7 @@ function EnhancedTableToolbar(props) {
         </Tooltip>
       ) : (
         <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
+          <FilterPopover />
         </Tooltip>
       )}
     </Toolbar>
