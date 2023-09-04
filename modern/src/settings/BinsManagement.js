@@ -115,6 +115,8 @@ const BinsManagement = () => {
 
   const items = useSelector((state) => state.dbManagement.items);
 
+  const filtredItems = useSelector((state) => state.dbManagement.filtred);
+
   const setItems = (items) => dispatch(dbManagementActions.setItems(items));
 
   const routes = useSelector((state) => state.dbManagement.routes);
@@ -419,7 +421,7 @@ const BinsManagement = () => {
       </ConfirmDialog>
       <CollectionTable
         // Modify the position value to an anchor link to google maps
-        rows={items.map((item) => ({
+        rows={filtredItems.map((item) => ({
           ...item,
           position: (
             <IconButton size="small">

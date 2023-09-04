@@ -19,14 +19,15 @@ const useStyle = makeStyles(() => ({
     "&>div.MuiPopover-paper": {
       left: "1729px",
       right: "10px",
+      width: "180px",
     },
   },
 }));
 
 const initFilter = {
-  centerid: "center-all",
-  bintypeid: "type-all",
-  routid: "route-all",
+  centerid: "all-center",
+  bintypeid: "all-type",
+  routid: "all-route",
 };
 
 export default function BasicPopover() {
@@ -43,6 +44,8 @@ export default function BasicPopover() {
   const types = useSelector((state) => state.dbManagement.types);
 
   const items = useSelector((state) => state.dbManagement.items);
+
+  // Table just for listing this filter items in select box
 
   const [table, setTable] = useState({ routes: [], centers: [], types: [] });
 
@@ -73,7 +76,12 @@ export default function BasicPopover() {
       });
 
     dispatch(dbManagementActions.setFiltred(filter));
-  }, [activeFilter.bintypeid, activeFilter.centerid, activeFilter.routid]);
+  }, [
+    activeFilter.bintypeid,
+    activeFilter.centerid,
+    activeFilter.routid,
+    items,
+  ]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -135,8 +143,8 @@ export default function BasicPopover() {
               name="bintypeid"
             >
               <MenuItem
-                selected={"type-all" === activeFilter.bintypeid}
-                value={"type-all"}
+                selected={"all-type" === activeFilter.bintypeid}
+                value={"all-type"}
               >
                 All
               </MenuItem>
@@ -162,8 +170,8 @@ export default function BasicPopover() {
               name="centerid"
             >
               <MenuItem
-                selected={"center-all" === activeFilter.centerid}
-                value={"center-all"}
+                selected={"all-center" === activeFilter.centerid}
+                value={"all-center"}
               >
                 All
               </MenuItem>
@@ -189,8 +197,8 @@ export default function BasicPopover() {
               name="routid"
             >
               <MenuItem
-                selected={"route-all" === activeFilter.routid}
-                value={"route-all"}
+                selected={"all-route" === activeFilter.routid}
+                value={"all-route"}
               >
                 All
               </MenuItem>
