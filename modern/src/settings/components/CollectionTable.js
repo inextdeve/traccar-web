@@ -16,17 +16,14 @@ import {
   Checkbox,
   IconButton,
   Tooltip,
-  TextField,
-  Autocomplete,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
 import { visuallyHidden } from "@mui/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { dbManagementActions } from "../../store";
 import FilterPopover from "./FilterPopover";
+
 const top100Films = [
   { label: "The Shawshank Redemption", year: 1994 },
   { label: "The Godfather", year: 1972 },
@@ -195,6 +192,7 @@ function EnhancedTableHead(props) {
     numSelected,
     rowCount,
     onRequestSort,
+    headCells,
   } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -214,7 +212,7 @@ function EnhancedTableHead(props) {
             }}
           />
         </TableCell>
-        {props.headCells.map((headCell) => (
+        {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
             // align={headCell.numeric ? "right" : "left"}
@@ -244,18 +242,13 @@ function EnhancedTableHead(props) {
 function EnhancedTableToolbar(props) {
   const dispatch = useDispatch();
 
-  const { numSelected, onDelete, searchRows } = props;
+  const { numSelected, onDelete, searchLabel, title, filterTool } = props;
 
   const setOpen = (bool) =>
     dispatch(dbManagementActions.setOpenEditDialog(bool));
 
   const handleOpen = () => {
     setOpen(true);
-  };
-  const [openSearch, setOpenSearch] = React.useState(false);
-
-  const handleSearch = (e) => {
-    console.dir(e.target.textContent);
   };
 
   return (
@@ -279,7 +272,8 @@ function EnhancedTableToolbar(props) {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} Selected
+          {numSelected}
+          Selected
         </Typography>
       ) : (
         <Typography
@@ -288,7 +282,7 @@ function EnhancedTableToolbar(props) {
           id="tableTitle"
           component="div"
         >
-          {props.title}
+          {title}
         </Typography>
       )}
       {numSelected === 1 ? (
@@ -305,40 +299,11 @@ function EnhancedTableToolbar(props) {
           </IconButton>
         </Tooltip>
       ) : (
-        <>
-          <Tooltip title="Search">
-            <Box sx={{ display: "flex", gap: "0.5rem" }}>
-              <Autocomplete
-                size="small"
-                open={openSearch}
-                onInputChange={(_, value) => {
-                  if (value.length === 0) {
-                    if (openSearch) setOpenSearch(false);
-                  } else {
-                    if (!openSearch) setOpenSearch(true);
-                  }
-                }}
-                onClose={() => setOpenSearch(false)}
-                disablePortal
-                id="combo-box-demo"
-                options={searchRows}
-                sx={{ width: 200, maxHeight: "20px" }}
-                renderInput={(params) => (
-                  <TextField size="small" {...params} label="Bins" />
-                )}
-                onChange={handleSearch}
-                multiple={false}
-              />
-              <IconButton>
-                <SearchIcon />
-              </IconButton>
-            </Box>
-          </Tooltip>
-
-          <Tooltip title="Filter list">
-            <FilterPopover />
-          </Tooltip>
-        </>
+        <Tooltip title="Filter list">
+          {filterTool ? (
+            <FilterPopover searchLabel={searchLabel} labelName={title} />
+          ) : null}
+        </Tooltip>
       )}
     </Toolbar>
   );
@@ -351,22 +316,17 @@ export default function EnhancedTable({
   keys,
   onDelete,
   searchLabel,
+  filterTool = false,
 }) {
   const dispatch = useDispatch();
   const [order, setOrder] = React.useState("asc");
-
-  // Fit Rows For Search Autocomplete
-
-  // const searchRows = rows.map((row) => ({
-  //   label: row[searchLabel],
-  // }));
-  const searchRows = top100Films;
+  // const searchRows = top100Films;
   // Order by column
   const [orderBy, setOrderBy] = React.useState("id");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  //Store
+  // Store
   const selected = useSelector((state) => state.dbManagement.selected);
   const setSelected = (items) =>
     dispatch(dbManagementActions.setSelected(items));
@@ -437,7 +397,8 @@ export default function EnhancedTable({
           numSelected={selected.length}
           title={title}
           onDelete={onDelete}
-          searchRows={searchRows}
+          searchLabel={searchLabel}
+          filterTool={filterTool}
         />
         <TableContainer>
           <Table
@@ -480,13 +441,11 @@ export default function EnhancedTable({
                       />
                     </TableCell>
 
-                    {keys.map((key, index) => {
-                      return (
-                        <TableCell key={`${key}-${index}`} align="left">
-                          {row[key]}
-                        </TableCell>
-                      );
-                    })}
+                    {keys.map((key, index) => (
+                      <TableCell key={`${key}-${index}`} align="left">
+                        {row[key]}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 );
               })}

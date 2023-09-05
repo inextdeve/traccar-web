@@ -226,7 +226,7 @@ const BinsManagement = () => {
       // Id of selected item
       const id = selected[0];
 
-      const selectedItem = items.filter((item) => item.id == id);
+      const selectedItem = items.filter((item) => item.id === id);
 
       setActiveRow(selectedItem[0]);
     }
@@ -246,7 +246,7 @@ const BinsManagement = () => {
     // Check Validation if just one inp is emptey => not valid => break the loop => return false
     let valid = true;
 
-    for (let key of Object.keys(inputErr)) {
+    for (const key of Object.keys(inputErr)) {
       if (activeRow[key] === "") {
         valid = false;
         break;
@@ -394,9 +394,7 @@ const BinsManagement = () => {
       }
 
       // Remove the selected id rows
-      const newItems = items.filter((item) => {
-        return !selected.includes(item.id);
-      });
+      const newItems = items.filter((item) => !selected.includes(item.id));
       setItems(newItems);
       toastId = toast.success("Success");
     } catch (error) {
@@ -433,6 +431,8 @@ const BinsManagement = () => {
         headCells={headCells}
         title={t("bins")}
         onDelete={() => setOpenDelete(true)}
+        searchLabel="description"
+        filterTool
       />
       <EditDialog
         onSave={() => handleSave("edit")}
@@ -466,17 +466,15 @@ const BinsManagement = () => {
                 onChange={handleInputChange}
                 name="bintypeid"
               >
-                {types.map((type) => {
-                  return (
-                    <MenuItem
-                      key={type.id}
-                      selected={type.id === activeRow.bintypeid}
-                      value={type.id}
-                    >
-                      {type.bintype}
-                    </MenuItem>
-                  );
-                })}
+                {types.map((type) => (
+                  <MenuItem
+                    key={type.id}
+                    selected={type.id === activeRow.bintypeid}
+                    value={type.id}
+                  >
+                    {type.bintype}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
             <FormControl sx={{ width: "auto" }}>
@@ -488,17 +486,15 @@ const BinsManagement = () => {
                 onChange={handleInputChange}
                 name="centerid"
               >
-                {centers.map((center) => {
-                  return (
-                    <MenuItem
-                      key={center.id}
-                      selected={center.id === activeRow.centerid}
-                      value={center.id}
-                    >
-                      {center.center_name}
-                    </MenuItem>
-                  );
-                })}
+                {centers.map((center) => (
+                  <MenuItem
+                    key={center.id}
+                    selected={center.id === activeRow.centerid}
+                    value={center.id}
+                  >
+                    {center.center_name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
             <FormControl sx={{ width: "auto" }}>
@@ -510,17 +506,15 @@ const BinsManagement = () => {
                 onChange={handleInputChange}
                 name="routid"
               >
-                {routes.map((route) => {
-                  return (
-                    <MenuItem
-                      key={route.id}
-                      selected={route.id === activeRow.routid}
-                      value={route.id}
-                    >
-                      {route.rout_code}
-                    </MenuItem>
-                  );
-                })}
+                {routes.map((route) => (
+                  <MenuItem
+                    key={route.id}
+                    selected={route.id === activeRow.routid}
+                    value={route.id}
+                  >
+                    {route.rout_code}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>
@@ -583,17 +577,15 @@ const BinsManagement = () => {
                 onChange={handleInputChange}
                 name="bintypeid"
               >
-                {types.map((type) => {
-                  return (
-                    <MenuItem
-                      key={type.id}
-                      selected={type.id === activeRow.bintypeid}
-                      value={type.id}
-                    >
-                      {type.bintype}
-                    </MenuItem>
-                  );
-                })}
+                {types.map((type) => (
+                  <MenuItem
+                    key={type.id}
+                    selected={type.id === activeRow.bintypeid}
+                    value={type.id}
+                  >
+                    {type.bintype}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
             <FormControl>
@@ -605,17 +597,15 @@ const BinsManagement = () => {
                 onChange={handleInputChange}
                 name="centerid"
               >
-                {centers.map((center) => {
-                  return (
-                    <MenuItem
-                      key={center.id}
-                      selected={center.id === activeRow.centerid}
-                      value={center.id}
-                    >
-                      {center.center_name}
-                    </MenuItem>
-                  );
-                })}
+                {centers.map((center) => (
+                  <MenuItem
+                    key={center.id}
+                    selected={center.id === activeRow.centerid}
+                    value={center.id}
+                  >
+                    {center.center_name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
             <FormControl>
@@ -627,17 +617,15 @@ const BinsManagement = () => {
                 onChange={handleInputChange}
                 name="routid"
               >
-                {routes.map((route) => {
-                  return (
-                    <MenuItem
-                      key={route.id}
-                      selected={route.id === activeRow.routid}
-                      value={route.id}
-                    >
-                      {route.rout_code}
-                    </MenuItem>
-                  );
-                })}
+                {routes.map((route) => (
+                  <MenuItem
+                    key={route.id}
+                    selected={route.id === activeRow.routid}
+                    value={route.id}
+                  >
+                    {route.rout_code}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>
