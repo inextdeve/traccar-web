@@ -299,11 +299,13 @@ function EnhancedTableToolbar(props) {
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
-          {filterTool ? (
-            <FilterPopover searchLabel={searchLabel} labelName={title} />
-          ) : null}
-        </Tooltip>
+        filterTool && (
+          <Tooltip title="Filter">
+            <div>
+              <FilterPopover searchLabel={searchLabel} labelName={title} />
+            </div>
+          </Tooltip>
+        )
       )}
     </Toolbar>
   );

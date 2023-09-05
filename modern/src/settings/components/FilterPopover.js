@@ -47,16 +47,20 @@ export default function BasicPopover({ searchLabel, labelName }) {
 
   const items = useSelector((state) => state.dbManagement.items);
 
-  // Table just for listing this filter items in select box
+  // Menu Items just for listing this filter items in select box
 
-  const [table, setTable] = useState({ routes: [], centers: [], types: [] });
+  const [menuItems, setMenuItems] = useState({
+    routes: [],
+    centers: [],
+    types: [],
+  });
 
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [activeFilter, setActiveFilter] = useState(initFilter);
 
   useEffect(() => {
-    setTable({ routes, centers, types });
+    setMenuItems({ routes, centers, types });
   }, [routes, centers, types]);
 
   const filter = () =>
@@ -78,7 +82,7 @@ export default function BasicPopover({ searchLabel, labelName }) {
       );
 
   useEffect(() => {
-    dispatch(dbManagementActions.setFiltred(filter()));
+    dispatch(dbManagementActions.setFiltered(filter()));
   }, [
     activeFilter.bintypeid,
     activeFilter.centerid,
@@ -116,7 +120,7 @@ export default function BasicPopover({ searchLabel, labelName }) {
       return item.description?.toLowerCase().indexOf(value?.toLowerCase()) > -1;
     });
 
-    dispatch(dbManagementActions.setFiltred(filtered));
+    dispatch(dbManagementActions.setFiltered(filtered));
   };
 
   return (
@@ -192,7 +196,7 @@ export default function BasicPopover({ searchLabel, labelName }) {
                 >
                   All
                 </MenuItem>
-                {table.types.map((type) => (
+                {menuItems.types.map((type) => (
                   <MenuItem
                     key={type.id}
                     selected={type.id === activeFilter.bintypeid}
@@ -217,7 +221,7 @@ export default function BasicPopover({ searchLabel, labelName }) {
                 >
                   All
                 </MenuItem>
-                {table.centers.map((center) => (
+                {menuItems.centers.map((center) => (
                   <MenuItem
                     key={center.id}
                     selected={center.id === activeFilter.centerid}
@@ -242,7 +246,7 @@ export default function BasicPopover({ searchLabel, labelName }) {
                 >
                   All
                 </MenuItem>
-                {table.routes.map((route) => (
+                {menuItems.routes.map((route) => (
                   <MenuItem
                     key={route.id}
                     selected={route.id === activeFilter.routid}
