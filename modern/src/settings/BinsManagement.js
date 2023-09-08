@@ -87,6 +87,12 @@ const BinsManagement = () => {
       disablePadding: false,
       label: t("reportRoute"),
     },
+    {
+      id: "lastEmptied",
+      numeric: true,
+      disablePadding: false,
+      label: t("lastOperation"),
+    },
   ];
   const keys = [
     "id",
@@ -95,6 +101,7 @@ const BinsManagement = () => {
     "bintype",
     "center_name",
     "route",
+    "time",
   ];
 
   // StateFull
@@ -205,6 +212,10 @@ const BinsManagement = () => {
           throw new Error("Server Error: Cannot get bins types");
         }
 
+        const lastOpeResponse = await fetch(`${URL}/api/bins/v2`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
         const routes = await routesResponse.json();
         const centers = await centersResponse.json();
         const types = await typesResponse.json();
@@ -212,6 +223,20 @@ const BinsManagement = () => {
         dispatch(dbManagementActions.setRoutes(routes));
         dispatch(dbManagementActions.setCenters(centers));
         dispatch(dbManagementActions.setTypes(types));
+
+        const lastOperation = await lastOpeResponse.json();
+
+        if (lastOperation.success) {
+          const itemsWithServTime = [...items];
+          lastOperation.data.forEach(({ id, time }) => {
+            itemsWithServTime.map((item) => {
+              if (item.id === id) return { ...item, time };
+
+              return item;
+            });
+          });
+          dispatch(dbManagementActions.setItems(itemsWithServTime));
+        }
       } catch (error) {
         dispatch(errorsActions.push(error.message));
       } finally {
