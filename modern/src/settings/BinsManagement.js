@@ -26,11 +26,6 @@ import trash from "../resources/images/icon/bin.svg";
 import { useTranslation } from "../common/components/LocalizationProvider";
 import ConfirmDialog from "./components/ConfirmDialog";
 
-const containerStyle = {
-  width: "100%",
-  height: "200px",
-};
-
 const initRow = {
   description: "",
   bintypeid: "",
@@ -142,6 +137,10 @@ const BinsManagement = () => {
   const setOpenAdd = (bool) =>
     dispatch(dbManagementActions.setOpenAddDialog(bool));
 
+  const dialogResizableHeight = useSelector(
+    (state) => state.dbManagement.dialogResizableHeight
+  );
+
   const loading = useSelector((state) => state.dbManagement.loading);
 
   const setLoading = (bool) => dispatch(dbManagementActions.setLoading(bool));
@@ -212,10 +211,6 @@ const BinsManagement = () => {
           throw new Error("Server Error: Cannot get bins types");
         }
 
-        const lastOpeResponse = await fetch(`${URL}/api/bins/v2`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
         const routes = await routesResponse.json();
         const centers = await centersResponse.json();
         const types = await typesResponse.json();
@@ -223,20 +218,6 @@ const BinsManagement = () => {
         dispatch(dbManagementActions.setRoutes(routes));
         dispatch(dbManagementActions.setCenters(centers));
         dispatch(dbManagementActions.setTypes(types));
-
-        const lastOperation = await lastOpeResponse.json();
-
-        if (lastOperation.success) {
-          const itemsWithServTime = [...items];
-          lastOperation.data.forEach(({ id, time }) => {
-            itemsWithServTime.map((item) => {
-              if (item.id === id) return { ...item, time };
-
-              return item;
-            });
-          });
-          dispatch(dbManagementActions.setItems(itemsWithServTime));
-        }
       } catch (error) {
         dispatch(errorsActions.push(error.message));
       } finally {
@@ -547,7 +528,10 @@ const BinsManagement = () => {
             <Box>
               {isLoaded ? (
                 <GoogleMap
-                  mapContainerStyle={containerStyle}
+                  mapContainerStyle={{
+                    width: "100%",
+                    height: `${100 + dialogResizableHeight}px`,
+                  }}
                   center={{
                     lat: parseFloat(activeRow.latitude),
                     lng: parseFloat(activeRow.longitude),
@@ -654,29 +638,30 @@ const BinsManagement = () => {
               </Select>
             </FormControl>
           </Box>
-          <Box>
-            <Box>
-              {isLoaded ? (
-                <GoogleMap
-                  mapContainerStyle={containerStyle}
-                  center={{
-                    lat: 26.9555741,
-                    lng: 49.5683506,
+          <Box sx={{ display: "flex", alignItems: "stretch" }}>
+            {isLoaded ? (
+              <GoogleMap
+                mapContainerStyle={{
+                  width: "100%",
+                  height: `${100 + dialogResizableHeight}px`,
+                }}
+                center={{
+                  lat: 26.9555741,
+                  lng: 49.5683506,
+                }}
+                zoom={10}
+              >
+                <Marker
+                  draggable
+                  onDragEnd={handleDrag}
+                  position={{
+                    lat: parseFloat(activeRow.latitude),
+                    lng: parseFloat(activeRow.longitude),
                   }}
-                  zoom={10}
-                >
-                  <Marker
-                    draggable
-                    onDragEnd={handleDrag}
-                    position={{
-                      lat: parseFloat(activeRow.latitude),
-                      lng: parseFloat(activeRow.longitude),
-                    }}
-                    icon={trash}
-                  />
-                </GoogleMap>
-              ) : null}
-            </Box>
+                  icon={trash}
+                />
+              </GoogleMap>
+            ) : null}
           </Box>
         </Box>
       </EditDialog>

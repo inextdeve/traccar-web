@@ -11,6 +11,7 @@ const { reducer, actions } = createSlice({
     filtered: [],
     openEditDialog: false,
     openAddDialog: false,
+    dialogResizableHeight: 0,
     loading: false,
   },
   reducers: {
@@ -37,6 +38,9 @@ const { reducer, actions } = createSlice({
     },
     setOpenAddDialog(state, action) {
       state.openAddDialog = action.payload;
+    },
+    setDialogResizableHeight(state, action) {
+      state.dialogResizableHeight = action.payload;
     },
     setLoading(state, action) {
       state.loading = action.payload;
