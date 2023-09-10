@@ -1,6 +1,4 @@
-import React, {
-  useEffect, useRef, useState, useCallback,
-} from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import Carousel from "react-material-ui-carousel";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -33,12 +31,12 @@ import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
 import { URL } from "../common/util/constant";
 
-const Item = (props) => {
+const Item = ({ item }) => {
   const classes = useReportStyles();
 
   return (
     <div>
-      <img className={classes.reportImg} src={props.item} alt="report" />
+      <img className={classes.reportImg} src={item} alt="report" />
     </div>
   );
 };
@@ -56,12 +54,13 @@ const BinsReports = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
   const [mapLoading, setMapLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(false);
 
   // MAP Proceessing
-  const mapButtonClick = useCallback(async ({ id, tag }) => {
+  const mapButtonClick = useCallback(async ({ id }) => {
     setSelectedItem(true);
     setMapLoading(null);
     const url = `${URL}/api/bins/${id}`;
@@ -83,9 +82,9 @@ const BinsReports = () => {
             latitude,
             longitude,
             binType: bintype,
-          }),
-        ),
-      ),
+          })
+        )
+      )
     );
   });
 
@@ -204,8 +203,7 @@ const BinsReports = () => {
           id="alert-dialog-title"
           sx={{ display: "flex", justifyContent: "space-between" }}
         >
-          <span>Report Images</span>
-          {" "}
+          <span>Report Images</span>{" "}
           {selectedImage ? (
             <span className={`${classes.positive} ${classes.imageReportTag}`}>
               After
@@ -273,7 +271,7 @@ const BinsReports = () => {
             <ExcelExport excelData={items} fileName="ReportSheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -281,7 +279,7 @@ const BinsReports = () => {
                 >
                   {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box ref={TableRef}>
