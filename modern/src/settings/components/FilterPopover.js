@@ -149,6 +149,18 @@ export default function BasicPopover({ searchLabel, labelName }) {
           multiple={false}
         />
       </Box>
+      <Box>
+        <TextField
+          type="number"
+          id="outlined-basic"
+          label="Days"
+          variant="outlined"
+          sx={{ width: "120px" }}
+          InputProps={{ inputProps: { min: 0 } }}
+          // onChange={(e) => setNum(e.target.value)}
+          // value={num}
+        />
+      </Box>
 
       <Box>
         <IconButton
