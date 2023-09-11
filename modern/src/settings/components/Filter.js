@@ -15,6 +15,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { makeStyles } from "@mui/styles";
 import { useTranslation } from "../../common/components/LocalizationProvider";
 import { dbManagementActions } from "../../store/dbManagement";
+import { filterDatesByDaysAgo } from "../../common/util/filters";
 
 const useStyle = makeStyles(() => ({
   Popover: {
@@ -47,6 +48,8 @@ export default function BasicPopover({ searchLabel, labelName }) {
 
   const items = useSelector((state) => state.dbManagement.items);
 
+  const filteredItems = useSelector((state) => state.dbManagement.filtered);
+
   // Menu Items just for listing this filter items in select box
 
   const [menuItems, setMenuItems] = useState({
@@ -58,6 +61,8 @@ export default function BasicPopover({ searchLabel, labelName }) {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [activeFilter, setActiveFilter] = useState(initFilter);
+
+  const [searchValue, setSearchValue] = useState("")
 
   useEffect(() => {
     setMenuItems({ routes, centers, types });
@@ -81,6 +86,16 @@ export default function BasicPopover({ searchLabel, labelName }) {
           : item.bintypeid === activeFilter.bintypeid
       );
 
+  const search = () => {
+    if (typeof searchValue !== "string") return;
+    const filtered = filter().filter((item) => {
+      if (!searchValue) return true;
+      return item.description?.toLowerCase().indexOf(searchValue?.toLowerCase()) > -1;
+    });
+    dispatch(dbManagementActions.setFiltered(filtered));
+    return filtered;
+  }
+  
   useEffect(() => {
     dispatch(dbManagementActions.setFiltered(filter()));
   }, [
@@ -112,17 +127,18 @@ export default function BasicPopover({ searchLabel, labelName }) {
 
   const [openSearch, setOpenSearch] = useState(false);
 
-  const handleSearch = (value) => {
-    // console.dir(e.type);
-    if (typeof value !== "string") return;
-    const filtered = filter().filter((item) => {
-      if (!value) return true;
-      return item.description?.toLowerCase().indexOf(value?.toLowerCase()) > -1;
-    });
+  const handleSearch = () => {
+    search();
+  };
+  const handleDateFilter = (_, value) => {
+    // Call the search method for preserve the last filtered items
+    search(searchValue);
+
+    const filtered = filterDatesByDaysAgo(filteredItems, value);
 
     dispatch(dbManagementActions.setFiltered(filtered));
-  };
 
+  }
   return (
     <Box sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
       <Box>
@@ -135,7 +151,8 @@ export default function BasicPopover({ searchLabel, labelName }) {
             } else {
               setOpenSearch(true);
             }
-            handleSearch(value);
+            setSearchValue(value);
+            handleSearch();
           }}
           onClose={() => setOpenSearch(false)}
           disablePortal
@@ -145,7 +162,11 @@ export default function BasicPopover({ searchLabel, labelName }) {
           renderInput={(params) => (
             <TextField size="small" {...params} label={labelName} />
           )}
-          onChange={handleSearch}
+          onChange={(_, value) => {
+            setSearchValue(value);
+            handleSearch()
+          }}
+          
           multiple={false}
         />
       </Box>
@@ -157,8 +178,7 @@ export default function BasicPopover({ searchLabel, labelName }) {
           variant="outlined"
           sx={{ width: "120px" }}
           InputProps={{ inputProps: { min: 0 } }}
-          // onChange={(e) => setNum(e.target.value)}
-          // value={num}
+          onChange={handleDateFilter}
         />
       </Box>
 

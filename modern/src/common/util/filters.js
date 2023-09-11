@@ -4,10 +4,12 @@ function filterDatesByDaysAgo(datesArray, daysAgo) {
   cutoffDate.setDate(cutoffDate.getDate() - daysAgo);
 
   // Use Array.filter to filter dates that are before the cutoff date
-  const filteredDates = datesArray.filter((dateStr) => {
-    const date = new Date(dateStr);
+  const filteredDates = datesArray.filter(({time}) => {
+    const date = new Date(time);
     return date < cutoffDate;
   });
 
   return filteredDates;
 }
+
+export {filterDatesByDaysAgo}
