@@ -62,11 +62,13 @@ export default function BasicPopover({ searchLabel, labelName }) {
 
   const [activeFilter, setActiveFilter] = useState(initFilter);
 
-  const [searchValue, setSearchValue] = useState("")
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     setMenuItems({ routes, centers, types });
   }, [routes, centers, types]);
+
+  // Handle popover filter
 
   const filter = () =>
     items
@@ -86,16 +88,18 @@ export default function BasicPopover({ searchLabel, labelName }) {
           : item.bintypeid === activeFilter.bintypeid
       );
 
-  const search = () => {
-    if (typeof searchValue !== "string") return;
+  // Handle Search Box
+
+  const search = (value) => {
+    if (typeof value !== "string") return;
     const filtered = filter().filter((item) => {
-      if (!searchValue) return true;
-      return item.description?.toLowerCase().indexOf(searchValue?.toLowerCase()) > -1;
+      if (!value) return true;
+      return item.description?.toLowerCase().indexOf(value?.toLowerCase()) > -1;
     });
     dispatch(dbManagementActions.setFiltered(filtered));
     return filtered;
-  }
-  
+  };
+
   useEffect(() => {
     dispatch(dbManagementActions.setFiltered(filter()));
   }, [
@@ -123,22 +127,17 @@ export default function BasicPopover({ searchLabel, labelName }) {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
-  // Handle Search Box
-
   const [openSearch, setOpenSearch] = useState(false);
 
-  const handleSearch = () => {
-    search();
-  };
-  const handleDateFilter = (_, value) => {
+  const handleDateFilter = (e) => {
     // Call the search method for preserve the last filtered items
-    search(searchValue);
+    const previousFilter = search(searchValue);
 
-    const filtered = filterDatesByDaysAgo(filteredItems, value);
+    const filtered = filterDatesByDaysAgo(previousFilter, e.target.value);
 
     dispatch(dbManagementActions.setFiltered(filtered));
+  };
 
-  }
   return (
     <Box sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
       <Box>
@@ -152,7 +151,7 @@ export default function BasicPopover({ searchLabel, labelName }) {
               setOpenSearch(true);
             }
             setSearchValue(value);
-            handleSearch();
+            search(value);
           }}
           onClose={() => setOpenSearch(false)}
           disablePortal
@@ -164,9 +163,8 @@ export default function BasicPopover({ searchLabel, labelName }) {
           )}
           onChange={(_, value) => {
             setSearchValue(value);
-            handleSearch()
+            search(value);
           }}
-          
           multiple={false}
         />
       </Box>
