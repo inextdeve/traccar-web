@@ -23,6 +23,7 @@ import { visuallyHidden } from "@mui/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { dbManagementActions } from "../../store";
 import Filter from "./Filter";
+import { useDeletePermission } from "../../common/util/permissions";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -116,6 +117,8 @@ function EnhancedTableToolbar(props) {
 
   const { numSelected, onDelete, searchLabel, title, filterTool } = props;
 
+  const deletePermission = useDeletePermission();
+
   const setOpen = (bool) =>
     dispatch(dbManagementActions.setOpenEditDialog(bool));
 
@@ -164,21 +167,21 @@ function EnhancedTableToolbar(props) {
           </IconButton>
         </Tooltip>
       ) : null}
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton onClick={onDelete}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        filterTool && (
-          <Tooltip title="Filter">
-            <div>
-              <Filter searchLabel={searchLabel} labelName={title} />
-            </div>
-          </Tooltip>
-        )
-      )}
+      {numSelected > 0
+        ? deletePermission && (
+            <Tooltip title="Delete">
+              <IconButton onClick={onDelete}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          )
+        : filterTool && (
+            <Tooltip title="Filter">
+              <div>
+                <Filter searchLabel={searchLabel} labelName={title} />
+              </div>
+            </Tooltip>
+          )}
     </Toolbar>
   );
 }

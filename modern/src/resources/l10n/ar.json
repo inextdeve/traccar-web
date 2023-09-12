@@ -652,5 +652,6 @@
   "byService": "حسب الخدمة",
   "exited": "الخارجة",
   "notExited": "لم تخرج",
-  "simulator": "محاكاة"
+  "simulator": "محاكاة",
+  "delete": "الحذف"
 }

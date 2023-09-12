@@ -654,5 +654,6 @@
   "byService": "By Service",
   "exited": "Exited",
   "notExited": "Not Exited",
-  "simulator": "Simulator"
+  "simulator": "Simulator",
+  "delete": "Delete"
 }
