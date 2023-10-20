@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import {
-  Button, Dialog, DialogActions, DialogContent, FormControl, InputLabel, MenuItem, Select, TextField, Autocomplete,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Autocomplete,
 } from "@mui/material";
 
 import { createFilterOptions } from "@mui/material/useAutocomplete";
@@ -55,21 +64,16 @@ const AddAttributeDialog = ({ open, onResult, definitions }) => {
             return filtered;
           }}
           options={options}
-          getOptionLabel={(option) => (option && typeof option === "object" ? option.name : option)}
-          renderOption={(props, option) => (
-            <li {...props}>
-              {option.name}
-            </li>
-          )}
+          getOptionLabel={(option) =>
+            option && typeof option === "object" ? option.name : option
+          }
+          renderOption={(props, option) => <li {...props}>{option.name}</li>}
           renderInput={(params) => (
             <TextField {...params} label={t("sharedAttribute")} />
           )}
           freeSolo
         />
-        <FormControl
-          fullWidth
-          disabled={key in definitions}
-        >
+        <FormControl fullWidth disabled={key in definitions}>
           <InputLabel>{t("sharedType")}</InputLabel>
           <Select
             label={t("sharedType")}
@@ -79,6 +83,9 @@ const AddAttributeDialog = ({ open, onResult, definitions }) => {
             <MenuItem value="string">{t("sharedTypeString")}</MenuItem>
             <MenuItem value="number">{t("sharedTypeNumber")}</MenuItem>
             <MenuItem value="boolean">{t("sharedTypeBoolean")}</MenuItem>
+            <MenuItem disabled value="array">
+              {t("sharedTypeArray")}
+            </MenuItem>
           </Select>
         </FormControl>
       </DialogContent>
@@ -90,10 +97,7 @@ const AddAttributeDialog = ({ open, onResult, definitions }) => {
         >
           {t("sharedAdd")}
         </Button>
-        <Button
-          autoFocus
-          onClick={() => onResult(null)}
-        >
+        <Button autoFocus onClick={() => onResult(null)}>
           {t("sharedCancel")}
         </Button>
       </DialogActions>

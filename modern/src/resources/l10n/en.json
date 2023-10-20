@@ -83,6 +83,7 @@
   "sharedTypeString": "String",
   "sharedTypeNumber": "Number",
   "sharedTypeBoolean": "Boolean",
+  "sharedTypeArray": "Array",
   "sharedTimezone": "Timezone",
   "sharedInfoTitle": "Info",
   "sharedSavedCommand": "Saved Command",

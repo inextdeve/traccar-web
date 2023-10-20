@@ -83,6 +83,7 @@
   "sharedTypeString": "نص",
   "sharedTypeNumber": "رقم",
   "sharedTypeBoolean": "منطقية",
+  "sharedTypeArray": "مصفوفة",
   "sharedTimezone": "منطقة زمنية",
   "sharedInfoTitle": "معلومات",
   "sharedSavedCommand": "أمر مخزن",

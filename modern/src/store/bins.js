@@ -4,6 +4,7 @@ const { reducer, actions } = createSlice({
   name: "bins",
   initialState: {
     bins: [],
+    routes: [],
     showFilter: false,
     filter: "",
     filterSet: {},
@@ -19,6 +20,9 @@ const { reducer, actions } = createSlice({
     updateBins(state, action) {
       state.bins = action.payload;
       state.filteredBins = action.payload;
+    },
+    updateRoutes(state, action) {
+      state.routes = action.payload;
     },
     toggleShowFilter(state) {
       state.showFilter = !state.showFilter;

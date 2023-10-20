@@ -14,6 +14,9 @@ import {
   AccordionSummary,
   Typography,
   AccordionDetails,
+  MenuItem,
+  ListItemText,
+  Select,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
@@ -23,9 +26,18 @@ import AddAttributeDialog from "./AddAttributeDialog";
 import { useTranslation } from "../../common/components/LocalizationProvider";
 import { useAttributePreference } from "../../common/util/preferences";
 import {
-  distanceFromMeters, distanceToMeters, distanceUnitString, speedFromKnots, speedToKnots, speedUnitString, volumeFromLiters, volumeToLiters, volumeUnitString,
+  distanceFromMeters,
+  distanceToMeters,
+  distanceUnitString,
+  speedFromKnots,
+  speedToKnots,
+  speedUnitString,
+  volumeFromLiters,
+  volumeToLiters,
+  volumeUnitString,
 } from "../../common/util/converter";
 import useFeatures from "../../common/util/useFeatures";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   removeButton: {
@@ -38,8 +50,25 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(3),
   },
 }));
+// For array attribute select
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
-const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definitions, focusAttribute }) => {
+const EditAttributesAccordion = ({
+  attribute,
+  attributes,
+  setAttributes,
+  definitions,
+  focusAttribute,
+}) => {
   const classes = useStyles();
   const t = useTranslation();
 
@@ -48,6 +77,9 @@ const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definit
   const speedUnit = useAttributePreference("speedUnit");
   const distanceUnit = useAttributePreference("distanceUnit");
   const volumeUnit = useAttributePreference("volumeUnit");
+
+  // Get routes
+  const routes = useSelector((state) => state.bins.routes);
 
   const [addDialogShown, setAddDialogShown] = useState(false);
 
@@ -94,9 +126,14 @@ const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definit
   const getAttributeType = (value) => {
     if (typeof value === "number") {
       return "number";
-    } if (typeof value === "boolean") {
+    }
+    if (typeof value === "boolean") {
       return "boolean";
     }
+    if (typeof value === "object") {
+      return "array";
+    }
+
     return "string";
   };
 
@@ -124,21 +161,34 @@ const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definit
   const convertToList = (attributes) => {
     const booleanList = [];
     const otherList = [];
-    const excludeAttributes = ["speedUnit", "distanceUnit", "volumeUnit", "timezone"];
-    Object.keys(attributes || []).filter((key) => !excludeAttributes.includes(key)).forEach((key) => {
-      const value = attributes[key];
-      const type = getAttributeType(value);
-      const subtype = getAttributeSubtype(key);
-      if (type === "boolean") {
-        booleanList.push({
-          key, value, type, subtype,
-        });
-      } else {
-        otherList.push({
-          key, value, type, subtype,
-        });
-      }
-    });
+    const excludeAttributes = [
+      "speedUnit",
+      "distanceUnit",
+      "volumeUnit",
+      "timezone",
+    ];
+    Object.keys(attributes || [])
+      .filter((key) => !excludeAttributes.includes(key))
+      .forEach((key) => {
+        const value = attributes[key];
+        const type = getAttributeType(value);
+        const subtype = getAttributeSubtype(key);
+        if (type === "boolean") {
+          booleanList.push({
+            key,
+            value,
+            type,
+            subtype,
+          });
+        } else {
+          otherList.push({
+            key,
+            value,
+            type,
+            subtype,
+          });
+        }
+      });
     return [...otherList, ...booleanList];
   };
 
@@ -152,6 +202,9 @@ const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definit
         case "boolean":
           updateAttribute(definition.key, false);
           break;
+        case "array":
+          updateAttribute(definition.key, []);
+          break;
         default:
           updateAttribute(definition.key, "");
           break;
@@ -159,35 +212,91 @@ const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definit
     }
   };
 
-  return features.disableAttributes ? "" : (
+  return features.disableAttributes ? (
+    ""
+  ) : (
     <Accordion defaultExpanded={!!attribute}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="subtitle1">
-          {t("sharedAttributes")}
-        </Typography>
+        <Typography variant="subtitle1">{t("sharedAttributes")}</Typography>
       </AccordionSummary>
       <AccordionDetails className={classes.details}>
-        {convertToList(attributes).map(({
-          key, value, type, subtype,
-        }) => {
+        {convertToList(attributes).map(({ key, value, type, subtype }) => {
           if (type === "boolean") {
             return (
-              <Grid container direction="row" justifyContent="space-between" key={key}>
+              <Grid
+                container
+                direction="row"
+                justifyContent="space-between"
+                key={key}
+              >
                 <FormControlLabel
-                  control={(
+                  control={
                     <Checkbox
                       checked={value}
                       onChange={(e) => updateAttribute(key, e.target.checked)}
                     />
-                  )}
+                  }
                   label={getAttributeName(key, subtype)}
                 />
-                <IconButton size="small" className={classes.removeButton} onClick={() => deleteAttribute(key)}>
+                <IconButton
+                  size="small"
+                  className={classes.removeButton}
+                  onClick={() => deleteAttribute(key)}
+                >
                   <CloseIcon fontSize="small" />
                 </IconButton>
               </Grid>
             );
           }
+          // This is just for route if you want to make it standard for future use make the route condition && key === "routes"
+          if (type === "array") {
+            return (
+              <FormControl key={key}>
+                <InputLabel>{key}</InputLabel>
+                <Select
+                  multiple
+                  value={getDisplayValue(value, subtype)}
+                  onChange={(e) =>
+                    updateAttribute(key, e.target.value, type, subtype)
+                  }
+                  input={<OutlinedInput label={key} />}
+                  // Using map() for mapping ids to route name
+                  renderValue={(selected) =>
+                    selected
+                      .map((routesId) => {
+                        return routes.filter(({ id }) => id == routesId)[0]
+                          .rout_code;
+                      })
+                      .join(", ")
+                  }
+                  MenuProps={MenuProps}
+                  endAdornment={
+                    <InputAdornment position="end" sx={{ marginRight: "15px" }}>
+                      <IconButton
+                        size="small"
+                        edge="end"
+                        onClick={() => deleteAttribute(key)}
+                      >
+                        <CloseIcon fontSize="small" />
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                >
+                  {routes.map(({ rout_code, id }) => (
+                    <MenuItem key={rout_code} value={id}>
+                      <Checkbox
+                        checked={
+                          getDisplayValue(value, subtype).indexOf(id) > -1
+                        }
+                      />
+                      <ListItemText primary={rout_code} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          }
+
           return (
             <FormControl key={key}>
               <InputLabel>{getAttributeName(key, subtype)}</InputLabel>
@@ -195,15 +304,21 @@ const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definit
                 label={getAttributeName(key, subtype)}
                 type={type === "number" ? "number" : "text"}
                 value={getDisplayValue(value, subtype)}
-                onChange={(e) => updateAttribute(key, e.target.value, type, subtype)}
+                onChange={(e) =>
+                  updateAttribute(key, e.target.value, type, subtype)
+                }
                 autoFocus={focusAttribute === key}
-                endAdornment={(
+                endAdornment={
                   <InputAdornment position="end">
-                    <IconButton size="small" edge="end" onClick={() => deleteAttribute(key)}>
+                    <IconButton
+                      size="small"
+                      edge="end"
+                      onClick={() => deleteAttribute(key)}
+                    >
                       <CloseIcon fontSize="small" />
                     </IconButton>
                   </InputAdornment>
-                )}
+                }
               />
             </FormControl>
           );
