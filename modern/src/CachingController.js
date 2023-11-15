@@ -66,7 +66,6 @@ const CachingController = () => {
       const options = { headers: { Authorization: `Bearer ${token}` } };
       const response = await fetch(`${URL}/api/routes`, options);
       if (response.ok) {
-        console.log("Get Routes");
         dispatch(binsActions.updateRoutes(await response.json()));
       } else {
         throw Error(await response.text());
