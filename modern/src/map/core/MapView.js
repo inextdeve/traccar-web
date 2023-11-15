@@ -99,7 +99,6 @@ const MapView = ({ children }) => {
 
   useEffect(() => {
     maplibregl.accessToken = mapboxAccessToken;
-    console.log("ACCESS TOKEN MAPSS: ", mapboxAccessToken);
   }, [mapboxAccessToken]);
 
   useEffect(() => {
