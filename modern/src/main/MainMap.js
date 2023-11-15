@@ -20,6 +20,7 @@ import MapScale from "../map/MapScale";
 import MapNotification from "../map/notification/MapNotification";
 import useFeatures from "../common/util/useFeatures";
 import MapMarkersAnalytics from "../map/MapMarkersAnalytics";
+import MapMarkersNearbyStops from "../map/MapMarkersNearbyStops";
 import Popup from "../common/components/Popup";
 import { URL } from "../common/util/constant";
 import MyMapButton from "../map/core/Buttons";
@@ -29,6 +30,8 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.bins.loading);
+
+  const nearbyStops = useSelector((state) => state.devices.nearbyStops);
 
   const desktop = useMediaQuery(theme.breakpoints.up("md"));
 
@@ -202,6 +205,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
         {showBins ? (
           <MapMarkersAnalytics positions={filteredBins} onClick={onMarkClick} />
         ) : null}
+        <MapMarkersNearbyStops positions={nearbyStops} />
         <MapAccuracy positions={filteredPositions} />
         <MapLiveRoutes />
         <MapPositions

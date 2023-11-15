@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Draggable from "react-draggable";
 import {
@@ -28,8 +28,10 @@ import moment from "moment";
 import Carousel from "react-material-ui-carousel";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import LaunchIcon from "@mui/icons-material/Launch";
+import RvHookupIcon from "@mui/icons-material/RvHookup";
 import { useTranslation } from "./LocalizationProvider";
 import sendMessage from "../util/sendMessage";
+import TruckDialog from "./TruckDialog";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -172,6 +174,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
   const [showReport, setShowReport] = useState(false);
   const [showImages, setShowImages] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  // Set open for truck dialog
+  const [open, setOpen] = useState(false);
 
   const toggleDetails = () => {
     setShowReport(false);
@@ -191,25 +195,25 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 JCR Cleaning Project 
                 Alarm Bin Not Empty 
                 DateTime: ${moment(
-    new Intl.DateTimeFormat("sv-SE", {
-      timeZone: "Asia/Riyadh",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    }).format(new Date()),
-  ).format("MMMM Do YYYY, h:mm:ss a")}
+                  new Intl.DateTimeFormat("sv-SE", {
+                    timeZone: "Asia/Riyadh",
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: false,
+                  }).format(new Date())
+                ).format("MMMM Do YYYY, h:mm:ss a")}
                 Bin no: ${binData[0].description}
                 RoutNo: ${binData[0].route}
                 Area: ${binData[0].center}
                 Bin Type: ${popup.binType}
                 Last Time Emptied: ${lastOperation()}
                 https://www.google.com/maps/place/${binData[0].latitude},${
-  binData[0].longitude
-}`;
+    binData[0].longitude
+  }`;
 
   return (
     <div className={classes.root}>
@@ -227,7 +231,17 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
               }}
             >
               <Typography variant="body2">Details</Typography>
-              <IconButton size="small" onClick={onClose} onTouchStart={onClose}>
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setOpen(false);
+                  onClose();
+                }}
+                onTouchStart={() => {
+                  setOpen(false);
+                  onClose();
+                }}
+              >
                 <CloseIcon fontSize="small" />
               </IconButton>
             </Box>
@@ -242,7 +256,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     <StatusRow name={t("binType")} content={popup.binType} />
                     <StatusRow
                       name={t("status")}
-                      content={(
+                      content={
                         <span
                           style={{
                             color: `${
@@ -254,12 +268,12 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           {binData[0].status}
                         </span>
-                      )}
+                      }
                     />
                     <StatusRow
                       name={t("lastOperation")}
                       content={moment(lastOperation()).format(
-                        "MMM Do YY, H:mm",
+                        "MMM Do YY, H:mm"
                       )}
                     />
                     <StatusRow
@@ -276,7 +290,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     />
                     <StatusRow
                       name={t("position")}
-                      content={(
+                      content={
                         <a
                           href={`https://www.google.com/maps/search/?api=1&query=${binData[0].latitude},${binData[0].longitude}`}
                           target="_blank"
@@ -284,7 +298,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                         >
                           Google Map
                         </a>
-                      )}
+                      }
                     />
                   </TableBody>
                 </Table>
@@ -344,7 +358,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                   launchLink
                                 />
                               );
-                            },
+                            }
                           )}
                         </Carousel>
                       </Box>
@@ -484,8 +498,8 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                                 >
                                   {item.emptedTime
                                     ? moment(item.emptedTime).format(
-                                      "MMM Do YY, H:mm",
-                                    )
+                                        "MMM Do YY, H:mm"
+                                      )
                                     : moment(item.date).format("MMM Do YY")}
                                 </Typography>
                               </TableCell>
@@ -520,6 +534,15 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
               <IconButton color="secondary" onClick={toggleDetails}>
                 {showMore ? <RemoveCircleOutlineIcon /> : <ControlPointIcon />}
               </IconButton>
+
+              <IconButton
+                color="secondary"
+                disabled={!binData}
+                onClick={() => setOpen(true)}
+              >
+                <RvHookupIcon />
+              </IconButton>
+
               <Box>
                 {binData && binData[2] ? (
                   <IconButton color="negative" onClick={toggleReport}>
@@ -528,13 +551,22 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 ) : null}
                 <IconButton
                   color="secondary"
-                  onClick={() => sendMessage(generateMessage(), binData[0].driver_phone)}
+                  onClick={() =>
+                    sendMessage(generateMessage(), binData[0].driver_phone)
+                  }
                   disabled={binData ? !binData[0]?.driver_phone : true}
                 >
                   <WhatsAppIcon />
                 </IconButton>
               </Box>
             </CardActions>
+
+            <TruckDialog
+              open={open}
+              setOpen={setOpen}
+              latitude={binData ? binData[0]?.latitude : null}
+              longitude={binData ? binData[0]?.longitude : null}
+            />
           </Card>
         </Draggable>
       )}

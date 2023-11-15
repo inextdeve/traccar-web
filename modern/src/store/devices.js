@@ -10,11 +10,13 @@ const { reducer, actions } = createSlice({
     showCamera: false,
     showCameraList: false,
     equipments: [],
+    nearbyStops: [],
   },
   reducers: {
     refresh(state, action) {
       state.equipments = action.payload;
-      const getRandom = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+      const getRandom = (min, max) =>
+        Math.floor(Math.random() * (max - min + 1) + min);
       state.items = {};
       action.payload.forEach((item) => (state.items[item.id] = item));
       state.cameraList = action.payload
@@ -42,7 +44,7 @@ const { reducer, actions } = createSlice({
     },
     updateSelectedCamera(state, action) {
       const alreadyExist = state.selectedCamera.some(
-        (item) => item?.id === action.payload.id && !item?.removed,
+        (item) => item?.id === action.payload.id && !item?.removed
       );
       if (!alreadyExist) {
         state.selectedCamera = [...state.selectedCamera, action.payload];
@@ -55,6 +57,9 @@ const { reducer, actions } = createSlice({
         }
         return item;
       });
+    },
+    updateNearbyStops(state, action) {
+      state.nearbyStops = action.payload;
     },
   },
 });
