@@ -140,8 +140,8 @@ const MainToolbar = ({
               onChange={(e) => setFilter({ ...filter, groups: e.target.value })}
               multiple
             >
-              {Object.values(groups).sort((a, b) => a.name.localeCompare(b.name)).map((group) => (
-                <MenuItem key={group.id} value={group.id}>{group.name}</MenuItem>
+              {Object.values(groups).sort((a, b) => a.name.localeCompare(b.name)).map((group, index) => (
+                <MenuItem key={`${group.id}-${index}`} value={group.id}>{group.name}</MenuItem>
               ))}
             </Select>
           </FormControl>
