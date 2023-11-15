@@ -2,6 +2,7 @@ import { useId, useCallback, useEffect } from "react";
 import { map } from "./core/MapView";
 
 const MapMarkersAnalytics = ({ minzoom, positions, onClick }) => {
+  console.log("MapMarkersRendered")
   const id = useId();
   const onMouseEnter = () => (map.getCanvas().style.cursor = "pointer");
   const onMouseLeave = () => (map.getCanvas().style.cursor = "");

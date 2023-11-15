@@ -54,7 +54,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   useEffect(() => {
     const fetchData = async () => {
       const reportedBinData = await fetch(`${URL}/api/bins/reports`, {
-        headers: { Authorization: `Bearer fb1329817e3ca2132d39134dd6d894b3` },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await reportedBinData.json();
@@ -187,6 +187,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   const onClose = () => {
     dispatch(analyticsActions.updatePopup(false));
     dispatch(analyticsActions.updateBinData(null));
+    dispatch(devicesActions.updateNearbyStops([]))
   };
 
   const showBins = useSelector((state) => state.bins.showBins);

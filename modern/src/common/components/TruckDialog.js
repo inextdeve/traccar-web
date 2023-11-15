@@ -10,14 +10,16 @@ import {
   Button,
   Typography,
   IconButton,
+  CircularProgress
 } from "@mui/material";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { useState } from "react";
 import { URL } from "../util/constant";
-import { errorsActions } from "../../store";
+import { devicesActions, errorsActions } from "../../store";
 import { toast } from "react-toastify";
+
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -36,17 +38,18 @@ const TruckDialog = ({ open, setOpen, latitude, longitude }) => {
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
 
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async () => {
-    if (!selectedDevices.length)
-      return dispatch(errorsActions.push("Select one device at least !"));
 
     try {
+      setLoading(true)
       const query = new URLSearchParams({
         latitude,
         longitude,
         devices: selectedDevices.map((device) => String(device.id)).join(","),
       });
-      console.log(`${URL}/api/devices/nearby-stops?${query.toString()}`);
+      
       const response = await fetch(
         `${URL}/api/devices/nearby-stops?${query.toString()}`,
         {
@@ -58,13 +61,22 @@ const TruckDialog = ({ open, setOpen, latitude, longitude }) => {
 
       const data = await response.json();
       if (!data?.length) return toast.warning("There is no nearby stop !");
+
+      dispatch(devicesActions.updateNearbyStops(data.map((item) => ({...item, category: "trashNegative"}))));
+
     } catch (error) {
       dispatch(errorsActions.push(error.message || "Unknown error"));
+    } finally {
+      setLoading(false)
     }
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  }
+
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onClose={handleClose}>
       <DialogTitle
         sx={{
           display: "flex",
@@ -75,12 +87,8 @@ const TruckDialog = ({ open, setOpen, latitude, longitude }) => {
         <Typography>Select Devices</Typography>
         <IconButton
           size="small"
-          onClick={() => {
-            setOpen(false);
-          }}
-          onTouchStart={() => {
-            setOpen(false);
-          }}
+          onClick={handleClose}
+          onTouchStart={handleClose}
         >
           <CloseIcon fontSize="small" />
         </IconButton>
@@ -88,9 +96,11 @@ const TruckDialog = ({ open, setOpen, latitude, longitude }) => {
       <DialogContent>
         {devices && (
           <Autocomplete
+            // Look at a bug from MUI Loop on isOptionEqualToValue Fn
+            isOptionEqualToValue={(option, value) =>option.id === value.id}
             onChange={(_, value) => setSelectedDevices(value)}
             multiple
-            id="checkboxes-devices"
+            id="checkboxes-devices-nearby"
             options={Object.values(devices)}
             disableCloseOnSelect
             getOptionLabel={(option) => option.name}
@@ -113,7 +123,7 @@ const TruckDialog = ({ open, setOpen, latitude, longitude }) => {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleSubmit}>Load</Button>
+        <Button onClick={handleSubmit} disabled={!selectedDevices.length} sx={{display: "flex", justifyContent: "flex-end",alignItems: "center"}}>{loading && <CircularProgress size={12}/>}<span style={{marginLeft: "0.8rem"}}>Show</span></Button>
       </DialogActions>
     </Dialog>
   );

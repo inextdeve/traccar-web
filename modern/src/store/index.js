@@ -51,5 +51,15 @@ export { dbManagementActions } from "./dbManagement";
 export default configureStore({
   reducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(throttleMiddleware),
+    getDefaultMiddleware({
+      immutableCheck: false,
+      serializableCheck: false,
+    }).concat(throttleMiddleware),
 });
+// Use this params inside getDefaultMiddleware Fn if you get warning about middlware
+/* 
+{
+    immutableCheck: false,
+    serializableCheck: false,
+  }
+*/

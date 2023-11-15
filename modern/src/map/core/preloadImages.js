@@ -101,7 +101,9 @@ export default async () => {
               category === "trashNegative" ||
               category === "bin" ||
               category === "trashInfo" ||
-              category === "trashWarning"
+              category === "trashWarning" ||
+              category === "pointBlue" ||
+              category === "pointRed"
             ) {
               mapImages[`${category}-${color}`] = prepareIcon(
                 noBackground,

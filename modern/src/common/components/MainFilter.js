@@ -112,7 +112,6 @@ const MainFilter = () => {
     }
 
     const filtered = filteredBins.filter((item) => {
-      // console.log(item)
       if (!item.description) return false;
 
       if (item.description.toLowerCase().indexOf(searchTerm) !== -1) return true;
@@ -195,8 +194,8 @@ const MainFilter = () => {
                 }}
                 multiple
               >
-                {filterSet?.route?.map((item) => (
-                  <MenuItem value={item}>{item}</MenuItem>
+                {filterSet?.route?.map((item, index) => (
+                  <MenuItem key={index} value={item}>{item}</MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -213,8 +212,8 @@ const MainFilter = () => {
                 }}
                 multiple
               >
-                {filterSet?.bintype?.map((item) => (
-                  <MenuItem value={item}>{item}</MenuItem>
+                {filterSet?.bintype?.map((item, index) => (
+                  <MenuItem key={index} value={item}>{item}</MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -231,8 +230,8 @@ const MainFilter = () => {
                 }}
                 multiple
               >
-                {filterSet?.center_name?.map((item) => (
-                  <MenuItem value={item}>{item}</MenuItem>
+                {filterSet?.center_name?.map((item, index) => (
+                  <MenuItem key={index} value={item}>{item}</MenuItem>
                 ))}
               </Select>
             </FormControl>
