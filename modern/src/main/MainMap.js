@@ -24,12 +24,17 @@ import MapMarkersNearbyStops from "../map/MapMarkersNearbyStops";
 import Popup from "../common/components/Popup";
 import { URL } from "../common/util/constant";
 import MyMapButton from "../map/core/Buttons";
+import { useConfirm } from "material-ui-confirm";
 
 const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const confirm = useConfirm();
+
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.bins.loading);
+  // Selected Bin in popup
+  const binId = useSelector(state => state.analytics.popup.id);
 
   const nearbyStops = useSelector((state) => state.devices.nearbyStops);
 
@@ -192,6 +197,43 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
 
   const showBins = useSelector((state) => state.bins.showBins);
 
+  const onNearbyStopsMarkersClick = useCallback(async (position) => {
+    
+    try {
+      await confirm({ description: `This will update the position of the selected bin to here !` });
+      const newPosition = JSON.parse(position);
+      
+      // Modify the position of the bin
+      dispatch(binsActions.updateBins(filteredBins.map((bin) => {
+        if (bin.id === binId) {
+          
+          return {...bin, longitude: newPosition.longitude, latitude: newPosition.latitude}
+        }
+        return bin;
+      })));
+
+      // Set the update in the DB
+      const response = await fetch(`${URL}/api/bins`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({id_bin: binId,position: `${newPosition.latitude} ${newPosition.longitude}`}),
+      });
+
+      if (response.status >= 400 && response.status < 600) {
+        const errorMessage = await response.json();
+        throw new Error(
+          errorMessage?.message || "Server Error: The item cannot updated"
+        );
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+  },[nearbyStops])
+
   return (
     <>
       {loading ? <LinearProgress /> : null}
@@ -206,7 +248,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
         {showBins ? (
           <MapMarkersAnalytics positions={filteredBins} onClick={onMarkClick} />
         ) : null}
-        <MapMarkersNearbyStops positions={nearbyStops} />
+        <MapMarkersNearbyStops positions={nearbyStops} onClick={onNearbyStopsMarkersClick}/>
         <MapAccuracy positions={filteredPositions} />
         <MapLiveRoutes />
         <MapPositions

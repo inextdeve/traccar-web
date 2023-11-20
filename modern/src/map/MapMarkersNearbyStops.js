@@ -2,7 +2,6 @@ import { useId, useCallback, useEffect } from "react";
 import { map } from "./core/MapView";
 
 const MapMarkersAnalytics = ({ minzoom, positions, onClick }) => {
-  console.log("MapMarkersRendered")
   const id = useId();
   const onMouseEnter = () => (map.getCanvas().style.cursor = "pointer");
   const onMouseLeave = () => (map.getCanvas().style.cursor = "");
@@ -13,9 +12,10 @@ const MapMarkersAnalytics = ({ minzoom, positions, onClick }) => {
       const feature = event.features[0];
       if (onClick) {
         onClick(
-          feature.properties.bin,
+          // console.log(feature)
+          // feature.properties.bin,
           feature.properties.position,
-          feature.properties.index
+          // feature.properties.index
         );
       }
     },
@@ -69,11 +69,12 @@ const MapMarkersAnalytics = ({ minzoom, positions, onClick }) => {
           type: "Point",
           coordinates: [position.longitude, position.latitude],
         },
+        
         properties: {
           index,
-          bin: {
+          //Here you can add any properties that you want [stop is a custom name]
+          stop: {
             id: position.id,
-            binType: position.binType || "",
           },
           position: {
             longitude: position.longitude,

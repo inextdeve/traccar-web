@@ -29,7 +29,6 @@ import trashPositiveSvg from "../../resources/images/icon/trashPositive.svg";
 import trashNegativeSvg from "../../resources/images/icon/trashNegative.svg";
 import trashWarningSvg from "../../resources/images/icon/trashYellow.svg";
 import trashInfoSvg from "../../resources/images/icon/trashBlue.svg";
-// import binSvg from "../../resources/images/icon/bin.svg";
 import cameraSvg from "../../resources/images/icon/camera.svg";
 import skidLoaderSvg from "../../resources/images/icon/skidLoader.svg";
 import compactorSvg from "../../resources/images/icon/compactor.svg";
@@ -40,6 +39,7 @@ import waterTruckSvg from "../../resources/images/icon/waterTruck.svg";
 import LowBedTrailerSvg from "../../resources/images/icon/lowBedTrailer.svg";
 import hookLifterSvg from "../../resources/images/icon/hookLifter.svg";
 import wreckerTruckSvg from "../../resources/images/icon/wreckerTruck.svg";
+import pointSvg from "../../resources/images/icon/point.svg"
 
 export const mapIcons = {
   animal: animalSvg,
@@ -67,7 +67,6 @@ export const mapIcons = {
   trashNegative: trashNegativeSvg,
   trashWarning: trashWarningSvg,
   trashInfo: trashInfoSvg,
-  // bin: binSvg,
   camera: cameraSvg,
   skidLoader: skidLoaderSvg,
   compactor: compactorSvg,
@@ -78,6 +77,7 @@ export const mapIcons = {
   lowBedTrailer: LowBedTrailerSvg,
   hookLifter: hookLifterSvg,
   wreckerTruck: wreckerTruckSvg,
+  point: pointSvg
 };
 
 export const mapIconKey = (category) => (mapIcons.hasOwnProperty(category) ? category : "default");
@@ -101,14 +101,21 @@ export default async () => {
               category === "trashNegative" ||
               category === "bin" ||
               category === "trashInfo" ||
-              category === "trashWarning" ||
-              category === "pointBlue" ||
-              category === "pointRed"
+              category === "trashWarning"
             ) {
               mapImages[`${category}-${color}`] = prepareIcon(
                 noBackground,
                 icon,
                 "#FFFFFF00",
+              );
+              return;
+            }
+
+            if (category === "point") {
+              mapImages[`${category}-${color}`] = prepareIcon(
+                noBackground,
+                icon,
+                palette.colors[color],
               );
               return;
             }
