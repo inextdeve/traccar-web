@@ -32,10 +32,13 @@ import RvHookupIcon from "@mui/icons-material/RvHookup";
 import { useTranslation } from "./LocalizationProvider";
 import sendMessage from "../util/sendMessage";
 import TruckDialog from "./TruckDialog";
+import {useResizeDetector} from "react-resize-detector"
+
 
 const useStyles = makeStyles((theme) => ({
   card: {
     width: theme.dimensions.popupMaxWidth,
+    
   },
   media: {
     height: theme.dimensions.popupImageHeight,
@@ -215,10 +218,20 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
     binData[0].longitude
   }`;
 
+  const getBodyHeight = () => {
+    const body = document.getElementsByTagName("body")[0];
+    const height = body.offsetHeight
+    return height
+  }
+
+  const {height:popupHeight, popupRef} = useResizeDetector();
+  const {height:moreHeight, moreRef} = useResizeDetector();
+
+
   return (
-    <div className={classes.root}>
+    <div className={classes.root} ref={popupRef}>
       {popup.show && (
-        <Draggable handle={`.${classes.media}, .${classes.header}`}>
+        <Draggable handle={`.${classes.media}, .${classes.header}`} bounds={{top: 0, bottom: getBodyHeight() - 70}}>
           <Card elevation={3} className={classes.card}>
             <Box
               className={classes.header}
@@ -303,7 +316,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                   </TableBody>
                 </Table>
                 {showReport && (
-                  <Box xs={{ mt: "2rem" }}>
+                  <Box xs={{ mt: "2rem"}}>
                     {showImages ? (
                       <Box>
                         <Box
@@ -451,7 +464,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                   </Box>
                 )}
                 {showMore && (
-                  <Box xs={{ mt: "2rem" }}>
+                  <Box xs={{ mt: "2rem" }} >
                     <Table size="small">
                       <TableHead>
                         <TableRow>
@@ -466,7 +479,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                           </TableCell>
                         </TableRow>
                       </TableHead>
-                      <TableBody>
+                      <TableBody ref={moreRef} style={{maxHeight: (getBodyHeight() - popupHeight) + "px"}}>
                         {[...binData[1].last7Days]
                           .reverse()
                           .map((item, index) => (
