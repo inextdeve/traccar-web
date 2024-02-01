@@ -32,8 +32,8 @@ import RvHookupIcon from "@mui/icons-material/RvHookup";
 import { useTranslation } from "./LocalizationProvider";
 import sendMessage from "../util/sendMessage";
 import TruckDialog from "./TruckDialog";
-import {useResizeDetector} from "react-resize-detector"
-
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -224,12 +224,9 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
     return height
   }
 
-  const {height:popupHeight, popupRef} = useResizeDetector();
-  const {height:moreHeight, moreRef} = useResizeDetector();
-
 
   return (
-    <div className={classes.root} ref={popupRef}>
+    <div className={classes.root} >
       {popup.show && (
         <Draggable handle={`.${classes.media}, .${classes.header}`} bounds={{top: 0, bottom: getBodyHeight() - 70}}>
           <Card elevation={3} className={classes.card}>
@@ -464,7 +461,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                   </Box>
                 )}
                 {showMore && (
-                  <Box xs={{ mt: "2rem" }} >
+                  <SimpleBar style={{ maxHeight:  getBodyHeight() - 500 }}>
                     <Table size="small">
                       <TableHead>
                         <TableRow>
@@ -479,7 +476,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                           </TableCell>
                         </TableRow>
                       </TableHead>
-                      <TableBody ref={moreRef} style={{maxHeight: (getBodyHeight() - popupHeight) + "px"}}>
+                      <TableBody >
                         {[...binData[1].last7Days]
                           .reverse()
                           .map((item, index) => (
@@ -534,7 +531,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                           ))}
                       </TableBody>
                     </Table>
-                  </Box>
+                  </SimpleBar>
                 )}
               </CardContent>
             ) : (

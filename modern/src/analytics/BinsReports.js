@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Carousel from "react-material-ui-carousel";
 import { useDispatch, useSelector } from "react-redux";
-
 import {
   Box,
   Button,
@@ -13,11 +12,9 @@ import {
   DialogTitle,
 } from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
-
 import ImageIcon from "@mui/icons-material/Image";
 import { useTheme } from "@mui/material/styles";
 import { analyticsActions } from "../store";
-
 import Print from "./common/Print";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
@@ -30,6 +27,8 @@ import PrintingHeader from "../common/components/PrintingHeader";
 import MapAnalytics from "../map/MapAnalytics";
 import Popup from "../common/components/Popup";
 import { URL } from "../common/util/constant";
+import ReportDetails from "./components/ReportDetails";
+import moment from "moment";
 
 const Item = ({ item }) => {
   const classes = useReportStyles();
@@ -90,6 +89,7 @@ const BinsReports = () => {
 
   // Table Data Processing
   const columnsHead = [
+    "more",
     "reportID",
     "date",
     "binName",
@@ -101,7 +101,8 @@ const BinsReports = () => {
     "actions",
   ];
   const keys = [
-    "reportId",
+    "reportDetails",
+    "id",
     "time",
     "description_bin",
     "type",
@@ -120,7 +121,11 @@ const BinsReports = () => {
       tag: "bin",
     };
     return {
+      reportDetails:(
+        <ReportDetails description={item.description}/>
+      ),
       ...item,
+      time: moment(item.time).format('MM Do YYYY - H:mm'),
       status: parseInt(item.status) ? t("done") : t("processing"),
       actions: (
         <>

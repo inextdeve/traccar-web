@@ -656,5 +656,6 @@
   "exited": "Exited",
   "notExited": "Not Exited",
   "simulator": "Simulator",
-  "delete": "Delete"
+  "delete": "Delete",
+  "more": "More"
 }
