@@ -32,13 +32,15 @@ import RvHookupIcon from "@mui/icons-material/RvHookup";
 import { useTranslation } from "./LocalizationProvider";
 import sendMessage from "../util/sendMessage";
 import TruckDialog from "./TruckDialog";
-import SimpleBar from 'simplebar-react';
-import 'simplebar-react/dist/simplebar.min.css';
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 
 const useStyles = makeStyles((theme) => ({
   card: {
     width: theme.dimensions.popupMaxWidth,
-    
+    "& .MuiCardContent-root": {
+      paddingBottom: "4px",
+    },
   },
   media: {
     height: theme.dimensions.popupImageHeight,
@@ -60,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
   },
+
   negative: {
     color: theme.palette.colors.negative,
   },
@@ -220,15 +223,17 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
 
   const getBodyHeight = () => {
     const body = document.getElementsByTagName("body")[0];
-    const height = body.offsetHeight
-    return height
-  }
-
+    const height = body.offsetHeight;
+    return height;
+  };
 
   return (
-    <div className={classes.root} >
+    <div className={classes.root}>
       {popup.show && (
-        <Draggable handle={`.${classes.media}, .${classes.header}`} bounds={{top: 0, bottom: getBodyHeight() - 70}}>
+        <Draggable
+          handle={`.${classes.media}, .${classes.header}`}
+          bounds={{ top: 0, bottom: getBodyHeight() - 70 }}
+        >
           <Card elevation={3} className={classes.card}>
             <Box
               className={classes.header}
@@ -255,6 +260,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 <CloseIcon fontSize="small" />
               </IconButton>
             </Box>
+
             {binData ? (
               <CardContent className={classes.content}>
                 <Table size="small" classes={{ root: classes.table }}>
@@ -313,7 +319,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                   </TableBody>
                 </Table>
                 {showReport && (
-                  <Box xs={{ mt: "2rem"}}>
+                  <Box xs={{ mt: "2rem" }}>
                     {showImages ? (
                       <Box>
                         <Box
@@ -460,8 +466,44 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                     )}
                   </Box>
                 )}
+                <CardActions classes={{ root: classes.actions }} disableSpacing>
+                  <IconButton color="secondary" onClick={toggleDetails}>
+                    {showMore ? (
+                      <RemoveCircleOutlineIcon />
+                    ) : (
+                      <ControlPointIcon />
+                    )}
+                  </IconButton>
+
+                  <IconButton
+                    color="secondary"
+                    disabled={!binData}
+                    onClick={() => setOpen(true)}
+                  >
+                    <RvHookupIcon />
+                  </IconButton>
+
+                  <Box>
+                    {binData && binData[2] ? (
+                      <IconButton color="negative" onClick={toggleReport}>
+                        <FlagIcon />
+                      </IconButton>
+                    ) : null}
+                    <IconButton
+                      color="secondary"
+                      onClick={() =>
+                        sendMessage(generateMessage(), binData[0].driver_phone)
+                      }
+                      disabled={binData ? !binData[0]?.driver_phone : true}
+                    >
+                      <WhatsAppIcon />
+                    </IconButton>
+                  </Box>
+                </CardActions>
                 {showMore && (
-                  <SimpleBar style={{ maxHeight:  getBodyHeight() - 500 }}>
+                  <SimpleBar style={{ maxHeight: getBodyHeight() - 500 }}>
+                    <Divider />
+
                     <Table size="small">
                       <TableHead>
                         <TableRow>
@@ -476,7 +518,7 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                           </TableCell>
                         </TableRow>
                       </TableHead>
-                      <TableBody >
+                      <TableBody>
                         {[...binData[1].last7Days]
                           .reverse()
                           .map((item, index) => (
@@ -539,37 +581,6 @@ const Popup = ({ onClose, desktopPadding = 0 }) => {
                 <CircularProgress />
               </Box>
             )}
-
-            <CardActions classes={{ root: classes.actions }} disableSpacing>
-              <IconButton color="secondary" onClick={toggleDetails}>
-                {showMore ? <RemoveCircleOutlineIcon /> : <ControlPointIcon />}
-              </IconButton>
-
-              <IconButton
-                color="secondary"
-                disabled={!binData}
-                onClick={() => setOpen(true)}
-              >
-                <RvHookupIcon />
-              </IconButton>
-
-              <Box>
-                {binData && binData[2] ? (
-                  <IconButton color="negative" onClick={toggleReport}>
-                    <FlagIcon />
-                  </IconButton>
-                ) : null}
-                <IconButton
-                  color="secondary"
-                  onClick={() =>
-                    sendMessage(generateMessage(), binData[0].driver_phone)
-                  }
-                  disabled={binData ? !binData[0]?.driver_phone : true}
-                >
-                  <WhatsAppIcon />
-                </IconButton>
-              </Box>
-            </CardActions>
 
             <TruckDialog
               open={open}
