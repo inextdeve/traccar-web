@@ -90,7 +90,9 @@ const TruckDialog = ({ open, setOpen, latitude, longitude }) => {
         latitude,
         longitude,
         devices: mergedDevices.map((deviceId) => String(deviceId)).join(","),
-        distance
+        distance,
+        from,
+        to
       });
       console.log(mergedDevices)
       const response = await fetch(

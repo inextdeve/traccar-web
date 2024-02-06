@@ -69,6 +69,7 @@ const BinsStatusChart = ({ bins, title, subtitle, key1, key2 }) => {
             type="category"
             axisLine={false}
             tickLine={false}
+            width={185}
           />
 
           <Bar

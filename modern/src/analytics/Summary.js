@@ -189,10 +189,11 @@ const Summary = () => {
                         "theProportionOfEmptedAndUnemptedBinsByTypes",
                       )}
                       bins={chartData.map((item) => {
+                        
                         const empted = (item.empty_bin * 100) / item.total;
 
                         return {
-                          name: item.id,
+                          name: item.date,
                           empted: countRate(item.total, item.empty_bin).toFixed(
                             2,
                           ),
