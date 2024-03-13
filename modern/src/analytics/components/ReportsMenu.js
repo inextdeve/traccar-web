@@ -21,6 +21,7 @@ import DateRangeIcon from "@mui/icons-material/DateRange";
 import DeviceHubIcon from "@mui/icons-material/DeviceHub";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import AltRouteIcon from "@mui/icons-material/AltRoute";
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 
 import { analyticsActions } from "../../store";
 import RouteIcon from "../../common/icons/RouteIcon";
@@ -109,11 +110,18 @@ const ReportsMenu = () => {
               selected={location.pathname === "/analytics/bin/summary"}
             />
             <MenuItem
+              title={t("supervisor")}
+              link="/analytics/bin/supervisor"
+              icon={<SupervisorAccountIcon />}
+              selected={location.pathname === "/analytics/bin/supervisor"}
+            />
+            <MenuItem
               title={t("simulator")}
               link="/analytics/bin/simulator"
               icon={<AltRouteIcon />}
               selected={location.pathname === "/analytics/bin/simulator"}
             />
+            
           </List>
         </Collapse>
       </List>

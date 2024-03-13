@@ -98,6 +98,7 @@
   "sharedLocation": "Location",
   "sharedImport": "Import",
   "sharedColumns": "Columns",
+  "supervisor": "Supervisor",
   "sharedDropzoneText": "Drag and drop a file here or click",
   "calendarSimple": "Simple",
   "calendarRecurrence": "Recurrence",

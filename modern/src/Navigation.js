@@ -66,6 +66,7 @@ import BinsManagement from "./settings/BinsManagement";
 import RoutesManagement from "./settings/RoutesManagement";
 import CentersManagement from "./settings/CentersManagement";
 import TypesManagement from "./settings/TypesManagement";
+import Supervisor from "./analytics/Supervisor";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -185,6 +186,7 @@ const Navigation = () => {
           <Route path="equipments/week" element={<EquipmentsByWeek />} />
           <Route path="equipments/service" element={<EquipmentsByService />} />
           <Route path="bin/simulator" element={<Simulator />} />
+          <Route path="bin/supervisor" element={<Supervisor />} />
         </Route>
       </Route>
     </Routes>
