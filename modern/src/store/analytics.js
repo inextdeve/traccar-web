@@ -32,6 +32,7 @@ const { reducer, actions } = createSlice({
       sweeping: false,
       equipments: false,
     },
+    supervisors: [],
   },
   reducers: {
     updateLoading(state, action) {
@@ -81,6 +82,9 @@ const { reducer, actions } = createSlice({
         [action.payload]: !state.menu[action.payload],
       };
     },
+    updateSupervisors(state, action) {
+      state.items = action.payload;
+    }
   },
 });
 

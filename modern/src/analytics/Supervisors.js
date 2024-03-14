@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  Grid, Typography, Box, Skeleton, Button,
+  Grid, Typography, Box, Skeleton, Button, Slider,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -19,11 +19,32 @@ import ExcelExport from "./components/ExcelExport";
 import PrintingHeader from "../common/components/PrintingHeader";
 import { URL } from "../common/util/constant";
 
+const marks = [
+  {
+    value: 0,
+    label: '0%',
+  },
+  {
+    value: 85,
+    label: '85%',
+  },
+
+  {
+    value: 100,
+    label: '100%',
+  },
+];
+
+function valuetext(value) {
+return `${value}%`;
+}
+
 const Supervisor = () => {
   const classes = useReportStyles();
   const t = useTranslation();
   const dispatch = useDispatch();
   const TableRef = useRef(null);
+  const defaultRange = [0, 100];
 
   const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
@@ -33,47 +54,54 @@ const Supervisor = () => {
   const loading = useSelector((state) => state.analytics.loading);
   const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
 
+  const [rateRange, setRateRange] = useState(defaultRange);
+  const [tableItems, setTableItems] = useState([]);
+
+
+
   // Table Data Processing
   const columnsHead = [
     "id",
-    "date",
-    "numberOfBins",
+    "sharedName",
+    "bins",
     "empted",
-    "notEmpted",
-    "completionRate",
+    "rate",
   ];
   const data = useSelector((state) => state.analytics.items);
-  const keys = ["id", "date", "total", "empty_bin", "un_empty_bin", "rate"];
+  const keys = ["driverid", "name", "bins", "emptedBins","rate"];
+
+  useEffect(() => {
+    //On datachange set tableItems
+  },[])
+
   const items = data.map((item, index) => ({
-    id: index,
     ...item,
-    date: moment(item.date).format("MMM Do YY"),
-    rate: `${countRate(item.total, item.empty_bin).toFixed(2)}%`,
-  }));
+    rate: `${countRate(item.bins, item.emptedBins).toFixed(2)}%`,
+    total: countRate(item.bins, item.emptedBins),
+  })).sort((a,b) => b.total - a.total);
   items.push({
-    id: t("total"),
-    total: countTotal(items, "total"),
-    date: "All",
-    empty_bin: countTotal(items, "empty_bin"),
-    un_empty_bin: countTotal(items, "un_empty_bin"),
+    driverid: t("total"),
+    name: "-",
+    bins: countTotal(items, "bins"),
+    emptedBins: countTotal(items, "emptedBins"),
     rate: `${countRate(
-      countTotal(items, "total"),
-      countTotal(items, "empty_bin"),
+      countTotal(items, "bins"),
+      countTotal(items, "emptedBins"),
     ).toFixed(2)}%`,
   });
   // Data for charts drop Total item
-  const chartData = items.slice(0, -1);
+  const chartData = items;
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${URL}/api/bins/summary`, {
+    fetch(`${URL}/api/supervisors/statistics`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((data) => {
         setIsLoading(false);
         return data.json();
       })
-      .then((data) => dispatch(analyticsActions.updateItems(data)))
+      .then((data) => dispatch(analyticsActions.updateSupervisors(data)))
       .catch(() => setIsLoading(false));
   }, []);
 
@@ -83,7 +111,7 @@ const Supervisor = () => {
       to,
     });
 
-    const url = `${URL}/api/bins/summary?${query.toString()}`;
+    const url = `${URL}/api/supervisors/statistics?${query.toString()}`;
 
     setIsLoading(true);
     fetch(url, {
@@ -91,10 +119,14 @@ const Supervisor = () => {
     })
       .then((data) => data.json())
       .then((data) => {
-        dispatch(analyticsActions.updateItems(data));
+        dispatch(analyticsActions.updateSupervisors(data));
         setIsLoading(false);
       });
   };
+
+  useEffect(() => {
+    dispatch(analyticsActions.updateSupervisors(items.filter((i) => i.total > rateRange[0] && i.total < rateRange[1])))
+  }, [rateRange])
 
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "summary"]}>
@@ -122,12 +154,34 @@ const Supervisor = () => {
               )}
             />
           </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              margin: "auto",
+              marginTop: "2rem",
+              marginBottom: "1rem",
+              maxWidth: "400px"
+            }}
+          >
+            <Slider
+              track="normal"
+              aria-labelledby="track-inverted-range-slider"
+              getAriaValueText={valuetext}
+              defaultValue={defaultRange}
+              marks={marks}
+              onChange={(e) => {
+                setRateRange(e.target.value)
+              }}
+            />
+          </Box>
           <Box ref={TableRef}>
             <PrintingHeader />
             <AnalyticsTable
               columnsHead={columnsHead}
               items={items}
               keys={keys}
+              supervisor={true}
             />
             {!loading ? (
               <Typography
@@ -149,7 +203,7 @@ const Supervisor = () => {
             <Grid container className={classes.charts}>
               {!loading ? (
                 <>
-                  <Grid item xs={12} lg={5} className={classes.chart}>
+                  {/* <Grid item xs={12} lg={5} className={classes.chart}>
                     <BinsChart
                       key1="Empted"
                       key2="Unempted"
@@ -169,8 +223,8 @@ const Supervisor = () => {
                         },
                       ]}
                     />
-                  </Grid>
-                  <Grid xs={12} lg={6} item className={classes.chart}>
+                  </Grid> */}
+                  {/* <Grid xs={12} lg={6} item className={classes.chart}>
                     <BinsPercentageChart
                       title={t("theProportionOfEachBinsType")}
                       subtitle={t("theProportionOfEachBinType")}
@@ -179,22 +233,22 @@ const Supervisor = () => {
                         value: parseInt(item.total, 10),
                       }))}
                     />
-                  </Grid>
+                  </Grid> */}
                   <Grid xs={12} item className={classes.chart}>
                     <BinsStatusChart
                       key1="empted"
                       key2="unempted"
-                      title={t("binsStatusByType")}
+                      title={t("supervisorCompletionRate")}
                       subtitle={t(
-                        "theProportionOfEmptedAndUnemptedBinsByTypes",
+                        "theProportionOfEmptedAndUnemptedBinsBySupervisors",
                       )}
                       bins={chartData.map((item) => {
                         
-                        const empted = (item.empty_bin * 100) / item.total;
+                        const empted = (item.emptedBins * 100) / item.bins;
 
                         return {
-                          name: item.date,
-                          empted: countRate(item.total, item.empty_bin).toFixed(
+                          name: item.name?.split(" ").shift() === "-" ? "Total" : item.name?.split(" ").shift(),
+                          empted: countRate(item.bins, item.emptedBins).toFixed(
                             2,
                           ),
                           unempted: 100 - empted,

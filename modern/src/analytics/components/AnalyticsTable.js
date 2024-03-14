@@ -13,10 +13,12 @@ import { useTranslation } from "../../common/components/LocalizationProvider";
 import TableShimmer from "../../common/components/TableShimmer";
 import useReportStyles from "../common/useReportStyles";
 
-const AnalyticsTable = ({ columnsHead, items, keys, excludeTotal }) => {
+const AnalyticsTable = ({ columnsHead, items, keys, excludeTotal, supervisor=false }) => {
   const classes = useReportStyles();
   const t = useTranslation();
   const loading = useSelector((state) => state.analytics.loading);
+
+  const supervisorClass = (item) => supervisor ? parseInt(item.total) > 95 ? classes.positive : (parseInt(item.total) < 95 && parseInt(item.total)) > 84  ? classes.warning : parseInt(item.total) < 85 ? classes.negative : null : ""
 
   return (
     <TableContainer component={Paper}>
@@ -44,20 +46,23 @@ const AnalyticsTable = ({ columnsHead, items, keys, excludeTotal }) => {
                 <TableRow
                   key={itemsIndex + 2}
                   hover={itemsIndex !== items.length - 1}
+                  
                   className={
-                    itemsIndex === items.length - 1 && !excludeTotal
+                    `${itemsIndex === items.length - 1 && !excludeTotal
                       ? classes.greyRow
-                      : null
+                      : null}`
                   }
                 >
                   <TableCell
                     sx={itemsIndex === items.length - 1 ? { border: 0 } : null}
+                    className={supervisor ? supervisorClass(item) : null}
                   />
                   {keys.map((key, index) => (
                     <TableCell
+                      sx={{color: supervisor ? "#FFF" : "#000"}}
                       key={index}
                       className={
-                        itemsIndex === items.length - 1 && !excludeTotal
+                        `${itemsIndex === items.length - 1 && !excludeTotal
                           ? classes.lastCell
                           : key === "empty_bin" ||
                             key === "cleaned" ||
@@ -67,7 +72,7 @@ const AnalyticsTable = ({ columnsHead, items, keys, excludeTotal }) => {
                             key === "not_cleaned" ||
                             key === "offline"
                               ? classes.unEmptyBin
-                              : null
+                              : null} ${supervisor ? supervisorClass(item) : null}`
                       }
                       align={`${
                         index === keys.length - 1 ? "center" : "inherit"

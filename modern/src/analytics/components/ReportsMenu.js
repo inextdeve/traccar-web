@@ -111,9 +111,9 @@ const ReportsMenu = () => {
             />
             <MenuItem
               title={t("supervisor")}
-              link="/analytics/bin/supervisor"
+              link="/analytics/bin/supervisors"
               icon={<SupervisorAccountIcon />}
-              selected={location.pathname === "/analytics/bin/supervisor"}
+              selected={location.pathname === "/analytics/bin/supervisors"}
             />
             <MenuItem
               title={t("simulator")}

@@ -99,6 +99,8 @@
   "sharedImport": "Import",
   "sharedColumns": "Columns",
   "supervisor": "Supervisor",
+  "supervisorCompletionRate": "Supervisor Completion Rate",
+  "theProportionOfEmptedAndUnemptedBinsBySupervisors": "The proportion of empted And unempted bins by supervisors",
   "sharedDropzoneText": "Drag and drop a file here or click",
   "calendarSimple": "Simple",
   "calendarRecurrence": "Recurrence",

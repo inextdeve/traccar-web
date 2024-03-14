@@ -74,4 +74,7 @@ export default makeStyles((theme) => ({
     fontSize: "0.99rem",
     lineHeight: "32px",
   },
+  warning: {
+    background: theme.palette.colors.warning,
+  },
 }));

@@ -100,6 +100,8 @@
   "sharedColumns": "Columns",
   "sharedDropzoneText": "Drag and drop a file here or click",
   "supervisor": "المراقبين",
+  "supervisorCompletionRate": "معدل إنجاز المشرف",
+  "theProportionOfEmptedAndUnemptedBinsBySupervisors": "نسبة الصناديق الفارغة وغير المفرغة من قبل المشرفين",
   "calendarSimple": "Simple",
   "calendarRecurrence": "Recurrence",
   "calendarOnce": "Once",
