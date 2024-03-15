@@ -86,7 +86,9 @@ const ReportFilter = ({ handleSubmit }) => {
             label={t("reportFrom")}
             type="datetime-local"
             value={from}
-            onChange={(e) => dispatch(analyticsActions.updateFrom(e.target.value))}
+            onChange={(e) =>
+              dispatch(analyticsActions.updateFrom(e.target.value))
+            }
             fullWidth
           />
         </div>
@@ -97,7 +99,9 @@ const ReportFilter = ({ handleSubmit }) => {
             label={t("reportTo")}
             type="datetime-local"
             value={to}
-            onChange={(e) => dispatch(analyticsActions.updateTo(e.target.value))}
+            onChange={(e) =>
+              dispatch(analyticsActions.updateTo(e.target.value))
+            }
             fullWidth
           />
         </div>

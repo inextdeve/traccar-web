@@ -29,7 +29,7 @@ export default makeStyles((theme) => ({
     color: "#fff",
   },
   greyRow: {
-    backgroundColor: theme.palette.colors.neutral,
+    backgroundColor: theme.palette.colors.primary,
   },
   lastCell: {
     fontWeight: "500",

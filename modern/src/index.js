@@ -3,7 +3,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-import { CssBaseline, ThemeProvider, StyledEngineProvider } from "@mui/material";
+import { CssBaseline, StyledEngineProvider } from "@mui/material";
 import { ConfirmProvider } from "material-ui-confirm";
 import store from "./store";
 import { LocalizationProvider } from "./common/components/LocalizationProvider";
@@ -16,6 +16,15 @@ import NativeInterface from "./common/components/NativeInterface";
 import ServerProvider from "./ServerProvider";
 import ErrorBoundary from "./ErrorBoundary";
 
+import {
+  experimental_extendTheme as materialExtendTheme,
+  Experimental_CssVarsProvider as MaterialCssVarsProvider,
+  THEME_ID as MATERIAL_THEME_ID,
+} from "@mui/material/styles";
+import { CssVarsProvider as JoyCssVarsProvider } from "@mui/joy/styles";
+
+const materialTheme = materialExtendTheme(theme);
+
 preloadImages();
 
 const root = createRoot(document.getElementById("root"));
@@ -24,22 +33,26 @@ root.render(
     <Provider store={store}>
       <LocalizationProvider>
         <StyledEngineProvider injectFirst>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <ServerProvider>
-              <BrowserRouter>
-                <ConfirmProvider>
-                  <Navigation />
-                </ConfirmProvider>
-              </BrowserRouter>
-            </ServerProvider>
-            <ErrorHandler />
-            <NativeInterface />
-          </ThemeProvider>
+          <MaterialCssVarsProvider
+            theme={{ [MATERIAL_THEME_ID]: materialTheme }}
+          >
+            <JoyCssVarsProvider>
+              <CssBaseline />
+              <ServerProvider>
+                <BrowserRouter>
+                  <ConfirmProvider>
+                    <Navigation />
+                  </ConfirmProvider>
+                </BrowserRouter>
+              </ServerProvider>
+              <ErrorHandler />
+              <NativeInterface />
+            </JoyCssVarsProvider>
+          </MaterialCssVarsProvider>
         </StyledEngineProvider>
       </LocalizationProvider>
     </Provider>
-  </ErrorBoundary>,
+  </ErrorBoundary>
 );
 
 serviceWorkerRegistration.register();

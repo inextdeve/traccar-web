@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Grid, Typography, Box, Skeleton, Button, Slider,
-} from "@mui/material";
+import { Grid, Typography, Box, Skeleton, Button } from "@mui/material";
+import Slider from "@mui/joy/Slider";
+import Card from "@mui/joy/Card";
 import { useDispatch, useSelector } from "react-redux";
-import moment from "moment";
 import Print from "./common/Print";
 import PageLayout from "../common/components/PageLayout";
 import useReportStyles from "./common/useReportStyles";
@@ -22,21 +21,21 @@ import { URL } from "../common/util/constant";
 const marks = [
   {
     value: 0,
-    label: '0%',
+    label: "0%",
   },
   {
     value: 85,
-    label: '85%',
+    label: "85%",
   },
 
   {
     value: 100,
-    label: '100%',
+    label: "100%",
   },
 ];
 
 function valuetext(value) {
-return `${value}%`;
+  return `${value}%`;
 }
 
 const Supervisor = () => {
@@ -46,39 +45,35 @@ const Supervisor = () => {
   const TableRef = useRef(null);
   const defaultRange = [0, 100];
 
-  const countTotal = (array, prop) => array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
+  const countTotal = (array, prop) =>
+    array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
 
   const countRate = (total, n) => (n * 100) / total;
 
   const token = useSelector((state) => state.session.user.attributes.apitoken);
   const loading = useSelector((state) => state.analytics.loading);
-  const setIsLoading = (state) => dispatch(analyticsActions.updateLoading(state));
+  const setIsLoading = (state) =>
+    dispatch(analyticsActions.updateLoading(state));
 
   const [rateRange, setRateRange] = useState(defaultRange);
   const [tableItems, setTableItems] = useState([]);
 
-
-
   // Table Data Processing
-  const columnsHead = [
-    "id",
-    "sharedName",
-    "bins",
-    "empted",
-    "rate",
-  ];
+  const columnsHead = ["id", "sharedName", "bins", "empted", "rate"];
   const data = useSelector((state) => state.analytics.items);
-  const keys = ["driverid", "name", "bins", "emptedBins","rate"];
+  const keys = ["driverid", "name", "bins", "emptedBins", "rate"];
 
   useEffect(() => {
     //On datachange set tableItems
-  },[])
+  }, []);
 
-  const items = data.map((item, index) => ({
-    ...item,
-    rate: `${countRate(item.bins, item.emptedBins).toFixed(2)}%`,
-    total: countRate(item.bins, item.emptedBins),
-  })).sort((a,b) => b.total - a.total);
+  const items = data
+    .map((item, index) => ({
+      ...item,
+      rate: `${countRate(item.bins, item.emptedBins).toFixed(2)}%`,
+      total: countRate(item.bins, item.emptedBins),
+    }))
+    .sort((a, b) => b.total - a.total);
   items.push({
     driverid: t("total"),
     name: "-",
@@ -86,7 +81,7 @@ const Supervisor = () => {
     emptedBins: countTotal(items, "emptedBins"),
     rate: `${countRate(
       countTotal(items, "bins"),
-      countTotal(items, "emptedBins"),
+      countTotal(items, "emptedBins")
     ).toFixed(2)}%`,
   });
   // Data for charts drop Total item
@@ -125,8 +120,14 @@ const Supervisor = () => {
   };
 
   useEffect(() => {
-    dispatch(analyticsActions.updateSupervisors(items.filter((i) => i.total > rateRange[0] && i.total < rateRange[1])))
-  }, [rateRange])
+    setTableItems(
+      items.filter((i) => {
+        if (i.name == "-") return true;
+        if (rateRange[0] === rateRange[1]) return i.total >= rateRange[0];
+        return i.total >= rateRange[0] && i.total <= rateRange[1];
+      })
+    );
+  }, [rateRange, data]);
 
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={["analytics", "summary"]}>
@@ -143,7 +144,7 @@ const Supervisor = () => {
             <ExcelExport excelData={items} fileName="SummarySheet" />
             <Print
               target={TableRef.current}
-              button={(
+              button={
                 <Button
                   variant="contained"
                   color="secondary"
@@ -151,7 +152,7 @@ const Supervisor = () => {
                 >
                   {t("print")}
                 </Button>
-              )}
+              }
             />
           </Box>
           <Box
@@ -161,25 +162,28 @@ const Supervisor = () => {
               margin: "auto",
               marginTop: "2rem",
               marginBottom: "1rem",
-              maxWidth: "400px"
+              maxWidth: "400px",
             }}
           >
-            <Slider
-              track="normal"
-              aria-labelledby="track-inverted-range-slider"
-              getAriaValueText={valuetext}
-              defaultValue={defaultRange}
-              marks={marks}
-              onChange={(e) => {
-                setRateRange(e.target.value)
-              }}
-            />
+            <Card color="primary" size="md" sx={{ width: "400px", px: "2rem" }}>
+              <Slider
+                size="sm"
+                track="normal"
+                aria-labelledby="track-inverted-range-slider"
+                getAriaValueText={valuetext}
+                defaultValue={defaultRange}
+                marks={marks}
+                onChange={(e) => {
+                  setRateRange(e.target.value);
+                }}
+              />
+            </Card>
           </Box>
           <Box ref={TableRef}>
             <PrintingHeader />
             <AnalyticsTable
               columnsHead={columnsHead}
-              items={items}
+              items={tableItems}
               keys={keys}
               supervisor={true}
             />
@@ -240,16 +244,18 @@ const Supervisor = () => {
                       key2="unempted"
                       title={t("supervisorCompletionRate")}
                       subtitle={t(
-                        "theProportionOfEmptedAndUnemptedBinsBySupervisors",
+                        "theProportionOfEmptedAndUnemptedBinsBySupervisors"
                       )}
                       bins={chartData.map((item) => {
-                        
                         const empted = (item.emptedBins * 100) / item.bins;
 
                         return {
-                          name: item.name?.split(" ").shift() === "-" ? "Total" : item.name?.split(" ").shift(),
+                          name:
+                            item.name?.split(" ").shift() === "-"
+                              ? "Total"
+                              : item.name?.split(" ").shift(),
                           empted: countRate(item.bins, item.emptedBins).toFixed(
-                            2,
+                            2
                           ),
                           unempted: 100 - empted,
                           amt: 100,
