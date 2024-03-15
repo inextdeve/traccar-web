@@ -63,9 +63,6 @@ const Supervisor = () => {
   const data = useSelector((state) => state.analytics.items);
   const keys = ["driverid", "name", "bins", "emptedBins", "rate"];
 
-  useEffect(() => {
-    //On datachange set tableItems
-  }, []);
 
   const items = data
     .map((item, index) => ({
@@ -124,7 +121,7 @@ const Supervisor = () => {
       items.filter((i) => {
         if (i.name == "-") return true;
         if (rateRange[0] === rateRange[1]) return i.total >= rateRange[0];
-        return i.total >= rateRange[0] && i.total <= rateRange[1];
+        return i.total >= rateRange[0] ;
       })
     );
   }, [rateRange, data]);
