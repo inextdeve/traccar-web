@@ -44,6 +44,7 @@ const Supervisor = () => {
   const dispatch = useDispatch();
   const TableRef = useRef(null);
   const defaultRange = [0, 100];
+  const [factor, setFactor] = useState(1);
 
   const countTotal = (array, prop) =>
     array.map((item) => parseFloat(item[prop])).reduce((n, c) => n + c, 0);
@@ -67,8 +68,8 @@ const Supervisor = () => {
   const items = data
     .map((item, index) => ({
       ...item,
-      rate: `${countRate(item.bins, item.emptedBins).toFixed(2)}%`,
-      total: countRate(item.bins, item.emptedBins),
+      rate: `${(countRate(item.bins, item.emptedBins) / factor).toFixed(2)}%`,
+      total: (countRate(item.bins, item.emptedBins) / factor).toFixed(2),
     }))
     .sort((a, b) => b.total - a.total);
   items.push({
@@ -76,10 +77,10 @@ const Supervisor = () => {
     name: "-",
     bins: countTotal(items, "bins"),
     emptedBins: countTotal(items, "emptedBins"),
-    rate: `${countRate(
+    rate: `${(countRate(
       countTotal(items, "bins"),
       countTotal(items, "emptedBins")
-    ).toFixed(2)}%`,
+    ) / factor).toFixed(2) }%`,
   });
   // Data for charts drop Total item
   const chartData = items;
@@ -98,13 +99,15 @@ const Supervisor = () => {
   }, []);
 
   const handleSubmit = ({ from, to }) => {
+    setFactor((new Date(to) - new Date(from)) / 86400000);
     const query = new URLSearchParams({
       from,
       to,
     });
 
-    const url = `${URL}/api/supervisors/statistics?${query.toString()}`;
 
+    const url = `${URL}/api/supervisors/statistics?${query.toString()}`;
+    
     setIsLoading(true);
     fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
