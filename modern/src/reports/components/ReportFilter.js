@@ -139,6 +139,7 @@ const ReportFilter = ({
               multiple
             >
               {Object.values(groups)
+                .filter((group) => !!group.id)
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((group) => (
                   <MenuItem key={group.id} value={group.id}>

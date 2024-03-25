@@ -110,7 +110,7 @@ const ReportsMenu = () => {
               selected={location.pathname === "/analytics/bin/summary"}
             />
             <MenuItem
-              title={t("supervisor")}
+              title={t("supervisors")}
               link="/analytics/bin/supervisors"
               icon={<SupervisorAccountIcon />}
               selected={location.pathname === "/analytics/bin/supervisors"}

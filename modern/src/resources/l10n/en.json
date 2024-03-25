@@ -98,7 +98,7 @@
   "sharedLocation": "Location",
   "sharedImport": "Import",
   "sharedColumns": "Columns",
-  "supervisor": "Supervisor",
+  "supervisors": "Supervisors",
   "supervisorCompletionRate": "Supervisor Completion Rate",
   "theProportionOfEmptedAndUnemptedBinsBySupervisors": "The proportion of empted And unempted bins by supervisors",
   "sharedDropzoneText": "Drag and drop a file here or click",
