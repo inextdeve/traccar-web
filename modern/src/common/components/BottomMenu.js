@@ -85,7 +85,7 @@ const BottomMenu = () => {
         });
       }
     }
-
+    console.log("Before session");
     await fetch("/api/session", { method: "DELETE" });
     nativePostMessage("logout");
     navigate("/login");
@@ -127,7 +127,7 @@ const BottomMenu = () => {
       >
         <BottomNavigationAction
           label={t("mapTitle")}
-          icon={(
+          icon={
             <Badge
               color="error"
               variant="dot"
@@ -136,7 +136,7 @@ const BottomMenu = () => {
             >
               <MapIcon />
             </Badge>
-          )}
+          }
           value="map"
         />
         {!disableReports && (
