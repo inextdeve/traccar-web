@@ -57,8 +57,8 @@ const ReportFilter = ({ handleSubmit }) => {
     }
 
     handleSubmit({
-      from: selectedFrom.toISOString(),
-      to: selectedTo.toISOString(),
+      from: moment(selectedFrom).format("YYYY-MM-DDTHH:mm"),
+      to: moment(selectedTo).format("YYYY-MM-DDTHH:mm"),
     });
   };
 
